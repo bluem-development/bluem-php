@@ -23,6 +23,8 @@
 		"selective/xmldsig": "^1.0"
     },
 	"autoload": {
-        "psr-4": {"Bluem\\PHP": "vendor/daanrijpkema/bluem-php/"}
+        "psr-4": {
+            "Bluem\\": "vendor/daanrijpkema/bluem-php/"
+        }
     }
 }
