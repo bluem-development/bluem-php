@@ -72,11 +72,11 @@ Creating necessary variables can be done using helper functions
 Generating an entrance code (required for later retrieving statuses)
 
 ```php
-$entranceCode = $this->bluem->CreateEntranceCode();
+$entranceCode = $bluem_object->CreateEntranceCode();
 ```
 Generating a mandate ID:
 ```php
-$mandateId = $this->bluem->CreateMandateId($order_id, $customer_id);
+$mandateId = $bluem_object->CreateMandateId($order_id, $customer_id);
 ```
 When creating a new transaction,  the entranceCode and MandateID will be generated implicitly.
 
@@ -84,7 +84,7 @@ When creating a new transaction,  the entranceCode and MandateID will be generat
 When you are handling a callback and status update yourself, you can use the simple transaction type. This simply creates a transaction, tells you where to redirect. After the user finishes the transaction process, they are redirected to the fourth parameter without any further ado.
 ```php
 // simple emandate transaction
-$response = $this->bluem->CreateNewTransaction($customer_id, $order_id,"simple","https://google.com");
+$response = $bluem_object->CreateNewTransaction($customer_id, $order_id,"simple","https://google.com");
 ```
 
 #### Creating Default transactions
@@ -93,7 +93,7 @@ It uses the `merchantReturnURLBase` attribute, set in the parameter when creatin
 This process automatically adds the mandateID as a GET parameter to the return URL, so it can be picked up for the Status Update.
 ```php
 // default
-$response = $this->bluem->CreateNewTransaction($customer_id, $order_id,"default");
+$response = $bluem_object->CreateNewTransaction($customer_id, $order_id,"default");
 ```
 
 #### Redirection after creation
@@ -112,7 +112,7 @@ if (isset($response->EMandateTransactionResponse->TransactionURL)) {
 ### Requesting a Transaction status
 
 ```php
-$response = $this->bluem->RequestTransactionStatus(
+$response = $bluem_object->RequestTransactionStatus(
     $existing_mandate_id,
     $existing_entrance_code
 );
