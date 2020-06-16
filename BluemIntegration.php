@@ -1,4 +1,4 @@
-<?php //BlueMIntegration.php
+<?php 
 namespace Bluem;
 
 if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
