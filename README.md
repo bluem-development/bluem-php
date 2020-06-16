@@ -20,10 +20,16 @@ composer require daanrijpkema/bluem-php:dev-master
 Include the required autoload functions of Composer in your code. 
 
 ```php
+
+// get composer dependencies
 require 'vendor/autoload.php';
+
+// load the Bluem class from its namespace
+use \Bluem\BluemIntegration as Bluem;
+
 ```
 
-Then you can retrieve an object to utilize all functions as such:
+Then you can retrieve an object to utilize all functions as below. It is suggested to save these configuration settings in a database or settings handler, so they can be stored by the user instead of in code.
 
 ```php
 $bluem_config = new Stdclass();
