@@ -9,10 +9,10 @@ Use this to write your own applications in PHP that communicate with Bluem.
 
 ## Installation
 
-Run composer to install dependencies before or after deployment
+Run Composer to install this library and dependences:
 
-```
-composer install
+```bash
+composer require daanrijpkema/bluem-php
 ```
 
 ## Usage
