@@ -25,7 +25,7 @@ Include the required autoload functions of Composer in your code.
 require 'vendor/autoload.php';
 
 // load the Bluem class from its namespace
-use \Bluem\BluemIntegration as Bluem;
+use \Bluem\BluemIntegration as BluemIntegration;
 
 ```
 
