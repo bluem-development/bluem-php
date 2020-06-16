@@ -1,0 +1,25 @@
+{
+    "name": "daanrijpkema/bluem-php",
+    "type": "library",
+    "description": "Bluem PHP interface",
+    "keywords": ["bluem","php","interface","wrapper","emandate","epayment"],
+    "homepage": "https://daanrijpkema.com",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Daan Rijpkema",
+            "email": "info@daanrijpkema.com",
+            "homepage": "https://daanrijpkema.com",
+            "role": "Developer"
+        }
+	],
+	"support": {
+		"issues": "https://github.com/daanrijpkema/bluem-php"
+	},
+	"require": {
+		"php": ">=5.4",
+		"nesbot/carbon": "^2.31",
+		"pear/http_request2": "^2.3",
+		"selective/xmldsig": "^1.0"
+    }
+}
