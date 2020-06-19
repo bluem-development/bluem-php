@@ -67,7 +67,7 @@ $bluem_config->localInstrumentCode = ...
 // URL to return to after finishing the process
 $bluem_config->merchantReturnURLBase = ...;
 
-$bluem_object = new BlueMIntegration($bluem_config);
+$bluem_object = new \Bluem\BluemIntegration($bluem_config);
 ```
 
 ## Usage
