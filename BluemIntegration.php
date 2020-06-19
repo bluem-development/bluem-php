@@ -76,7 +76,11 @@ class BluemIntegration
 	 * @param int $customer_id The Customer ID
 	 * @param int $order_id    The Order ID
 	 */
-	public function CreateNewTransaction($customer_id, $order_id): EMandateResponse
+	public function CreateNewTransaction(
+		$customer_id, $order_id, 
+		$transaction_type = "default", 
+		$simple_redirect_url = ""
+		)
 	{
 
 		if (is_null($customer_id)) {
@@ -93,7 +97,9 @@ class BluemIntegration
 			$this->CreateMandateID($order_id, $customer_id),
 			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
 				isset($this->configuration->expected_return) ?
-				$this->configuration->expected_return : "")
+				$this->configuration->expected_return : ""),
+			$transaction_type,
+			$simple_redirect_url
 		);
 
 		return $this->PerformRequest($r);
@@ -115,7 +121,8 @@ class BluemIntegration
 	 */
 	public function CreateMandateID(String $order_id, String $customer_id): String
 	{
-		if($this->configuration->senderID === "S1300")  // veteranen search team
+		// veteranen search team
+		if($this->configuration->senderID === "S1300")  
 		{
 			return "M".Carbon::now()->format('YmdHis');
 		} 
@@ -152,7 +159,7 @@ class BluemIntegration
 		try {
 			$http_response = $req->send();
 			if ($http_response->getStatus() == 200) {
-				// echo $http_response->getBody();
+				
 				$response = new EMandateResponse($http_response->getBody());
 				if (!$response->Status()) {
 

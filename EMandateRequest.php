@@ -270,7 +270,9 @@ class EMandateTransactionRequest extends EMandateRequest
 	private $purchaseID;
 	private $sendOption;
 	
-	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none")
+	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none",
+	$transaction_type = "default",
+	$simple_redirect_url="")
 	{
 		
 		parent::__construct($config,"",$expected_return);
@@ -279,6 +281,10 @@ class EMandateTransactionRequest extends EMandateRequest
 		
 		$this->merchantReturnURLBase = $config->merchantReturnURLBase;
 		
+		$this->transaction_type = $transaction_type;	
+		if($this->transaction_type==="simple" && $simple_redirect_url!=="") {
+			$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}"; 
+		}
 
 		$now = Carbon::now();
 		
@@ -309,7 +315,10 @@ class EMandateTransactionRequest extends EMandateRequest
 		}
 		$this->purchaseID = "{$purchaseIDPrefix}{$this->debtorReference}-{$order_id}";  // INKOOPNUMMER
 
-	
+		
+
+		$this->automatically_redirect = "1";
+
 	}
 	public function XmlString()
 	{
@@ -329,7 +338,7 @@ merchantSubID="'.$this->merchantSubID.'"
 language="nl" 
 sendOption="none">
 <MandateID>'.$this->mandateID.'</MandateID>
-<MerchantReturnURL automaticRedirect="1">'.$this->merchantReturnURL.'</MerchantReturnURL>
+<MerchantReturnURL automaticRedirect="'.$this->automatically_redirect.'">'.$this->merchantReturnURL.'</MerchantReturnURL>
 <SequenceType>'.$this->sequenceType.'</SequenceType>
 <EMandateReason>'.$this->eMandateReason.'</EMandateReason>
 <DebtorReference>'.$this->debtorReference.'</DebtorReference>
