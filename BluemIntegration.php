@@ -1,4 +1,5 @@
 <?php
+namespace Bluem;
 
 if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
 if (!defined("BLUEM_ENVIRONMENT_TESTING")) define("BLUEM_ENVIRONMENT_TESTING", "test");

@@ -1,4 +1,5 @@
 <?php 
+namespace Bluem;
 // namespace Bluem;
 
 /**
