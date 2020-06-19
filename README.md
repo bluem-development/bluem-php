@@ -12,7 +12,7 @@ Use this to write your own applications in PHP that communicate with Bluem.
 Run Composer to install this library and dependences:
 
 ```bash
-composer require daanrijpkema/bluem-php:dev-master
+composer require daanrijpkema/bluem-php
 ```
 
 ## Configuration
