@@ -1,4 +1,5 @@
 <?php 
+namespace Bluem;
 
 /**
  * Plugin Name: BlueM eMandate integration for WordPress
