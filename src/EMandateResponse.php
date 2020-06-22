@@ -1,5 +1,5 @@
 <?php 
-namespace Bluem;
+namespace bluem;
 
 /**
  * Plugin Name: BlueM eMandate integration for WordPress
@@ -25,7 +25,7 @@ if (!defined('ABSPATH')) {
 /**
  * 	EMandateResponse
  */
-class EMandateResponse extends SimpleXMLElement
+class EMandateResponse extends \SimpleXMLElement
 {
 
 	/**
