@@ -23,8 +23,6 @@
 		"selective/xmldsig": "^1.0"
     },
 	"autoload": {
-        "psr-4": {
-            "bluem\\": "src"
-        }
+        "psr-4": {"bluem\\": "src/"}
     }
 }
