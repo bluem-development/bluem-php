@@ -9,7 +9,7 @@
 
 // If you don't to add a custom vendor folder, then use the simple class
 // namespace HelloComposer;
-namespace daanrijpkema\BluemPHP;
+namespace Bluem\BluemPHP;
 
 class Hello
 {

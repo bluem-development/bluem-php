@@ -1,5 +1,5 @@
 <?php
-namespace daanrijpkema\BluemPHP;
+namespace Bluem\BluemPHP;
 
 if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
 if (!defined("BLUEM_ENVIRONMENT_TESTING")) define("BLUEM_ENVIRONMENT_TESTING", "test");
@@ -13,6 +13,8 @@ use Selective\XmlDSig\XmlSignatureValidator;
 libxml_use_internal_errors(true);
 
 use Carbon\Carbon;
+use Exception;
+
 // use Carbon\CarbonInterval;
 
 /**
@@ -32,7 +34,7 @@ class Integration
 	function __construct($configuration = null)
 	{
 		if (is_null($configuration)) {
-			echo "Geen geldige configuratie ingesteld; contact de websitebeheerder";
+			throw new Exception("Geen geldige configuratie ingesteld");
 			exit;
 			// $this->configuration = $this->_getDefaultConfiguration();
 		} else {

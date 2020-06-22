@@ -1,5 +1,5 @@
 <?php 
-namespace daanrijpkema\BluemPHP;
+namespace Bluem\BluemPHP;
 
 // if (!defined('ABSPATH')) {
 //     exit;
