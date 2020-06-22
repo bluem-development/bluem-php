@@ -70,30 +70,45 @@ $bluem_config->merchantReturnURLBase = ...;
 $bluem_object = new Integration($bluem_config);
 ```
 
-## Usage
+## General concept
 
-### Creating an eMandate Transaction
-Creating necessary variables can be done using helper functions
+Flow for every of the included services (eMandates, Payments, Identity and Iban Check) is very similar and thus easy to understand once you understand and implement one of them.
 
-Generating an entrance code (required for later retrieving statuses)
+One creates a request object, sends it to Bluem's servers with authentication and receives a response with a URL to redirect the user to (if the request was successful). 
 
-```php
-$entranceCode = $bluem_object->CreateEntranceCode();
-```
+The user is redirected to the response URL at the Bluem servers. In this Bluem environment, the user performs a mandate signing, payment, identity or iban check and returns to a predefined URL. 
+
+Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality. 
+
+The webhook functionality allows Bluem to directly push status changes and transaction results to your site or app in a trustworthy way. Therefore your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
+
+## eMandates 
+
+### Creating an eMandate Transaction: helper functions
+You need certain information to reference a transaction request: an ID (in this case the MandateID) and an entranceCode (basically a timestamp when you started the request). Creating this information can be done using helper functions. When creating a new transaction,  the entranceCode and MandateID will be generated within the `$bluem_object`.
+
+
 Generating a mandate ID:
 ```php
 $mandateId = $bluem_object->CreateMandateId($order_id, $customer_id);
 ```
-When creating a new transaction,  the entranceCode and MandateID will be generated implicitly.
 
-#### Creating Simple transactions
+Generating an entrance code:
+
+```php
+$entranceCode = $bluem_object->CreateEntranceCode();
+```
+
+
+
+#### Creating Simple eMandate transactions
 When you are handling a callback and status update yourself, you can use the simple transaction type. This simply creates a transaction, tells you where to redirect. After the user finishes the transaction process, they are redirected to the fourth parameter without any further ado.
 ```php
 // simple emandate transaction
 $response = $bluem_object->CreateNewTransaction($customer_id, $order_id,"simple","https://google.com");
 ```
 
-#### Creating Default transactions
+#### Creating Default eMandate transactions
 The default transaction returns to a callback function at a specific URL that then automatically performs a Status Update and can perform further functionalities.
 It uses the `merchantReturnURLBase` attribute, set in the parameter when creating the `$bluem_object` object to know where to redirect to expect this function.
 This process automatically adds the mandateID as a GET parameter to the return URL, so it can be picked up for the Status Update.
@@ -102,12 +117,12 @@ This process automatically adds the mandateID as a GET parameter to the return U
 $response = $bluem_object->CreateNewTransaction($customer_id, $order_id,"default");
 ```
 
-#### Redirection after creation
+#### Redirection after eMandate transaction creation
 When you have created a transaction, you receive a response from Bluem telling you where to redirect the user to.
 ```php
 if (isset($response->EMandateTransactionResponse->TransactionURL)) {
     $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
-    // TODO: redirect to the transaction URL
+    // TODO: redirect to the above transaction URL
 } else { 
 
     // TODO: no proper status given, show an error.
@@ -115,7 +130,7 @@ if (isset($response->EMandateTransactionResponse->TransactionURL)) {
 ```
 
 
-### Requesting a Transaction status
+### Requesting an eMandate Transaction status
 
 ```php
 $response = $bluem_object->RequestTransactionStatus(
@@ -132,6 +147,19 @@ if (!$response->Status()) {
     }
 }
 ```
+
+## Payments
+
+Coming soon..
+
+## Identity
+
+Coming soon..
+
+## Iban Check
+
+Coming soon..
+
 
 
 ## Important notes
