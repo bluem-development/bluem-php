@@ -11,7 +11,7 @@ namespace Bluem\BluemPHP;
 /**
  * 	EMandateResponse
  */
-class EMandateResponse extends \SimpleXMLElement
+class BluemResponse extends \SimpleXMLElement
 {
 
 	/**
@@ -44,7 +44,7 @@ class EMandateResponse extends \SimpleXMLElement
 /**
  * EMandateErrorResponse
  */
-class EMandateErrorResponse
+class ErrorBluemResponse
 {
 	private $error;
 
