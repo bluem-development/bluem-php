@@ -10,6 +10,9 @@
 namespace Bluem\BluemPHP;
 
 require_once 'Emandates.php';
+require_once 'Payments.php';
+require_once 'Identity.php';
+require_once 'Iban.php';
 require_once 'BluemResponse.php';
 
 use Carbon\Carbon;
@@ -47,14 +50,22 @@ class Integration
 			exit;
 		}
 
+		// validating configuration
+		if(!in_array($configuration->environment,[BLUEM_ENVIRONMENT_TESTING,BLUEM_ENVIRONMENT_ACCEPTANCE,BLUEM_ENVIRONMENT_PRODUCTION]))
+		{
+			throw new Exception("Invalid environment setting, should be test,acc or prod");
+		}
+		
+		
 		$this->configuration = $configuration;
+
+
 
 		if ($this->configuration->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
 			$this->configuration->accessToken = $configuration->production_accessToken;
 		} elseif ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {
 			$this->configuration->accessToken = $configuration->test_accessToken;
 		}
-
 		$this->environment = $this->configuration->environment;
 
 		// this is given by the bank (default 0)
@@ -96,7 +107,7 @@ class Integration
 		$request_type = "default",
 		$simple_redirect_url = ""
 	) {
-		$this->PerformRequest(
+		return $this->PerformRequest(
 			$this->CreateMandateRequest(
 				$customer_id,
 				$order_id,
@@ -141,6 +152,77 @@ class Integration
 
 
 
+	/**-------------- PAYMENT SPECIFIC FUNCTIONS --------------*/
+
+	public function CreatePaymentRequest(
+		$description,
+		$debtorReference,
+		$amount,
+		$dueDateTime=null,
+		$currency="EUR"
+	) {
+
+		$r = new PaymentBluemRequest(
+			$this->configuration,
+			$description,
+			$debtorReference,
+			$amount,
+			$dueDateTime,
+			$currency,
+			$this->CreatePaymentTransactionID($debtorReference),
+			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+				isset($this->configuration->expected_return) ?
+				$this->configuration->expected_return : "")
+		);
+		return $r;
+	}
+
+	public function Payment(
+		$description,
+		$debtorReference,
+		$amount,
+		$dueDateTime=null,
+		$currency="EUR"
+	) {
+		return $this->PerformRequest(
+			$this->CreatePaymentRequest(
+				$description,
+				$debtorReference,
+				$amount,
+				$dueDateTime,
+				$currency
+			)
+		);
+	}
+
+
+	public function PaymentStatus($transactionID, $entranceCode)
+	{
+
+		$r = new PaymentStatusBluemRequest(
+			$this->configuration,
+			$transactionID,
+			$entranceCode,
+			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+				isset($this->configuration->expected_return) ?
+				$this->configuration->expected_return : "")
+		);
+
+		$response = $this->PerformRequest($r);
+
+		return $response;
+	}
+
+	/**
+	 * Create a mandate ID in the required structure, based on the order ID, customer ID and the current timestamp.
+	 * @param String $order_id    The order ID
+	 * @param String $customer_id The customer ID
+	 */
+	public function CreatePaymentTransactionID(String $debtorReference): String
+	{
+		return substr($debtorReference, 0, 28).Carbon::now()->format('Ymd');
+	}
+
 
 
 	/**-------------- LEGACY FUNCTIONS --------------*/
@@ -162,12 +244,24 @@ class Integration
 	 * @param int $order_id    The Order ID
 	 */
 	public function CreateNewTransaction(
-		$customer_id,
-		$order_id,
-		$request_type = "default",
-		$simple_redirect_url = ""
+		$type="mandate",
+		$properties
 	) {
-		return $this->CreateMandate($customer_id, $order_id, $request_type, $simple_redirect_url);
+		switch ($type) {
+			case 'mandate':
+				return $this->CreateMandateRequest($properties['customer_id'], $properties['order_id'], $properties['request_type'], $properties['simple_redirect_url']);
+				break;
+			case 'payment':
+				return $this->CreatePaymentRequest(	$properties['description'],
+				$properties['debtorReference'],
+				$properties['amount'],
+				$properties['dueDateTime'],
+				$data['currency']);
+				break;
+			default:
+				throw new Exception("Type of transaction to create not given or invalid. Should be one of ['mandate', 'payment']");	
+				break;
+		}
 	}
 
 	/** Universal Functions */

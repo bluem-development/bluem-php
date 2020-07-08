@@ -7,6 +7,7 @@
  */
 namespace Bluem\BluemPHP;
 
+require_once __DIR__.'/BluemRequest.php';
 
 use Carbon\Carbon;
 
@@ -14,7 +15,7 @@ use Carbon\Carbon;
 /**
  * 	EMandateStatusRequest
  */
-class EmandateStatusBluemRequest extends BluemStatusRequest
+class EmandateStatusBluemRequest extends BluemRequest
 {
 	
     public $type_identifier = "requestStatus"; 
@@ -47,7 +48,7 @@ class EmandateStatusBluemRequest extends BluemStatusRequest
             'StatusRequest',
             $this->XmlRequestObjectWrap(
                 'EMandateStatusRequest',
-                '<MandateID>'.$this->mandateID.'</MandateID>',
+                '<MandateID>'.$this->mandateID.'</MandateID>'
             )
 		);
 
@@ -95,6 +96,7 @@ class EmandateBluemRequest extends BluemRequest
 
 		$this->type_identifier = "createTransaction";
 		
+	
 		$this->merchantReturnURLBase = $config->merchantReturnURLBase;
 		
 		$this->request_type = $request_type;	

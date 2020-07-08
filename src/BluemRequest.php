@@ -203,6 +203,6 @@ merchantSubID="'.$this->merchantSubID.'"*/
 }
 
 
-class BluemStatusRequest extends BluemRequest {
-	// for now identical to a normal request.
-}
+// class BluemStatusRequest extends BluemRequest {
+// 	// for now identical to a normal request.
+// }

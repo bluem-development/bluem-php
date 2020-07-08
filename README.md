@@ -105,30 +105,48 @@ $entranceCode = $bluem_object->CreateEntranceCode();
 When you are handling a callback and status update yourself, you can use the simple transaction type. This simply creates a transaction, tells you where to redirect. After the user finishes the transaction process, they are redirected to the fourth parameter without any further ado.
 ```php
 // simple emandate transaction
-$response = $bluem_object->CreateNewTransaction($customer_id, $order_id,"simple","https://google.com");
+$request = $bluem_object->CreateMandateRequest($customer_id,$order_id,"simple","https://google.com");
 ```
 
 #### Creating Default eMandate transactions
 The default transaction returns to a callback function at a specific URL that then automatically performs a Status Update and can perform further functionalities.
 It uses the `merchantReturnURLBase` attribute, set in the parameter when creating the `$bluem_object` object to know where to redirect to expect this function.
 This process automatically adds the mandateID as a GET parameter to the return URL, so it can be picked up for the Status Update.
+
 ```php
 // default
-$response = $bluem_object->CreateNewTransaction($customer_id, $order_id,"default");
+$request = $bluem_object->CreateMandateRequest($customer_id,$order_id,"default");
+
+```
+#### Perform the request
+After creating any request, you will still have to perform the request:
+
+```php
+$response = $bluem_object->PerformRequest($request);
 ```
 
+Tip: you can also combine the creation and performance if the request in one function call, if you do not want to manipulate or read the request object beforehand:
+```php
+$response = $bluem_object->Mandate($customer_id, $order_id,"simple","https://google.com");
+$response = $bluem_object->Mandate($customer_id, $order_id,"default");
+```
+
+If you do anything wrong or you are unauthorized, the Response object will be of type `Bluem\BluemPHP\ErrorBluemResponse` and has an `Error()` function to retrieve a string of information regarding your error that you could display to your user or handle yourself.
+
+An example about incorrect access token and Ids could be: "Unauthorized: check your access credentials".
+
 #### Redirection after eMandate transaction creation
-When you have created a transaction, you receive a response from Bluem telling you where to redirect the user to.
+When you have performed a transaction request successfully, you receive a response object from Bluem. This object tells you where to redirect the user to to actually perform the administrative steps at the Bluem portal.
 ```php
 if (isset($response->EMandateTransactionResponse->TransactionURL)) {
     $transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
     // TODO: redirect to the above transaction URL
+    header("Location: ". $transactionURL); // or something of thes ort.
 } else { 
-
     // TODO: no proper status given, show an error.
+    exit("Error: " . $response->Error()); // for example
 }
 ```
-
 
 ### Requesting an eMandate Transaction status
 
@@ -140,7 +158,7 @@ $response = $bluem_object->RequestTransactionStatus(
 if (!$response->Status()) {
     // no valid response received
 } else {
-    if ($response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success") {
+    if ($response->EMandateStatusUpdate->EMandateStatus->Status . "" === "Success") { // casting to string
         // successful status response
     } else {
         // different status response
@@ -150,7 +168,35 @@ if (!$response->Status()) {
 
 ## Payments
 
-Coming soon..
+Working similar to eMandates, but with other parameters:
+
+```php
+    $description = "Test payment";
+    $amount = 100.00;
+    $currency = "EUR"; // if set to null, will default to EUR
+    $debtorReference = "1234";
+    $dueDateTime = null; // set it automatically to two weeks in advance.
+
+    // To create AND perform a request:
+    $request = $bluem_object->CreatePaymentRequest(
+        $description,
+		$debtorReference,
+		$amount,
+		$dueDateTime,
+        $currency
+    );
+    $response = $bluem_object->PerformRequest($request);
+
+    // Or, to create and perform a request together in shorthand:
+    $response = $bluem_object->Payment(
+        $description,
+		$debtorReference,
+		$amount,
+		$dueDateTime,
+        $currency
+    );
+    
+```
 
 ## Identity
 
@@ -159,8 +205,6 @@ Coming soon..
 ## Iban Check
 
 Coming soon..
-
-
 
 ## Important notes
 

@@ -16,7 +16,7 @@ class IbanBluemRequest extends BluemRequest
 {
 	private $xmlInterfaceName = "IBANCheckInterface";
 
-	private $request_url_type = "icr";
+	public $request_url_type = "icr";
     public $type_identifier = "createTransaction";   
     
     public $transaction_code = "INX";    
@@ -29,19 +29,16 @@ class IbanBluemRequest extends BluemRequest
 	
     public function XmlString()
     {
-
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'IBANCheckTransactionRequest',
-               '',    // onbekend
+                '',    // onbekend
                 [
                     // onbekend
                 ]
             )
         );
-
-	
+    }
 }
-

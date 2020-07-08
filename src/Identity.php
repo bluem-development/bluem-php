@@ -16,7 +16,7 @@ class IdentityBluemRequest extends BluemRequest
 {
     protected $xmlInterfaceName = "IdentityInterface";
 
-	private $request_url_type = "ir";
+	public $request_url_type = "ir";
     public $type_identifier = "createTransaction";   
     public $transaction_code = "ITX";    
     
@@ -113,7 +113,7 @@ xsi:noNamespaceSchemaLocation="../IdentityInterface.xsd">
 }
 
 
-class IdentityStatusBluemRequest extends BluemStatusRequest
+class IdentityStatusBluemRequest extends BluemRequest
 {
     protected $xmlInterfaceName = "IdentityInterface";
 
