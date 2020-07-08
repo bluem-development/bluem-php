@@ -151,7 +151,7 @@ if (isset($response->EMandateTransactionResponse->TransactionURL)) {
 ### Requesting an eMandate Transaction status
 
 ```php
-$response = $bluem_object->RequestTransactionStatus(
+$response = $bluem_object->MandateStatus(
     $existing_mandate_id,
     $existing_entrance_code
 );
@@ -165,6 +165,8 @@ if (!$response->Status()) {
     }
 }
 ```
+
+The possible statuses are ... (see bluem docs)
 
 ## Payments
 
@@ -197,6 +199,12 @@ Working similar to eMandates, but with other parameters:
     );
     
 ```
+
+Requesting a payment status:
+```php
+$bluem_object->PaymentStatus()
+```
+
 
 ## Identity
 

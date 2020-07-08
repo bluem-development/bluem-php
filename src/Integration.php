@@ -209,12 +209,11 @@ class Integration
 		);
 
 		$response = $this->PerformRequest($r);
-
 		return $response;
 	}
 
 	/**
-	 * Create a mandate ID in the required structure, based on the order ID, customer ID and the current timestamp.
+	 * Create a payment Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.
 	 * @param String $order_id    The order ID
 	 * @param String $customer_id The customer ID
 	 */
@@ -235,6 +234,7 @@ class Integration
 	 */
 	public function RequestTransactionStatus($mandateID, $entranceCode)
 	{
+		// should be deprecated in this manner as this object is now not used solely for mandates.
 		return $this->MandateStatus($mandateID, $entranceCode);
 	}
 
