@@ -58,6 +58,38 @@ class BluemRequest
 		}
 	}
 
+
+	protected function XmlRequestInterfaceWrap($element_name,$type="TransactionRequest",$rest) {
+
+		return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><'.$element_name.'
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        type="'.$type.'" 
+        mode="direct" 
+        senderID="'.$this->senderID.'" 
+        version="1.0" 
+        createDateTime="'.$this->createDateTime.'" 
+        messageCount="1"
+          >'.$rest.'</'.$element_name.'>';
+	}
+
+	protected function XmlRequestObjectWrap($element_name,$rest,$extra_attrs = [])
+	{
+		$res = '<'.$element_name.'
+           entranceCode="'.$this->entranceCode.'" ';
+		foreach ($extra_attrs as $key => $value) {
+			$res .= $key.'="'.$value.'"'.PHP_EOL;
+		}
+
+		/*
+		entranceCode="'.$this->entranceCode.'" 
+requestType="Issuing" 
+localInstrumentCode="'.$this->localInstrumentCode.'" 
+merchantID="'.$this->merchantID.'" 
+merchantSubID="'.$this->merchantSubID.'"*/
+		$res.='>'.$rest.'</'.$element_name.'>';
+		return $res;
+	}
+	
 	public function XmlString()
 	{
 		return "";
@@ -168,4 +200,9 @@ class BluemRequest
 		$entranceCode .= Carbon::now()->format('YmdHis') . '000';
 		return $entranceCode;
 	}
+}
+
+
+class BluemStatusRequest extends BluemRequest {
+	// for now identical to a normal request.
 }

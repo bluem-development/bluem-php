@@ -14,6 +14,8 @@ use Carbon\Carbon;
 
 class IbanBluemRequest extends BluemRequest
 {
+	private $xmlInterfaceName = "IBANCheckInterface";
+
 	private $request_url_type = "icr";
     public $type_identifier = "createTransaction";   
     
@@ -23,5 +25,23 @@ class IbanBluemRequest extends BluemRequest
 	{
         return "INX";
 	}
+
+	
+    public function XmlString()
+    {
+
+        return $this->XmlRequestInterfaceWrap(
+            $this->xmlInterfaceName,
+            'TransactionRequest',
+            $this->XmlRequestObjectWrap(
+                'IBANCheckTransactionRequest',
+               '',    // onbekend
+                [
+                    // onbekend
+                ]
+            )
+        );
+
+	
 }
 

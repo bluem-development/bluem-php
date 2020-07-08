@@ -14,8 +14,9 @@ use Carbon\Carbon;
 /**
  * 	EMandateStatusRequest
  */
-class EmandateStatusBluemRequest extends BluemRequest
+class EmandateStatusBluemRequest extends BluemStatusRequest
 {
+	
     public $type_identifier = "requestStatus"; 
     public $transaction_code = "SRX";    
     
@@ -23,6 +24,11 @@ class EmandateStatusBluemRequest extends BluemRequest
 	function __construct($config,$mandateID,$expected_return="",$entranceCode="")
 	{
 		parent::__construct($config,$expected_return,$entranceCode);
+
+		$this->xmlInterfaceName = "EMandateInterface";
+		
+
+
 		$this->type_identifier = "requestStatus";
 		
 		$this->mandateID = $mandateID;
@@ -35,6 +41,17 @@ class EmandateStatusBluemRequest extends BluemRequest
 
 	public function XmlString()
 	{
+
+		return $this->XmlRequestInterfaceWrap(
+            $this->xmlInterfaceName,
+            'StatusRequest',
+            $this->XmlRequestObjectWrap(
+                'EMandateStatusRequest',
+                '<MandateID>'.$this->mandateID.'</MandateID>',
+            )
+		);
+
+/* // Reference
 		return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <EMandateInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="StatusRequest"
     mode="direct" senderID="'.$this->senderID.'" version="1.0" createDateTime="'.$this->createDateTime.'"
@@ -43,6 +60,7 @@ class EmandateStatusBluemRequest extends BluemRequest
         <MandateID>'.$this->mandateID.'</MandateID>
     </EMandateStatusRequest>
 </EMandateInterface>';
+*/
 	}
 	
 }
@@ -73,6 +91,8 @@ class EmandateBluemRequest extends BluemRequest
 		
 		parent::__construct($config,"",$expected_return);
 		
+		$this->xmlInterfaceName = "EMandateInterface";
+
 		$this->type_identifier = "createTransaction";
 		
 		$this->merchantReturnURLBase = $config->merchantReturnURLBase;
@@ -118,6 +138,28 @@ class EmandateBluemRequest extends BluemRequest
 	}
 	public function XmlString()
 	{
+		return $this->XmlRequestInterfaceWrap(
+            $this->xmlInterfaceName,
+            'TransactionRequest',
+            $this->XmlRequestObjectWrap(
+                'EmandateTransactionRequest',
+                '<MandateID>'.$this->mandateID.'</MandateID>
+				<MerchantReturnURL automaticRedirect="'.$this->automatically_redirect.'">'.$this->merchantReturnURL.'</MerchantReturnURL>
+				<SequenceType>'.$this->sequenceType.'</SequenceType>
+				<EMandateReason>'.$this->eMandateReason.'</EMandateReason>
+				<DebtorReference>'.$this->debtorReference.'</DebtorReference>
+				<PurchaseID>'.$this->purchaseID.'</PurchaseID>',
+				[
+					// 'entranceCode'=>$this->entranceCode,  always sent already
+					'requestType'=>"Issuing",
+					'localInstrumentCode'=>$this->localInstrumentCode,
+					'merchantID'=>$this->merchantID,
+					'merchantSubID'=>$this->merchantSubID,
+				]
+            )
+		);
+/* OLD: 		
+
 		$raw = '<?xml version="1.0"?>
 <EMandateInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 type="TransactionRequest" 
@@ -133,15 +175,11 @@ merchantID="'.$this->merchantID.'"
 merchantSubID="'.$this->merchantSubID.'" 
 language="nl" 
 sendOption="none">
-<MandateID>'.$this->mandateID.'</MandateID>
-<MerchantReturnURL automaticRedirect="'.$this->automatically_redirect.'">'.$this->merchantReturnURL.'</MerchantReturnURL>
-<SequenceType>'.$this->sequenceType.'</SequenceType>
-<EMandateReason>'.$this->eMandateReason.'</EMandateReason>
-<DebtorReference>'.$this->debtorReference.'</DebtorReference>
-<PurchaseID>'.$this->purchaseID.'</PurchaseID>
+
 </EMandateTransactionRequest>
 </EMandateInterface>';
 		return $raw;
+		*/
 	}
 
 	public function TransactionType() : String
