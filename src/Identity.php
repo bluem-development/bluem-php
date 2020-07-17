@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * (c) Daan Rijpkema <info@daanrijpkema.com>
  *
@@ -7,90 +7,121 @@
  */
 namespace Bluem\BluemPHP;
 
-
 use Carbon\Carbon;
-
-
 
 class IdentityBluemRequest extends BluemRequest
 {
     protected $xmlInterfaceName = "IdentityInterface";
 
-	public $request_url_type = "ir";
-    public $type_identifier = "createTransaction";   
-    public $transaction_code = "ITX";    
+    public $request_url_type = "ir";
+    public $type_identifier = "createTransaction";
+    public $transaction_code = "ITX";
     
-	public function TransactionType() : String
-	{
+    public function TransactionType() : String
+    {
         return "ITX";
     }
     
-    public function __construct($config,$entranceCode,$expectedReturn,$requestCategory = "CustomerIDRequest") {
-        parent::__construct($config,$entranceCode,$expectedReturn);
+    public function __construct(
+        $config,
+        $entranceCode,
+        $expectedReturn,
+        $requestCategory = "",
+        $description="",
+        $debtorReference="",
+        $debtorReturnURL = ""
+    ) {
+        parent::__construct($config, $entranceCode, $expectedReturn);
 
-        $this->requestCategory = $requestCategory;
+        // var_dump($requestCategory);
+        $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
+        // var_dump($this->requestCategory);
+        
+        $this->description= $description;
+        $this->debtorReference = $debtorReference;
+        $this->debtorReturnURL = $debtorReturnURL;
     }
 
-
-    private function getIdinRequestCategory($category="") {
+    private function getIdinRequestCategory($category)
+    {;
+$catstring = "";
         switch ($category) {
             case 'CustomerIDRequest':
-                $cat = '<CustomerIDRequest action="request"/>';
+                $catstring = '<CustomerIDRequest action="request"/>';
                 break;
-            case 'NameRequest': 
-                    $cat = '<NameRequest action="request"/>';
+            case 'NameRequest':
+                    $catstring = '<NameRequest action="request"/>';
                 break;
-            case 'AddressRequest': 
-                    $cat = '<AddressRequest action="request"/>';
+            case 'AddressRequest':
+                    $catstring = '<AddressRequest action="request"/>';
                 break;
-            case 'BirthDateRequest': 
-                    $cat = '<BirthDateRequest action="request"/>';
+            case 'BirthDateRequest':
+                    $catstring = '<BirthDateRequest action="request"/>';
                 break;
-            case 'AgeCheckRequest': 
-                    $cat = '<AgeCheckRequest ageOrOlder="18" action="skip"/>';
+            case 'AgeCheckRequest':
+                    $catstring = '<AgeCheckRequest ageOrOlder="18" action="skip"/>';
                 break;
-            case 'GenderRequest': 
-                    $cat = '<GenderRequest action="request"/>';
+            case 'GenderRequest':
+                    $catstring = '<GenderRequest action="request"/>';
                 break;
-            case 'TelephoneRequest': 
-                    $cat = '<TelephoneRequest action="skip"/> ';
+            case 'TelephoneRequest':
+                    $catstring = '<TelephoneRequest action="skip"/> ';
                 break;
-            case 'EmailRequest': 
-                    $cat = '<EmailRequest action="request"/>';
+            case 'EmailRequest':
+                    $catstring = '<EmailRequest action="request"/>';
                 break;
-
             default:
                 throw new \Exception("No proper IDIN request category given", 1);
                 break;
         }
-        return '<RequestCategory>'.$cat.'</RequestCategory>';
+        return $catstring.'';
+    }
+    private function getRequestCategoryElement($categories=[])
+    {
+        $result = "<RequestCategory>";
+
+        if (count($categories)>1) {
+            foreach ($categories as $cat) {
+                $result.=$this->getIdinRequestCategory($cat);
+            }
+        } else {
+            if (count($categories) == 1) {
+                $category = $categories[0];
+                $result .= $this->getIdinRequestCategory($category);
+            } elseif (is_string($categories)) {
+                $category = $categories;
+                $result .= $this->getIdinRequestCategory($category);
+            } 
+        }
+        
+        $result.="</RequestCategory>";
+
+        return ''.$result.'';
     }
 
     public function XmlString()
     {
-
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'IdentityTransactionRequest',
-                $this->getIdinRequestCategory($this->requestCategory).'
+                ($this->requestCategory).'
                 <Description>' . $this->description . '</Description>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
-                <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>',    
+                <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>',
                 [
-                    'documentType'=>"PayRequest",
                     'sendOption'=>"none",
                     'language'=>"nl",
-                    'brandID'=>$this->brandId
+                    'brandID'=>$this->brandID
                 ]
             )
         );
 
         /*
          <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<IdentityInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="TransactionRequest" mode="direct" 
-senderID="S1141" version="1.0" createDateTime="2019-05-02T08:28:40.314Z" messageCount="1" 
+<IdentityInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="TransactionRequest" mode="direct"
+senderID="S1141" version="1.0" createDateTime="2019-05-02T08:28:40.314Z" messageCount="1"
 xsi:noNamespaceSchemaLocation="../IdentityInterface.xsd">
     <IdentityTransactionRequest entranceCode="f33f6721cc197138b95a33566a0c388ec631d5b2" language="nl" brandID="IDIN" sendOption="none">
         <RequestCategory>
@@ -100,7 +131,7 @@ xsi:noNamespaceSchemaLocation="../IdentityInterface.xsd">
             <BirthDateRequest action="request"/>
             <AgeCheckRequest ageOrOlder="18" action="skip"/>
             <GenderRequest action="request"/>
-            <TelephoneRequest action="skip"/> 
+            <TelephoneRequest action="skip"/>
             <EmailRequest action="request"/>
         </RequestCategory>
         <Description>Identificatie voor demo</Description><!--description is shown to customer-->
@@ -118,23 +149,23 @@ class IdentityStatusBluemRequest extends BluemRequest
     protected $xmlInterfaceName = "IdentityInterface";
 
     public $request_url_type = "ir";
-    public $type_identifier = "requestStatus"; 
-    public $transaction_code = "ISX";    
+    public $type_identifier = "requestStatus";
+    public $transaction_code = "ISX";
     public function TransactionType() : String
-	{
+    {
         return "ISX";
     }
 
-    public function __construct($config,$entranceCode,$expectedReturn,$transactionId) {
-        parent::__construct($config,$entranceCode,$expectedReturn);
+    public function __construct($config, $entranceCode, $expectedReturn, $transactionID)
+    {
+        parent::__construct($config, $entranceCode, $expectedReturn);
 
-        $this->transactionId = $transactionId;
+        $this->transactionID = $transactionID;
     }
 
 
     public function XmlString()
     {
-
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'StatusRequest',
@@ -145,8 +176,8 @@ class IdentityStatusBluemRequest extends BluemRequest
         );
 
         /*            // Reference
-	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<IdentityInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="StatusRequest" mode="direct" 
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<IdentityInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="StatusRequest" mode="direct"
 senderID="S1141" version="1.0" createDateTime="2019-05-02T08:30:15.628Z" messageCount="1">
     <IdentityStatusRequest
             entranceCode="f33f6721cc197138b95a33566a0c388ec631d5b2">

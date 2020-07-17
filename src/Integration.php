@@ -17,6 +17,7 @@ require_once 'BluemResponse.php';
 
 use Carbon\Carbon;
 use Exception;
+use HTTP_Request2;
 use Selective\XmlDSig\XmlSignatureValidator;
 
 libxml_use_internal_errors(true);
@@ -224,6 +225,62 @@ class Integration
 
 
 
+
+
+	
+	/**-------------- IDENTITY SPECIFIC FUNCTIONS --------------*/
+
+	public function CreateIdentityRequest(
+		$requestCategory,
+		$description,
+		$debtorReference,
+		$debtorReturnURL
+	) {
+
+		$r = new IdentityBluemRequest(
+			$this->configuration,
+			"",
+			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+				isset($this->configuration->expected_return) ?
+				$this->configuration->expected_return : ""),
+			$requestCategory,
+			$description,
+			$debtorReference,
+			$debtorReturnURL	
+		);
+		//$this->CreateIdentityTransactionID($debtorReference),
+		return $r;
+	}
+
+
+	public function IdentityStatus($transactionID, $entranceCode)
+	{
+
+		$r = new IdentityStatusBluemRequest(
+			$this->configuration,
+			$entranceCode,
+			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+			isset($this->configuration->expected_return) ?
+			$this->configuration->expected_return : ""),
+			$transactionID
+		);
+
+		$response = $this->PerformRequest($r);
+		return $response;
+	}
+
+	/**
+	 * Create a Identity Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.
+	 * @param String $order_id    The order ID
+	 * @param String $customer_id The customer ID
+	 */
+	public function CreateIdentityTransactionID(String $debtorReference): String
+	{
+		return substr($debtorReference, 0, 28).Carbon::now()->format('Ymd');
+	}
+
+
+
 	/**-------------- LEGACY FUNCTIONS --------------*/
 	// To be deprecated by generic / universal functions
 
@@ -284,18 +341,23 @@ class Integration
 
 		$xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
 
-		$xttrs_date = $now->format("D, d M Y H:i:s") . " GMT";
+		// $xttrs_date = $now->format("D, d M Y H:i:s") . " GMT";
 		// conform Rfc1123 standard in GMT time
+$xttrs_date = $now->toRfc7231String();
 
 		$req = new \HTTP_Request2();
 		$req->setUrl($transaction_request->HttpRequestUrl());
-
+// echo $transaction_request->HttpRequestURL();
 		$req->setMethod(\HTTP_Request2::METHOD_POST);
 
 		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8");
+		// echo "HEADER Content-Type". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
 		$req->setHeader('x-ttrs-date', $xttrs_date);
+		// echo 'HEADER x-ttrs-date'. $xttrs_date;
 		$req->setHeader('x-ttrs-files-count', '1');
+		// echo 'HEADER x-ttrs-files-count'. '1';
 		$req->setHeader('x-ttrs-filename', $xttrs_filename);
+		// echo 'HEADER x-ttrs-filename'. $xttrs_filename;
 
 		$req->setBody($transaction_request->XmlString());
 

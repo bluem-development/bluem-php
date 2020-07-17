@@ -33,6 +33,7 @@ class BluemRequest
 		$this->environment = $config->environment;
 
 		$this->senderID = $config->senderID;
+		$this->brandID = $config->brandID;
 
 		$this->merchantID = $config->merchantID;
 
@@ -50,8 +51,8 @@ class BluemRequest
 		// uniek in de tijd voor emandate; string; niet zichtbaar voor klant; 
 		// uniek kenmerk van incassant voor deze transactie
 		// structuur: prefix voor testing + klantnummer + huidige timestamp tot op de seconde
-		if ($entranceCode === "") {
-
+		if ($entranceCode === "") 
+		{
 			$this->entranceCode = $this->entranceCode($expected_return);
 		} else {
 			$this->entranceCode = $entranceCode;
