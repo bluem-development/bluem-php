@@ -26,72 +26,76 @@ class IdentityBluemRequest extends BluemRequest
         $config,
         $entranceCode,
         $expectedReturn,
-        $requestCategory = "",
+        $requestCategory = [],
         $description="",
         $debtorReference="",
         $debtorReturnURL = ""
     ) {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
-        // var_dump($requestCategory);
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
-        // var_dump($this->requestCategory);
         
         $this->description= $description;
         $this->debtorReference = $debtorReference;
         $this->debtorReturnURL = $debtorReturnURL;
     }
 
-    private function getIdinRequestCategory($category)
-    {;
-$catstring = "";
+    private function getIdinRequestCategory($category,$active=true)
+    {
+        $action = ($active?"request":"skip");
+        
+        $catstring = "";
         switch ($category) {
             case 'CustomerIDRequest':
-                $catstring = '<CustomerIDRequest action="request"/>';
+                $catstring = '<CustomerIDRequest action="'.$action.'"/>';
                 break;
             case 'NameRequest':
-                    $catstring = '<NameRequest action="request"/>';
+                    $catstring = '<NameRequest action="'.$action.'"/>';
                 break;
             case 'AddressRequest':
-                    $catstring = '<AddressRequest action="request"/>';
+                    $catstring = '<AddressRequest action="'.$action.'"/>';
                 break;
             case 'BirthDateRequest':
-                    $catstring = '<BirthDateRequest action="request"/>';
+                    $catstring = '<BirthDateRequest action="'.$action.'"/>';
                 break;
-            case 'AgeCheckRequest':
-                    $catstring = '<AgeCheckRequest ageOrOlder="18" action="skip"/>';
+            case 'AgeCheckRequest': // this one is exclusive, cannot be combined
+                    $catstring = '<AgeCheckRequest ageOrOlder="18" action="'.$action.'"/>';
                 break;
             case 'GenderRequest':
-                    $catstring = '<GenderRequest action="request"/>';
+                    $catstring = '<GenderRequest action="'.$action.'"/>';
                 break;
             case 'TelephoneRequest':
-                    $catstring = '<TelephoneRequest action="skip"/> ';
+                    $catstring = '<TelephoneRequest action="'.$action.'"/> ';
                 break;
             case 'EmailRequest':
-                    $catstring = '<EmailRequest action="request"/>';
+                    $catstring = '<EmailRequest action="'.$action.'"/>';
                 break;
+                // CustomerIDLoginRequest login or DocumentSIgnatureRequest document sign request is exclusive, cannot be combined
             default:
                 throw new \Exception("No proper IDIN request category given", 1);
                 break;
         }
         return $catstring.'';
     }
-    private function getRequestCategoryElement($categories=[])
+    private function getRequestCategoryElement($active_categories=[])
     {
+        $all_cats = [
+            'CustomerIDRequest',
+            'NameRequest',
+            'AddressRequest',
+            'BirthDateRequest',
+            'AgeCheckRequest',
+            'GenderRequest',
+            'TelephoneRequest',
+            'EmailRequest',
+        ];
+
+        // TODO: Add DocumentRequestSign & CustomerIDlogin later
+
         $result = "<RequestCategory>";
 
-        if (count($categories)>1) {
-            foreach ($categories as $cat) {
-                $result.=$this->getIdinRequestCategory($cat);
-            }
-        } else {
-            if (count($categories) == 1) {
-                $category = $categories[0];
-                $result .= $this->getIdinRequestCategory($category);
-            } elseif (is_string($categories)) {
-                $category = $categories;
-                $result .= $this->getIdinRequestCategory($category);
-            } 
+        foreach ($all_cats as $cat ) {
+            $result.= $this->getIdinRequestCategory($cat,in_array($cat,$active_categories));
         }
         
         $result.="</RequestCategory>";
