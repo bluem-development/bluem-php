@@ -224,9 +224,6 @@ class Integration
 	}
 
 
-
-
-
 	
 	/**-------------- IDENTITY SPECIFIC FUNCTIONS --------------*/
 

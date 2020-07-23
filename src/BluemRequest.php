@@ -35,7 +35,13 @@ class BluemRequest
 		$this->senderID = $config->senderID;
 		$this->brandID = $config->brandID;
 
-		$this->merchantID = $config->merchantID;
+		// todo: move to mandate-specifics; as it is only necessary there
+		if(isset($config->merchantID)) {
+
+			$this->merchantID = $config->merchantID;
+		} else {
+			$this->merchantID = "";
+		}
 
 		// override with hardcoded merchantID when in test environment, according to documentation
 		if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
