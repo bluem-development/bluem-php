@@ -344,18 +344,18 @@ $xttrs_date = $now->toRfc7231String();
 
 		$req = new \HTTP_Request2();
 		$req->setUrl($transaction_request->HttpRequestUrl());
-// echo $transaction_request->HttpRequestURL();
+// echo '<br>'.$transaction_request->HttpRequestURL();
 		$req->setMethod(\HTTP_Request2::METHOD_POST);
 
 		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8");
-		// echo "HEADER Content-Type". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
+		// echo '<br>'."HEADER Content-Type". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
 		$req->setHeader('x-ttrs-date', $xttrs_date);
-		// echo 'HEADER x-ttrs-date'. $xttrs_date;
+		// echo '<br>'.'HEADER x-ttrs-date'. $xttrs_date;
 		$req->setHeader('x-ttrs-files-count', '1');
-		// echo 'HEADER x-ttrs-files-count'. '1';
+		// echo '<br>'.'HEADER x-ttrs-files-count'. '1';
 		$req->setHeader('x-ttrs-filename', $xttrs_filename);
-		// echo 'HEADER x-ttrs-filename'. $xttrs_filename;
-
+		// echo '<br>'.'HEADER x-ttrs-filename'. $xttrs_filename;
+// die();
 		$req->setBody($transaction_request->XmlString());
 
 		try {

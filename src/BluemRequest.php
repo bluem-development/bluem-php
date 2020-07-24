@@ -23,8 +23,7 @@ class BluemRequest
 	public $mandateID;
 
 	protected $senderID;
-	protected $merchantID;
-	protected $merchantSubID;
+
 	protected $createDateTime;
 
 
@@ -34,21 +33,6 @@ class BluemRequest
 
 		$this->senderID = $config->senderID;
 		$this->brandID = $config->brandID;
-
-		// todo: move to mandate-specifics; as it is only necessary there
-		if(isset($config->merchantID)) {
-
-			$this->merchantID = $config->merchantID;
-		} else {
-			$this->merchantID = "";
-		}
-
-		// override with hardcoded merchantID when in test environment, according to documentation
-		if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
-			$this->merchantID = "0020000387";
-		}
-
-		$this->merchantSubID = $config->merchantSubID;
 
 		$this->accessToken = $config->accessToken;
 
@@ -87,12 +71,6 @@ class BluemRequest
 			$res .= $key.'="'.$value.'"'.PHP_EOL;
 		}
 
-		/*
-		entranceCode="'.$this->entranceCode.'" 
-requestType="Issuing" 
-localInstrumentCode="'.$this->localInstrumentCode.'" 
-merchantID="'.$this->merchantID.'" 
-merchantSubID="'.$this->merchantSubID.'"*/
 		$res.='>'.$rest.'</'.$element_name.'>';
 		return $res;
 	}

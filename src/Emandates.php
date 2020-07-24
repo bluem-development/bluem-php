@@ -84,6 +84,10 @@ class EmandateBluemRequest extends BluemRequest
 	private $debtorReference;
 	private $purchaseID;
 	private $sendOption;
+
+	
+	protected $merchantID;
+	protected $merchantSubID;
 	
 	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none",
 	$request_type = "default",
@@ -134,6 +138,21 @@ class EmandateBluemRequest extends BluemRequest
 		$this->purchaseID = "{$purchaseIDPrefix}{$this->debtorReference}-{$order_id}";  // INKOOPNUMMER
 
 		
+		// todo: move to mandate-specifics; as it is only necessary there
+		if(isset($config->merchantID)) {
+
+			$this->merchantID = $config->merchantID;
+		} else {
+			$this->merchantID = "";
+		}
+
+		// override with hardcoded merchantID when in test environment, according to documentation
+		if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+			$this->merchantID = "0020000387";
+		}
+
+		$this->merchantSubID = $config->merchantSubID;
+
 
 		$this->automatically_redirect = "1";
 

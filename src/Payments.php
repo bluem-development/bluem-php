@@ -63,9 +63,9 @@ class PaymentBluemRequest extends BluemRequest
 {
     private $xmlInterfaceName = "EPaymentInterface";
     public $request_url_type = "pr";
-    public $type_identifier = "requestStatus";
+    public $type_identifier = "createTransaction";
     public $transaction_code = "PTX";
-
+    
     public function TransactionType(): String
     {
         return "PTX";
@@ -80,8 +80,9 @@ class PaymentBluemRequest extends BluemRequest
         $currency =null,
         $transactionID=null, 
         String $expected_return="none")
-    {
-        parent::__construct($config,"",$expected_return);
+        {
+            parent::__construct($config,"",$expected_return);
+            die();
         
         // TODO: fill all the rquired fields
         $this->description = $description;
@@ -95,20 +96,26 @@ class PaymentBluemRequest extends BluemRequest
 
         // DueDateTime :  2017-09-09T23:59:59.999Z
         if(is_null($dueDateTime)) {
-            $this->dueDateTime = Carbon::now()->addWeeks(2)->format("Y-m-d")."T23:59:59Z";
+            $this->dueDateTime = Carbon::now()->addDays(1)->toDateTimeLocalString() . ".000Z";;//->format('Y-m-d\TH:i:s').'.000Z';   //->format("Y-m-d")."T23:59:59Z";
         } else {
-            $this->dueDateTime = $dueDateTime;
+            $this->dueDateTime = Carbon::parse($dueDateTime)->toDateTimeLocalString() . ".000Z";;//format('Y-m-d\TH:i:s').'.000Z';   
+        }
+        // $this->dueDateTime .= '...';
+// 
+        $this->debtorReference = $debtorReference;
+        $this->amount = str_replace(',','.',$amount);
+
+        if(strpos($this->amount,'.')==false) {
+            $this->amount .= '.00';
         }
 
-        $this->debtorReference = $debtorReference;
-        $this->amount = $amount;
 
         $this->transactionID = $transactionID;
-        $this->debtorReturnURL = $config->merchantReturnURLBase."?transactionID={$this->transactionID}&entranceCode={$this->entranceCode}"; ; 
+        $this->debtorReturnURL = $config->merchantReturnURLBase."?entranceCode={$this->entranceCode}&amp;transactionID={$this->transactionID}";
         // note! different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class
 
-        $this->paymentReference="{$this->debtorReference}-{$this->transactionID}";
+        $this->paymentReference="{$this->debtorReference}{$this->transactionID}";
     }
 
 
@@ -126,7 +133,7 @@ class PaymentBluemRequest extends BluemRequest
             <Currency>' . $this->currency . '</Currency>
             <Amount>' . $this->amount . '</Amount>
             <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
-            <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>',
+            <DebtorReturnURL automaticRedirect="1">' . str_replace('&','&amp;',$this->debtorReturnURL) . '</DebtorReturnURL>',
             [
                 'documentType'=>"PayRequest",
                 'sendOption'=>"none",
