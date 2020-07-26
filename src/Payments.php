@@ -82,7 +82,6 @@ class PaymentBluemRequest extends BluemRequest
         String $expected_return="none")
         {
             parent::__construct($config,"",$expected_return);
-            die();
         
         // TODO: fill all the rquired fields
         $this->description = $description;

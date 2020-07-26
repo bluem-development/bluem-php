@@ -355,7 +355,7 @@ $xttrs_date = $now->toRfc7231String();
 		// echo '<br>'.'HEADER x-ttrs-files-count'. '1';
 		$req->setHeader('x-ttrs-filename', $xttrs_filename);
 		// echo '<br>'.'HEADER x-ttrs-filename'. $xttrs_filename;
-// die();
+
 		$req->setBody($transaction_request->XmlString());
 
 		try {
@@ -470,7 +470,7 @@ $xttrs_date = $now->toRfc7231String();
 		// echo $postData;
 		// echo "<hr>Input";
 		// var_dump($xml_input);
-		// die();
+		
 		if (!isset($xml_input->EMandateInterface->EMandateStatusUpdate)) {
 			http_response_code(400);
 			exit;
