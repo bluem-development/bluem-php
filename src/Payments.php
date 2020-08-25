@@ -27,7 +27,7 @@ class PaymentStatusBluemRequest extends BluemRequest
 
     function __construct($config, $transactionID, $expected_return = "", $entranceCode = "")
     {
-        parent::__construct($config, $expected_return, $entranceCode);
+        parent::__construct($config,  $entranceCode, $expected_return);
         $this->type_identifier = "requestStatus";
 
         $this->transactionID = $transactionID;
@@ -78,10 +78,11 @@ class PaymentBluemRequest extends BluemRequest
         $amount,
         $dueDateTime =null,
         $currency =null,
-        $transactionID=null, 
+        $transactionID=null,
+        $entranceCode,
         String $expected_return="none")
         {
-            parent::__construct($config,"",$expected_return);
+            parent::__construct($config,$entranceCode,$expected_return);
         
         // TODO: fill all the rquired fields
         $this->description = $description;
@@ -110,7 +111,8 @@ class PaymentBluemRequest extends BluemRequest
 
 
         $this->transactionID = $transactionID;
-        $this->debtorReturnURL = $config->merchantReturnURLBase."?entranceCode={$this->entranceCode}&amp;transactionID={$this->transactionID}";
+        $this->debtorReturnURL = $config->merchantReturnURLBase."?entranceCode={$this->entranceCode}&transactionID={$this->transactionID}";
+        $this->debtorReturnURL = str_replace('&','&amp;',$this->debtorReturnURL);
         // note! different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class
 
@@ -132,7 +134,7 @@ class PaymentBluemRequest extends BluemRequest
             <Currency>' . $this->currency . '</Currency>
             <Amount>' . $this->amount . '</Amount>
             <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
-            <DebtorReturnURL automaticRedirect="1">' . str_replace('&','&amp;',$this->debtorReturnURL) . '</DebtorReturnURL>',
+            <DebtorReturnURL automaticRedirect="1">' .$this->debtorReturnURL . '</DebtorReturnURL>',
             [
                 'documentType'=>"PayRequest",
                 'sendOption'=>"none",

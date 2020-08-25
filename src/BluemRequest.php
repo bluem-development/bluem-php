@@ -142,47 +142,53 @@ class BluemRequest
 	}
 
 	// test entranceCode substrings voor bepaalde types return responses
-	private function entranceCode($expected_return, $override = "")
+	private function entranceCode($expected_return, $entranceCode = "" )
 	{
-		$entranceCode = "";
+		
+		// create a default entrancecode if necessary
+		if($entranceCode =="" ) {
+			$entranceCode = Carbon::now()->format("YmdHisv");
+		}
+		
+		$prefix = "";
 		// only allow this in testing mode
 		if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
 			switch ($expected_return) {
 				case 'none': {
-						$entranceCode = "";
+						$prefix = "";
 						break;
 					}
 				case 'success': {
-						$entranceCode = "HIO100OIH";
+						$prefix = "HIO100OIH";
 						break;
 					}
 				case 'cancelled': {
-						$entranceCode = "HIO200OIH";
+						$prefix = "HIO200OIH";
 						break;
 					}
 				case 'expired': {
-						$entranceCode = "HIO300OIH";
+						$prefix = "HIO300OIH";
 						break;
 					}
 				case 'failure': {
-						$entranceCode = "HIO500OIH";
+						$prefix = "HIO500OIH";
 						break;
 					}
 				case 'open': {
-						$entranceCode = "HIO400OIH";
+						$prefix = "HIO400OIH";
 						break;
 					}
 				case 'pending': {
-						$entranceCode = "HIO600OIH";
+						$prefix = "HIO600OIH";
 						break;
 					}
 				default: {
-						$entranceCode = "";
+						$prefix = "";
 						break;
 					}
 			}
 		}
-		$entranceCode .= Carbon::now()->format('YmdHis') . '000';
+		$entranceCode = $prefix . $entranceCode; //Carbon::now()->format('YmdHisv'); //. '000';
 		return $entranceCode;
 	}
 }

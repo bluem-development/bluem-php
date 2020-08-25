@@ -163,7 +163,7 @@ class EmandateBluemRequest extends BluemRequest
             $this->xmlInterfaceName,
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
-                'EmandateTransactionRequest',
+                'EMandateTransactionRequest',
                 '<MandateID>'.$this->mandateID.'</MandateID>
 				<MerchantReturnURL automaticRedirect="'.$this->automatically_redirect.'">'.$this->merchantReturnURL.'</MerchantReturnURL>
 				<SequenceType>'.$this->sequenceType.'</SequenceType>

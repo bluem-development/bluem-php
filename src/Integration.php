@@ -160,8 +160,13 @@ class Integration
 		$debtorReference,
 		$amount,
 		$dueDateTime=null,
-		$currency="EUR"
+		$currency="EUR",
+		$entranceCode = null
 	) {
+
+		if(is_null($entranceCode)) {
+			$entranceCode = $this->CreateEntranceCode();
+		}
 
 		$r = new PaymentBluemRequest(
 			$this->configuration,
@@ -171,6 +176,7 @@ class Integration
 			$dueDateTime,
 			$currency,
 			$this->CreatePaymentTransactionID($debtorReference),
+			$entranceCode,
 			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
 				isset($this->configuration->expected_return) ?
 				$this->configuration->expected_return : "")
@@ -183,15 +189,21 @@ class Integration
 		$debtorReference,
 		$amount,
 		$dueDateTime=null,
-		$currency="EUR"
+		$currency="EUR",
+		$entranceCode = null
 	) {
+		
+		if(is_null($entranceCode)) {
+			$entranceCode = $this->CreateEntranceCode();
+		}
 		return $this->PerformRequest(
 			$this->CreatePaymentRequest(
 				$description,
 				$debtorReference,
 				$amount,
 				$dueDateTime,
-				$currency
+				$currency,
+				$entranceCode
 			)
 		);
 	}
@@ -203,10 +215,10 @@ class Integration
 		$r = new PaymentStatusBluemRequest(
 			$this->configuration,
 			$transactionID,
-			$entranceCode,
 			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-				isset($this->configuration->expected_return) ?
-				$this->configuration->expected_return : "")
+			isset($this->configuration->expected_return) ?
+			$this->configuration->expected_return : ""),
+			$entranceCode
 		);
 
 		$response = $this->PerformRequest($r);
@@ -299,10 +311,21 @@ class Integration
 	 */
 	public function CreateNewTransaction(
 		$type="mandate",
-		$properties
+		$properties= []
 	) {
+		var_dump($type);
+		var_dump($properties);
+		die();
 		switch ($type) {
 			case 'mandate':
+
+                if (!isset($properties['request_type'])) {
+                    $properties['request_type'] = 'default';
+                } 
+				if (!isset($properties['simple_redirect_url'])) {
+                    $properties['simple_redirect_url'] = '';
+                } 
+
 				return $this->CreateMandateRequest($properties['customer_id'], $properties['order_id'], $properties['request_type'], $properties['simple_redirect_url']);
 				break;
 			case 'payment':
@@ -310,7 +333,7 @@ class Integration
 				$properties['debtorReference'],
 				$properties['amount'],
 				$properties['dueDateTime'],
-				$data['currency']);
+				$properties['currency']);
 				break;
 			default:
 				throw new Exception("Type of transaction to create not given or invalid. Should be one of ['mandate', 'payment']");	
@@ -324,7 +347,7 @@ class Integration
 	 */
 	public function CreateEntranceCode(): String
 	{
-		return Carbon::now()->format("YmdHis") . "000";
+		return Carbon::now()->format("YmdHisv"); // . "000";
 	}
 
 	/**
@@ -424,6 +447,7 @@ $xttrs_date = $now->toRfc7231String();
 	 */
 	public function Webhook()
 	{
+		$verbose = false;
 
 		/* Senders provide Bluem with a webhook URL. The URL will be checked for consistency and validity and will not be stored if any of the checks fails. The following checks will be performed:
 	
@@ -434,6 +458,9 @@ $xttrs_date = $now->toRfc7231String();
 
 		// ONLY Accept post requests
 		if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+			if($verbose) {
+				exit("Not post");
+			}
 			http_response_code(400);
 			exit();
 		}
@@ -442,7 +469,9 @@ $xttrs_date = $now->toRfc7231String();
 		$postData = file_get_contents('php://input');
 		// var_dump($postData);
 		if ($postData === "") {
-			// echo "NO POST";
+            if ($verbose) {
+                echo "NO POST";
+            }
 			http_response_code(200);
 			exit();
 		}
@@ -454,12 +483,20 @@ $xttrs_date = $now->toRfc7231String();
 		try {
 			$xml_input = new \SimpleXMLElement($postData);
 		} catch (Exception $e) {
+            if ($verbose) {
+                var_dump($e);
+                exit();
+            }
 			http_response_code(400); 		// could not parse XML
 			exit();
 		}
-
+// var_dump($xml_input->EPaymentInterface->PaymentStatusUpdate);
 		// check if signature is valid in postdata
 		if (!$this->validateWebhookSignature($postData)) {
+			if($verbose) {
+				exit('no valid webhook sig');
+			}
+
 			http_response_code(400);
 			// echo 'The XML signature is not valid.';
 			// echo PHP_EOL;
@@ -471,12 +508,12 @@ $xttrs_date = $now->toRfc7231String();
 		// echo "<hr>Input";
 		// var_dump($xml_input);
 		
-		if (!isset($xml_input->EMandateInterface->EMandateStatusUpdate)) {
+		if (!isset($xml_input->EPaymentInterface->PaymentStatusUpdate)) {
 			http_response_code(400);
 			exit;
 		}
 
-		$status_update = $xml_input->EMandateInterface->EMandateStatusUpdate;
+		$status_update = $xml_input->EPaymentInterface->PaymentStatusUpdate;
 		return $status_update;
 	}
 
@@ -495,11 +532,12 @@ $xttrs_date = $now->toRfc7231String();
 		// } else {
 		// $public_key_file = "webhook.bluem.nl_pub_key_production.crt";
 		// }
-
+		$key_folder = 
 		$public_key_file = "bluem_nl.crt";
-		$public_key_file_path = ABSPATH . "wp-content/plugins/bluem-woocommerce/keys/" . $public_key_file;
+		$public_key_file_path = __DIR__. "/../keys/" . $public_key_file;
 		// TODO: put the key in a different folder, relative to this PHP library
-
+// echo $public_key_file_path;
+// die();
 
 		try {
 			$signatureValidator->loadPublicKeyFile($public_key_file_path);
