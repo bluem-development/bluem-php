@@ -18,11 +18,12 @@ use Carbon\Carbon;
 class EmandateStatusBluemRequest extends BluemRequest
 {
 	
-    public $type_identifier = "requestStatus"; 
+	public $type_identifier = "requestStatus"; 
+	public $request_url_type = "mr";
     public $transaction_code = "SRX";    
     
     	
-	function __construct($config,$mandateID,$expected_return="",$entranceCode="")
+	function __construct($config,$mandateID,$entranceCode="",$expected_return="")
 	{
 		parent::__construct($config,$expected_return,$entranceCode);
 
@@ -89,26 +90,23 @@ class EmandateBluemRequest extends BluemRequest
 	protected $merchantID;
 	protected $merchantSubID;
 	
-	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none",
-	$request_type = "default",
-	$simple_redirect_url="")
-	{
+	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none") {
 		
 		parent::__construct($config,"",$expected_return);
 		
 		$this->xmlInterfaceName = "EMandateInterface";
-
+		// $this->request_url_type = "mr";
 		$this->type_identifier = "createTransaction";
 		
 	
 		$this->merchantReturnURLBase = $config->merchantReturnURLBase;
 		
-		$this->request_type = $request_type;	
-		if($this->request_type==="simple" && $simple_redirect_url!=="") {
-			$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}"; 
-		}
+		// $this->request_type = $request_type;	
+		// if($this->request_type==="simple" && $simple_redirect_url!=="") {
+		// 	$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}"; 
+		// }
 
-		$now = Carbon::now();
+		$now = Carbon::now()->timezone('Europe/Amsterdam');
 		
 		$this->localInstrumentCode = $config->localInstrumentCode; // CORE | B2B ,  conform gegeven standaard
 		
@@ -116,10 +114,19 @@ class EmandateBluemRequest extends BluemRequest
 
 		// https uniek returnurl voor klant
 		$this->merchantReturnURL = $this->merchantReturnURLBase."?mandateID={$this->mandateID}"; 
-		$this->sequenceType = "RCUR"; // TODO: uit config halen
+		if(isset($config->sequenceType)) {
+			$this->sequenceType = $config->sequenceType;
+		} else {
+			$this->sequenceType = "RCUR";
+		}
 		
 		// reden van de machtiging; configurabel per partij
-		$this->eMandateReason = "Incasso abonnement"; // TODO: uit config halen
+		if(isset($config->eMandateReason)) {
+			$this->eMandateReason = $config->eMandateReason;
+		} else {
+			$this->eMandateReason = "Incasso machtiging";
+		}
+		// $this->eMandateReason = ; // TODO: uit config halen
 		
 		// Klantreferentie bijv naam of nummer
 		$this->debtorReference = $customer_id; 
@@ -135,7 +142,7 @@ class EmandateBluemRequest extends BluemRequest
         } else {
 			$purchaseIDPrefix = "";
 		}
-		$this->purchaseID = "{$purchaseIDPrefix}{$this->debtorReference}-{$order_id}";  // INKOOPNUMMER
+		$this->purchaseID = substr("{$purchaseIDPrefix}{$this->debtorReference}-{$order_id}",0,34);  // INKOOPNUMMER
 
 		
 		// todo: move to mandate-specifics; as it is only necessary there
@@ -151,7 +158,11 @@ class EmandateBluemRequest extends BluemRequest
 			$this->merchantID = "0020000387";
 		}
 
-		$this->merchantSubID = $config->merchantSubID;
+		if(isset($config->merchantSubID)) {
+			$this->merchantSubID = $config->merchantSubID;
+		} else {
+			$this->merchantSubID = "0";
+		}
 
 
 		$this->automatically_redirect = "1";

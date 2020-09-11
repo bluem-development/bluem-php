@@ -138,6 +138,7 @@ class BluemRequest
 				break;
 		}
 		$request_url .= "?token={$this->accessToken}";
+		
 		return $request_url;
 	}
 

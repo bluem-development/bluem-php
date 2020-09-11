@@ -78,8 +78,7 @@ class Integration
 	public function CreateMandateRequest(
 		$customer_id,
 		$order_id,
-		$request_type = "default",
-		$simple_redirect_url = ""
+		$mandate_id=false
 	) {
 		if (is_null($customer_id)) {
 			throw new Exception("Customer ID Not set", 1);
@@ -92,36 +91,35 @@ class Integration
 			$this->configuration,
 			$customer_id,
 			$order_id,
-			$this->CreateMandateID($order_id, $customer_id),
+			$mandate_id!==false?$mandate_id:$this->CreateMandateID($order_id, $customer_id),
 			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
 				isset($this->configuration->expected_return) ?
-				$this->configuration->expected_return : ""),
-			$request_type,
-			$simple_redirect_url
+				$this->configuration->expected_return : "")
 		);
 		return $r;
 	}
 
+
 	public function Mandate(
 		$customer_id,
 		$order_id,
-		$request_type = "default",
-		$simple_redirect_url = ""
+		$mandate_id
 	) {
-		return $this->PerformRequest(
-			$this->CreateMandateRequest(
-				$customer_id,
-				$order_id,
-				$request_type,
-				$simple_redirect_url
-			)
+		$_request = $this->CreateMandateRequest(
+			$customer_id,
+			$order_id,
+			$mandate_id
 		);
+		$response = $this->PerformRequest(
+			$_request
+		);
+		return $response;
 	}
+
 
 
 	public function MandateStatus($mandateID, $entranceCode)
 	{
-
 		$r = new EMandateStatusBluemRequest(
 			$this->configuration,
 			$mandateID,
@@ -130,9 +128,7 @@ class Integration
 				isset($this->configuration->expected_return) ?
 				$this->configuration->expected_return : "")
 		);
-
 		$response = $this->PerformRequest($r);
-
 		return $response;
 	}
 
@@ -305,7 +301,7 @@ class Integration
 	}
 
 	/**
-	 * Creates a new test transaction and in case of success, return the link to redirect to to get to the BlueM eMandate environment.
+	 * LEGACY Creates a new test transaction and in case of success, return the link to redirect to to get to the BlueM eMandate environment.
 	 * @param int $customer_id The Customer ID
 	 * @param int $order_id    The Order ID
 	 */
@@ -363,7 +359,9 @@ class Integration
 
 		// $xttrs_date = $now->format("D, d M Y H:i:s") . " GMT";
 		// conform Rfc1123 standard in GMT time
-$xttrs_date = $now->toRfc7231String();
+		$xttrs_date = $now->toRfc7231String();
+
+		// TODO: make sure the timezone is set correctly..
 
 		$req = new \HTTP_Request2();
 		$req->setUrl($transaction_request->HttpRequestUrl());
@@ -381,9 +379,17 @@ $xttrs_date = $now->toRfc7231String();
 
 		$req->setBody($transaction_request->XmlString());
 
+// var_dump($transaction_request->XmlString());
+// die();
+
 		try {
 			$http_response = $req->send();
 			// var_dump($http_response->getStatus());
+			// var_dump($transaction_request->XmlString());
+			// echo "<HR>".PHP_EOL;
+			// var_dump($http_response->getBody());
+			// var_dump($http_response->getStatus());
+			// die();
 
 			switch ($http_response->getStatus()) {
 				case 200: {
@@ -402,7 +408,7 @@ $xttrs_date = $now->toRfc7231String();
 					// or EMandateErrorResponse, IDentityErrorResponse or
 					// IBANCheckErrorResponse
 
-						return new ErrorBluemResponse('Your request was not formed correctly.');
+						return new ErrorBluemResponse('Your request was not formed correctly. Extra information: '.$http_response->getBody());
 						break;
 					}
 				case 401: {
