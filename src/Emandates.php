@@ -25,7 +25,8 @@ class EmandateStatusBluemRequest extends BluemRequest
     	
 	function __construct($config,$mandateID,$entranceCode="",$expected_return="")
 	{
-		parent::__construct($config,$expected_return,$entranceCode);
+		// var_dump($entranceCode);
+		parent::__construct($config,$entranceCode,$expected_return);
 
 		$this->xmlInterfaceName = "EMandateInterface";
 		

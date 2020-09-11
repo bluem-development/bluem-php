@@ -10,6 +10,7 @@
 namespace Bluem\BluemPHP;
 
 use Carbon\Carbon;
+use Exception;
 
 /**
  * 	BluemRequest
@@ -36,13 +37,14 @@ class BluemRequest
 
 		$this->accessToken = $config->accessToken;
 
-		$this->createDateTime = Carbon::now()->toDateTimeLocalString() . ".000Z";
+		$this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->toDateTimeLocalString() . ".000Z";
 
 		// uniek in de tijd voor emandate; string; niet zichtbaar voor klant; 
 		// uniek kenmerk van incassant voor deze transactie
 		// structuur: prefix voor testing + klantnummer + huidige timestamp tot op de seconde
 		if ($entranceCode === "") 
 		{
+		// throw new Exception("EntranceCode is required for creating this reque")	
 			$this->entranceCode = $this->entranceCode($expected_return);
 		} else {
 			$this->entranceCode = $entranceCode;
@@ -148,7 +150,7 @@ class BluemRequest
 		
 		// create a default entrancecode if necessary
 		if($entranceCode =="" ) {
-			$entranceCode = Carbon::now()->format("YmdHisv");
+			$entranceCode = Carbon::now()->timezone('Europe/Amsterdam')->format("YmdHisv");
 		}
 		
 		$prefix = "";

@@ -128,6 +128,8 @@ class Integration
 				isset($this->configuration->expected_return) ?
 				$this->configuration->expected_return : "")
 		);
+		// var_dump($r);
+		// var_dump($r->XmlString());
 		$response = $this->PerformRequest($r);
 		return $response;
 	}
@@ -141,10 +143,10 @@ class Integration
 	{
 		// veteranen search team
 		if ($this->configuration->senderID === "S1300") {
-			return "M" . Carbon::now()->format('YmdHis');
+			return "M" . Carbon::now()->timezone('Europe/Amsterdam')->format('YmdHis');
 		}
 		// nextdeli etc.
-		return substr($customer_id . Carbon::now()->format('Ymd') . $order_id, 0, 35);
+		return substr($customer_id . Carbon::now()->timezone('Europe/Amsterdam')->format('Ymd') . $order_id, 0, 35);
 	}
 
 
@@ -301,6 +303,7 @@ class Integration
 	}
 
 	/**
+	 * @deprecated Use specific functions instead!
 	 * LEGACY Creates a new test transaction and in case of success, return the link to redirect to to get to the BlueM eMandate environment.
 	 * @param int $customer_id The Customer ID
 	 * @param int $order_id    The Order ID
@@ -309,6 +312,7 @@ class Integration
 		$type="mandate",
 		$properties= []
 	) {
+		echo "Deprecated function";
 		var_dump($type);
 		var_dump($properties);
 		die();
@@ -353,7 +357,7 @@ class Integration
 	public function PerformRequest(BluemRequest $transaction_request)
 	{
 
-		$now = Carbon::now();
+		$now = Carbon::now()->timezone('Europe/Amsterdam');
 
 		$xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
 
@@ -365,16 +369,18 @@ class Integration
 
 		$req = new \HTTP_Request2();
 		$req->setUrl($transaction_request->HttpRequestUrl());
-// echo '<br>'.$transaction_request->HttpRequestURL();
 		$req->setMethod(\HTTP_Request2::METHOD_POST);
-
+		
 		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8");
-		// echo '<br>'."HEADER Content-Type". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
 		$req->setHeader('x-ttrs-date', $xttrs_date);
-		// echo '<br>'.'HEADER x-ttrs-date'. $xttrs_date;
 		$req->setHeader('x-ttrs-files-count', '1');
-		// echo '<br>'.'HEADER x-ttrs-files-count'. '1';
 		$req->setHeader('x-ttrs-filename', $xttrs_filename);
+		
+		
+		// echo '<br>'.$transaction_request->HttpRequestURL();
+		// echo '<br>'."HEADER Content-Type". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
+		// echo '<br>'.'HEADER x-ttrs-date'. $xttrs_date;
+		// echo '<br>'.'HEADER x-ttrs-files-count'. '1';
 		// echo '<br>'.'HEADER x-ttrs-filename'. $xttrs_filename;
 
 		$req->setBody($transaction_request->XmlString());
