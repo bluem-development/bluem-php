@@ -20,7 +20,7 @@ use Exception;
 use HTTP_Request2;
 use Selective\XmlDSig\XmlSignatureValidator;
 
-libxml_use_internal_errors(false);
+libxml_use_internal_errors(true);
 
 if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) {
 	define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
@@ -86,11 +86,16 @@ class Integration
 			throw new Exception("Order ID Not set", 1);
 		}
 
+		if($mandate_id === false)
+		{
+			$mandate_id = $this->CreateMandateID($order_id, $customer_id);
+		}
+		
 		$r = new EmandateBluemRequest(
 			$this->configuration,
 			$customer_id,
 			$order_id,
-			$mandate_id !== false ? $mandate_id : $this->CreateMandateID($order_id, $customer_id),
+			$mandate_id,
 			($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
 				isset($this->configuration->expected_return) ?
 				$this->configuration->expected_return : "")
@@ -119,6 +124,7 @@ class Integration
 
 	public function MandateStatus($mandateID, $entranceCode)
 	{
+		
 		$r = new EMandateStatusBluemRequest(
 			$this->configuration,
 			$mandateID,
@@ -128,12 +134,7 @@ class Integration
 				$this->configuration->expected_return : "")
 		);
 
-		// var_dump($r->XmlString());
 		$response = $this->PerformRequest($r);
-		// var_dump($r);
-		// var_dump($response);
-		// die();
-		// die();
 		return $response;
 	}
 
@@ -330,7 +331,7 @@ class Integration
 				if (!isset($properties['simple_redirect_url'])) {
 					$properties['simple_redirect_url'] = '';
 				}
-
+				
 				return $this->CreateMandateRequest($properties['customer_id'], $properties['order_id'], $properties['request_type'], $properties['simple_redirect_url']);
 				break;
 			case 'payment':
@@ -363,6 +364,7 @@ class Integration
 	 */
 	public function PerformRequest(BluemRequest $transaction_request)
 	{
+		$verbose = false;
 
 		// make sure the timezone is set correctly..
 		$now = Carbon::now()->timezone('Europe/Amsterdam');
@@ -376,46 +378,79 @@ class Integration
 		$request_url = $transaction_request->HttpRequestUrl();
 
 		$req = new \HTTP_Request2();
+		
+// $req->setConfig(['store_body'=>true]);
+
 		$req->setUrl($request_url);
 		$req->setMethod(\HTTP_Request2::METHOD_POST);
 
-		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8");
-		$req->setHeader('x-ttrs-date', $xttrs_date);
-		$req->setHeader('x-ttrs-files-count', '1');
-		$req->setHeader('x-ttrs-filename', $xttrs_filename);
+		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code. "; charset=UTF-8");
+		$req->setHeader("x-ttrs-date", $xttrs_date);
+		$req->setHeader("x-ttrs-files-count", "1");
+		$req->setHeader("x-ttrs-filename", $xttrs_filename);
+if($verbose) {
+	echo PHP_EOL."<BR>URL// ". $request_url;
+	// echo PHP_EOL."<BR>// ". "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
 
+echo PHP_EOL."<BR>HEADER// ". "Content-Type: ". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
+echo PHP_EOL."<BR>HEADER// ". 'x-ttrs-date: '. $xttrs_date;
+echo PHP_EOL."<BR>HEADER// ". 'x-ttrs-files-count: '. '1';
+echo PHP_EOL."<BR>HEADER// ". 'x-ttrs-filename: '. $xttrs_filename;
+echo "<HR>";
+echo PHP_EOL."BODY: ".$transaction_request->XmlString();
+}
+// var_dump(libxml_get_errors());
 
-		
-		$req->setBody($transaction_request->XmlString());
-		
-		try {
-			$http_response = $req->send();
-
-
-// 			var_dump($http_response);
-// 			var_dump($http_response->getBody());
-// 			echo PHP_EOL . '<br>'. 'URL: '. $transaction_request->HttpRequestURL();
-// 			echo PHP_EOL . '<br>'."HEADER: Content-Type: ". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
-// 			echo PHP_EOL . '<br>'.'HEADER: x-ttrs-date: '. $xttrs_date;
-// 			echo PHP_EOL . '<br>'.'HEADER: x-ttrs-files-count: '. '1';
-// 			echo PHP_EOL . '<br>'.'HEADER: x-ttrs-filename: '. $xttrs_filename;
 // die();
-// 			var_dump(new BluemResponse($http_response->getBody()));
-// 			die();
-			/* 
-			var_dump($transaction_request->XmlString());
-			echo $request_url;
-			echo "<HR>".PHP_EOL;
-			var_dump($http_response->getStatus()); */
-			// die();
 
+$req->setBody($transaction_request->XmlString());
+try {
+	// $statusLine = read_status_line();
+	// echo $statusLine;
+	// echo $http_response->getStatusLine();
+	$http_response = $req->send();
+	// var_dump($http_response->getHeader(), $http_response->getCookies(), $http_response->getBody());
+	// 		echo $http_response->getStatus();
+
+if ($verbose) {
+	echo PHP_EOL."<BR>RESPONSE// ";
+// 	var_dump($http_response);
+    // 	try {
+    // 		//code...
+    var_dump($http_response->getBody());
+}
+		// 	} catch (\Throwable $th) {
+// 		//throw $th;
+// 		echo "DOUBLE TRY";
+// 		echo $th->getMessage();
+// 		die();
+// 	}
+// }	
 			switch ($http_response->getStatus()) {
 				case 200: {
-                        if ($http_response->getBody() == "") {
-                            return new ErrorBluemResponse("Error: Empty response returned");
-                        }
+					if ($http_response->getBody() == "") {
+						return new ErrorBluemResponse("Error: Empty response returned");
+					}
+					// if($verbose) {
+
+					// 	var_dump($http_response->getBody());
 						
+					// }
+					
+					try {
 						$response = new BluemResponse($http_response->getBody());
+						//code...
+					} catch (\Throwable $th) {
+						echo "error in creating response";
+						var_dump($th->getMessage());
+						die();
+						//throw $th;
+					}
+					// if($verbose) {
+
+						// 					var_dump($response);
+						// die();
+					// }
 						if (!$response->Status()) {
 
 							return new ErrorBluemResponse("Error: " . ($response->Error()->ErrorMessage));
@@ -425,7 +460,7 @@ class Integration
 						break;
 					}
 				case 400: {
-						return new ErrorBluemResponse('Your request was not formed correctly. Extra information: ' . $http_response->getBody());
+						return new ErrorBluemResponse('Your request was not formed correctly.');// . $http_response->getBody());
 						break;
 					}
 				case 401: {
@@ -442,7 +477,10 @@ class Integration
 					}
 			}
 		} catch (\HTTP_Request2_Exception $e) {
-			$error = new ErrorBluemResponse('Error: ' . $e->getMessage());
+			var_dump($e);
+			$e->getMessage();
+			die();
+			$error = new ErrorBluemResponse('HTTP Request Error: ');
 			return $error;
 		}
 	}

@@ -68,7 +68,6 @@ class EmandateStatusBluemRequest extends BluemRequest
 	
 }
 
-
 /**
  * TransactionRequest
  */
