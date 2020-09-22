@@ -9,7 +9,7 @@
 
 namespace Bluem\BluemPHP;
 
-use Carbon\Carbon;
+use Carbon\Carbon as Carbon;
 use Exception;
 
 /**

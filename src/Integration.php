@@ -9,18 +9,22 @@
 
 namespace Bluem\BluemPHP;
 
+require __DIR__ . '/../vendor/autoload.php';
+
 require_once 'Emandates.php';
 require_once 'Payments.php';
 require_once 'Identity.php';
 require_once 'Iban.php';
 require_once 'BluemResponse.php';
+require_once 'BluemRequest.php';
 
 use Carbon\Carbon;
 use Exception;
-use HTTP_Request2;
+use HTTP_Request2 as BluemHttpRequest;
 use Selective\XmlDSig\XmlSignatureValidator;
+use Throwable;
 
-libxml_use_internal_errors(true);
+// libxml_use_internal_errors(false);
 
 if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) {
 	define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
@@ -86,11 +90,10 @@ class Integration
 			throw new Exception("Order ID Not set", 1);
 		}
 
-		if($mandate_id === false)
-		{
+		if ($mandate_id === false) {
 			$mandate_id = $this->CreateMandateID($order_id, $customer_id);
 		}
-		
+
 		$r = new EmandateBluemRequest(
 			$this->configuration,
 			$customer_id,
@@ -124,7 +127,7 @@ class Integration
 
 	public function MandateStatus($mandateID, $entranceCode)
 	{
-		
+
 		$r = new EMandateStatusBluemRequest(
 			$this->configuration,
 			$mandateID,
@@ -331,7 +334,7 @@ class Integration
 				if (!isset($properties['simple_redirect_url'])) {
 					$properties['simple_redirect_url'] = '';
 				}
-				
+
 				return $this->CreateMandateRequest($properties['customer_id'], $properties['order_id'], $properties['request_type'], $properties['simple_redirect_url']);
 				break;
 			case 'payment':
@@ -364,103 +367,126 @@ class Integration
 	 */
 	public function PerformRequest(BluemRequest $transaction_request)
 	{
-		$verbose = false;
 
+		// array holding allowed Origin domains
+		// $allowedOrigins = array(
+		// 	'(http(s)://)?(www\.)\-nextdeli\.com',
+		// 	'http://localhost',
+		// );
+
+		// if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] != '') {
+		// 	echo $_SERVER['HTTP_ORIGIN'];
+		// 	foreach ($allowedOrigins as $allowedOrigin) {
+		// 		if (preg_match('#' . $allowedOrigin . '#', $_SERVER['HTTP_ORIGIN'])) {
+		// 			echo "MATCH";
+		// 			header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+		// 			header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+		// 			header('Access-Control-Max-Age: 1000');
+		// 			header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+		// 			break;
+		// 		}
+		// 	}
+		// }
+		// die();
+		
+		$verbose = false;
+		
 		// make sure the timezone is set correctly..
 		$now = Carbon::now()->timezone('Europe/Amsterdam');
-
+		
 		$xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
-
+		
 		// $xttrs_date = $now->format("D, d M Y H:i:s") . " GMT";
 		// conform Rfc1123 standard in GMT time
 		$xttrs_date = $now->toRfc7231String();
-
-		$request_url = $transaction_request->HttpRequestUrl();
-
-		$req = new \HTTP_Request2();
 		
-// $req->setConfig(['store_body'=>true]);
-
+		$request_url = $transaction_request->HttpRequestUrl();
+		
+		$req = new BluemHttpRequest();
+		
+		// $req->setConfig(['store_body'=>true]);
+		
 		$req->setUrl($request_url);
-		$req->setMethod(\HTTP_Request2::METHOD_POST);
-
-		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code. "; charset=UTF-8");
+		$req->setMethod(BluemHttpRequest::METHOD_POST);
+		
+		$req->setHeader( 'Access-Control-Allow-Origin','*' );
+		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8");
 		$req->setHeader("x-ttrs-date", $xttrs_date);
 		$req->setHeader("x-ttrs-files-count", "1");
 		$req->setHeader("x-ttrs-filename", $xttrs_filename);
-if($verbose) {
-	echo PHP_EOL."<BR>URL// ". $request_url;
-	// echo PHP_EOL."<BR>// ". "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
+		if ($verbose) {
+			echo PHP_EOL . "<BR>URL// " . $request_url;
+			// echo PHP_EOL."<BR>// ". "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
 
-echo PHP_EOL."<BR>HEADER// ". "Content-Type: ". "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
-echo PHP_EOL."<BR>HEADER// ". 'x-ttrs-date: '. $xttrs_date;
-echo PHP_EOL."<BR>HEADER// ". 'x-ttrs-files-count: '. '1';
-echo PHP_EOL."<BR>HEADER// ". 'x-ttrs-filename: '. $xttrs_filename;
-echo "<HR>";
-echo PHP_EOL."BODY: ".$transaction_request->XmlString();
-}
-// var_dump(libxml_get_errors());
+			echo PHP_EOL . "<BR>HEADER// " . "Content-Type: " . "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
+			echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-date: ' . $xttrs_date;
+			echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-files-count: ' . '1';
+			echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-filename: ' . $xttrs_filename;
+			echo "<HR>";
+			echo PHP_EOL . "BODY: " . $transaction_request->XmlString();
+		}
+		// var_dump(libxml_get_errors());
 
-// die();
+		// die();
 
-$req->setBody($transaction_request->XmlString());
-try {
-	// $statusLine = read_status_line();
-	// echo $statusLine;
-	// echo $http_response->getStatusLine();
-	$http_response = $req->send();
-	// var_dump($http_response->getHeader(), $http_response->getCookies(), $http_response->getBody());
-	// 		echo $http_response->getStatus();
+		$req->setBody($transaction_request->XmlString());
+		try {
+			// $statusLine = read_status_line();
+			// echo $statusLine;
+			// echo $http_response->getStatusLine();
+			$http_response = $req->send();
+			// var_dump($http_response->getHeader(), $http_response->getCookies(), $http_response->getBody());
+			// 		echo $http_response->getStatus();
 
-if ($verbose) {
-	echo PHP_EOL."<BR>RESPONSE// ";
-// 	var_dump($http_response);
-    // 	try {
-    // 		//code...
-    var_dump($http_response->getBody());
-}
-		// 	} catch (\Throwable $th) {
-// 		//throw $th;
-// 		echo "DOUBLE TRY";
-// 		echo $th->getMessage();
-// 		die();
-// 	}
-// }	
+			if ($verbose) {
+				echo PHP_EOL . "<BR>RESPONSE// ";
+				// 	var_dump($http_response);
+				// 	try {
+				// 		//code...
+				var_dump($http_response->getBody());
+			}
+			// 	} catch (\Throwable $th) {
+			// 		//throw $th;
+			// 		echo "DOUBLE TRY";
+			// 		echo $th->getMessage();
+			// 		die();
+			// 	}
+			// }	
 			switch ($http_response->getStatus()) {
 				case 200: {
-					if ($http_response->getBody() == "") {
-						return new ErrorBluemResponse("Error: Empty response returned");
-					}
-					// if($verbose) {
+						if ($http_response->getBody() == "") {
+							return new ErrorBluemResponse("Error: Empty response returned");
+						}
+						// if($verbose) {
 
-					// 	var_dump($http_response->getBody());
-						
-					// }
-					
-					try {
-						$response = new BluemResponse($http_response->getBody());
-						//code...
-					} catch (\Throwable $th) {
-						echo "error in creating response";
-						var_dump($th->getMessage());
-						die();
-						//throw $th;
-					}
-					// if($verbose) {
+						// 	var_dump($http_response->getBody());
+
+						// }
+
+						try {
+							$response = new BluemResponse($http_response->getBody());
+							//code...
+						} catch (\Throwable $th) {
+							echo "error in creating response";
+							var_dump($th->getMessage());
+							die();
+							//throw $th;
+						}
+						// if($verbose) {
 
 						// 					var_dump($response);
 						// die();
-					// }
+						// }
 						if (!$response->Status()) {
 
 							return new ErrorBluemResponse("Error: " . ($response->Error()->ErrorMessage));
 						}
 						return $response;
-					
+
 						break;
 					}
 				case 400: {
-						return new ErrorBluemResponse('Your request was not formed correctly.');// . $http_response->getBody());
+						return new ErrorBluemResponse('Your request was not formed correctly.'); // . $http_response->getBody());
 						break;
 					}
 				case 401: {
@@ -476,11 +502,14 @@ if ($verbose) {
 						break;
 					}
 			}
-		} catch (\HTTP_Request2_Exception $e) {
-			var_dump($e);
-			$e->getMessage();
-			die();
-			$error = new ErrorBluemResponse('HTTP Request Error: ');
+		} catch (Throwable $e) {
+			// echo "KAAS";_
+			// die();
+			// var_dump($e);
+			// throw new Exception('Error: ' . $e->getMessage(), 400 );
+			// echo $e->getMessage();
+			// die();
+		$error = new ErrorBluemResponse('HTTP Request Error');
 			return $error;
 		}
 	}

@@ -19,8 +19,7 @@
 	"require": {
 		"php": ">=5.4",
 		"nesbot/carbon": "^2.31",
-		"pear/http_request2": "2.3",
-		"selective/xmldsig": "^1.0"
+		"pear/http_request2": "2.3"
     },
     "minimum-stability": "dev",
     "autoload": {
