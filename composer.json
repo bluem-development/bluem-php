@@ -22,7 +22,6 @@
 		"pear/http_request2": "^2.4",
         "selective/xmldsig": "^1.0"
     },
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Bluem\\BluemPHP\\": "src/"
