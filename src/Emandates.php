@@ -7,7 +7,7 @@
  */
 namespace Bluem\BluemPHP;
 
-require_once __DIR__.'/BluemRequest.php';
+// require_once __DIR__.'/BluemRequest.php';
 
 use Carbon\Carbon;
 
