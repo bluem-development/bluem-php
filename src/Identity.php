@@ -1,20 +1,21 @@
 <?php
+
 /*
- * (c) Daan Rijpkema <info@daanrijpkema.com>
+ * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Bluem\BluemPHP;
 
-use Carbon\Carbon;
 
 class IdentityBluemRequest extends BluemRequest
 {
     protected $xmlInterfaceName = "IdentityInterface";
 
     public $request_url_type = "ir";
-    public $type_identifier = "createTransaction";
+    public $typeIdentifier = "createTransaction";
     public $transaction_code = "ITX";
     
     public function TransactionType() : String
@@ -103,7 +104,7 @@ class IdentityBluemRequest extends BluemRequest
         return ''.$result.'';
     }
 
-    public function XmlString()
+    public function XmlString() : String
     {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
@@ -121,30 +122,7 @@ class IdentityBluemRequest extends BluemRequest
                 ]
             )
         );
-
-        /*
-         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<IdentityInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="TransactionRequest" mode="direct"
-senderID="S1141" version="1.0" createDateTime="2019-05-02T08:28:40.314Z" messageCount="1"
-xsi:noNamespaceSchemaLocation="../IdentityInterface.xsd">
-    <IdentityTransactionRequest entranceCode="f33f6721cc197138b95a33566a0c388ec631d5b2" language="nl" brandID="IDIN" sendOption="none">
-        <RequestCategory>
-            <CustomerIDRequest action="request"/>
-            <NameRequest action="request"/>
-            <AddressRequest action="request"/>
-            <BirthDateRequest action="request"/>
-            <AgeCheckRequest ageOrOlder="18" action="skip"/>
-            <GenderRequest action="request"/>
-            <TelephoneRequest action="skip"/>
-            <EmailRequest action="request"/>
-        </RequestCategory>
-        <Description>Identificatie voor demo</Description><!--description is shown to customer-->
-        <DebtorReference>37083</DebtorReference><!-- optional; client reference/number -->
-        <DebtorReturnURL automaticRedirect="1">https://companyname.demo.nl/idin/synchronise/f33f6721cc197138b95a33566a0c388ec631d5b2</DebtorReturnURL><!-- optional;return URL where Bluem redirects the user; if automaticRedirect=1 it means that the checkout result page is skipped, and the user is pushed back straight to given returnURL-->
-    </IdentityTransactionRequest>
-</IdentityInterface>
-         */
-    }
+   }
 }
 
 
@@ -153,7 +131,7 @@ class IdentityStatusBluemRequest extends BluemRequest
     protected $xmlInterfaceName = "IdentityInterface";
 
     public $request_url_type = "ir";
-    public $type_identifier = "requestStatus";
+    public $typeIdentifier = "requestStatus";
     public $transaction_code = "ISX";
     public function TransactionType() : String
     {
@@ -168,7 +146,7 @@ class IdentityStatusBluemRequest extends BluemRequest
     }
 
 
-    public function XmlString()
+    public function XmlString() : String
     {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
@@ -179,15 +157,7 @@ class IdentityStatusBluemRequest extends BluemRequest
             )
         );
 
-        /*            // Reference
-    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<IdentityInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="StatusRequest" mode="direct"
-senderID="S1141" version="1.0" createDateTime="2019-05-02T08:30:15.628Z" messageCount="1">
-    <IdentityStatusRequest
-            entranceCode="f33f6721cc197138b95a33566a0c388ec631d5b2">
-        <TransactionID>c3a9d2d5477429fa</TransactionID>
-    </IdentityStatusRequest>
-</IdentityInterface>
-*/
+        
+
     }
 }

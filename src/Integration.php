@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) Daan Rijpkema <info@daanrijpkema.com>
+ * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -57,27 +57,38 @@ class Integration
 
 		// validating configuration
 		if (!in_array($configuration->environment, [BLUEM_ENVIRONMENT_TESTING, BLUEM_ENVIRONMENT_ACCEPTANCE, BLUEM_ENVIRONMENT_PRODUCTION])) {
-			throw new Exception("Invalid environment setting, should be test,acc or prod");
+			throw new Exception("Invalid environment setting, should be either 'test', 'acc' or 'prod'");
 		}
 
-
 		$this->configuration = $configuration;
-
-
 
 		if ($this->configuration->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
 			$this->configuration->accessToken = $configuration->production_accessToken;
 		} elseif ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {
 			$this->configuration->accessToken = $configuration->test_accessToken;
+
+			// @todo: hardcode merchantID in case of test. It is always the bluem merchant ID then.
 		}
 		$this->environment = $this->configuration->environment;
+		// @todo Only use one environment variable. Right now it is saved in both $this->environment and $this->configuration->environment
 
 		// this is given by the bank (default 0)
 		$this->configuration->merchantSubID = "0";
+		// @todo get this from settings in the future
 	}
 
 	/**-------------- MANDATE SPECIFIC FUNCTIONS --------------*/
 
+	/**
+	 * Create a Mandate Request given a customer ID, order ID 
+	 * and Mandate ID and return the request object 
+	 * WITHOUT sending it
+	 *
+	 * @param $customer_id
+	 * @param $order_id
+	 * @param boolean $mandate_id
+	 * @return void
+	 */
 	public function CreateMandateRequest(
 		$customer_id,
 		$order_id,
@@ -106,11 +117,20 @@ class Integration
 		return $r;
 	}
 
-
+	/**
+	 * Create a Mandate Request given a customer ID, order ID 
+	 * and Mandate ID and return the request object,
+	 * sending it and returning the response
+	 *
+	 * @param $customer_id
+	 * @param $order_id
+	 * @param $mandate_id
+	 * @return void
+	 */
 	public function Mandate(
 		$customer_id,
 		$order_id,
-		$mandate_id
+		$mandate_id = false
 	) {
 		$_request = $this->CreateMandateRequest(
 			$customer_id,
@@ -124,7 +144,13 @@ class Integration
 	}
 
 
-
+	/**
+	 * Retrieving a mandate request's status based on a mandate ID and an entrance Code, and returning the response
+	 *
+	 * @param $mandateID
+	 * @param $entranceCode
+	 * @return void
+	 */
 	public function MandateStatus($mandateID, $entranceCode)
 	{
 
@@ -143,31 +169,69 @@ class Integration
 
 	/**
 	 * Create a mandate ID in the required structure, based on the order ID, customer ID and the current timestamp.
+	 * 
 	 * @param String $order_id    The order ID
 	 * @param String $customer_id The customer ID
 	 */
 	public function CreateMandateID(String $order_id, String $customer_id): String
 	{
-		// veteranen search team
+		// veteranen search team, specific
 		if ($this->configuration->senderID === "S1300") {
 			return "M" . Carbon::now()->timezone('Europe/Amsterdam')->format('YmdHis');
 		}
+
+		// @todo create a future interface where one can select options how mandate IDs are formed
+
 		// nextdeli etc.
 		return substr($customer_id . Carbon::now()->timezone('Europe/Amsterdam')->format('Ymd') . $order_id, 0, 35);
 	}
 
 
+		/**
+	 * For mandates only: retreive the maximum amount from 
+	 * the AcceptanceReport to use in parsing and validating 
+	 * mandates in webshop context
+	 *
+	 * @param $response
+	 * @return void
+	 */
+	public function GetMaximumAmountFromTransactionResponse($response)
+	{
+
+		if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount)) {
+
+			return (object) [
+				'amount' => (float) ($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount . ""),
+				'currency' => 'EUR'
+			];
+		}
+		return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
+	}
+
+
+
+
 
 	/**-------------- PAYMENT SPECIFIC FUNCTIONS --------------*/
-
+	/**
+	 * Create a payment request object
+	 *
+	 * @param String $description
+	 * @param  $debtorReference
+	 * @param Float $amount
+	 * @param  $dueDateTime
+	 * @param String $currency
+	 * @param  $entranceCode
+	 * @return PaymentBluemRequest
+	 */
 	public function CreatePaymentRequest(
-		$description,
+		String $description,
 		$debtorReference,
-		$amount,
+		Float $amount,
 		$dueDateTime = null,
-		$currency = "EUR",
+		String $currency = "EUR",
 		$entranceCode = null
-	) {
+	): PaymentBluemRequest {
 
 		if (is_null($entranceCode)) {
 			$entranceCode = $this->CreateEntranceCode();
@@ -189,12 +253,23 @@ class Integration
 		return $r;
 	}
 
+	/**
+	 * Create a payment request and perform it, returning the response
+	 *
+	 * @param  $description
+	 * @param  $debtorReference
+	 * @param  $amount
+	 * @param  $dueDateTime
+	 * @param string $currency
+	 * @param  $entranceCode
+	 * @return void
+	 */
 	public function Payment(
-		$description,
+		string $description,
 		$debtorReference,
 		$amount,
 		$dueDateTime = null,
-		$currency = "EUR",
+		string $currency = "EUR",
 		$entranceCode = null
 	) {
 
@@ -213,7 +288,13 @@ class Integration
 		);
 	}
 
-
+	/**
+	 * Retrieve the status of a payment request, based on transactionID and Entrance Code
+	 *
+	 * @param $transactionID
+	 * @param $entranceCode
+	 * @return void
+	 */
 	public function PaymentStatus($transactionID, $entranceCode)
 	{
 
@@ -232,8 +313,7 @@ class Integration
 
 	/**
 	 * Create a payment Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.
-	 * @param String $order_id    The order ID
-	 * @param String $customer_id The customer ID
+	 * @param String $debtorReference
 	 */
 	public function CreatePaymentTransactionID(String $debtorReference): String
 	{
@@ -243,13 +323,21 @@ class Integration
 
 
 	/**-------------- IDENTITY SPECIFIC FUNCTIONS --------------*/
-
+	/**
+	 * Create Identity request based on a category, description, reference and given a return URL
+	 *
+	 * @param [type] $requestCategory
+	 * @param [type] $description
+	 * @param [type] $debtorReference
+	 * @param [type] $debtorReturnURL
+	 * @return IdentityBluemRequest
+	 */
 	public function CreateIdentityRequest(
 		$requestCategory,
-		$description,
+		string $description,
 		$debtorReference,
 		$debtorReturnURL
-	) {
+	): IdentityBluemRequest {
 
 		$r = new IdentityBluemRequest(
 			$this->configuration,
@@ -266,7 +354,13 @@ class Integration
 		return $r;
 	}
 
-
+	/**
+	 * Retrieve Identity request status
+	 *
+	 * @param [type] $transactionID
+	 * @param [type] $entranceCode
+	 * @return void
+	 */
 	public function IdentityStatus($transactionID, $entranceCode)
 	{
 
@@ -285,72 +379,14 @@ class Integration
 
 	/**
 	 * Create a Identity Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.
-	 * @param String $order_id    The order ID
-	 * @param String $customer_id The customer ID
+	 * @param String $debtorReference
+	 * @return String Identity Transaction ID 
 	 */
 	public function CreateIdentityTransactionID(String $debtorReference): String
 	{
 		return substr($debtorReference, 0, 28) . Carbon::now()->format('Ymd');
 	}
 
-
-
-	/**-------------- LEGACY FUNCTIONS --------------*/
-	// To be deprecated by generic / universal functions
-
-	/**
-	 * Request a transaction status for any type of transaction
-	 * 
-	 * @param [type] $mandateID [description]
-	 */
-	public function RequestTransactionStatus($mandateID, $entranceCode)
-	{
-		// should be deprecated in this manner as this object is now not used solely for mandates.
-		return $this->MandateStatus($mandateID, $entranceCode);
-	}
-
-	/**
-	 * @deprecated Use specific functions instead!
-	 * LEGACY Creates a new test transaction and in case of success, return the link to redirect to to get to the BlueM eMandate environment.
-	 * @param int $customer_id The Customer ID
-	 * @param int $order_id    The Order ID
-	 */
-	public function CreateNewTransaction(
-		$type = "mandate",
-		$properties = []
-	) {
-
-		throw new Exception("Deprecated function call");
-		// echo "Deprecated function";
-		// var_dump($type);
-		// var_dump($properties);
-		die();
-		switch ($type) {
-			case 'mandate':
-
-				if (!isset($properties['request_type'])) {
-					$properties['request_type'] = 'default';
-				}
-				if (!isset($properties['simple_redirect_url'])) {
-					$properties['simple_redirect_url'] = '';
-				}
-
-				return $this->CreateMandateRequest($properties['customer_id'], $properties['order_id'], $properties['request_type'], $properties['simple_redirect_url']);
-				break;
-			case 'payment':
-				return $this->CreatePaymentRequest(
-					$properties['description'],
-					$properties['debtorReference'],
-					$properties['amount'],
-					$properties['dueDateTime'],
-					$properties['currency']
-				);
-				break;
-			default:
-				throw new Exception("Type of transaction to create not given or invalid. Should be one of ['mandate', 'payment']");
-				break;
-		}
-	}
 
 	/** Universal Functions */
 	/**
@@ -368,55 +404,32 @@ class Integration
 	public function PerformRequest(BluemRequest $transaction_request)
 	{
 
-		// array holding allowed Origin domains
-		// $allowedOrigins = array(
-		// 	'(http(s)://)?(www\.)\-nextdeli\.com',
-		// 	'http://localhost',
-		// );
-
-		// if (isset($_SERVER['HTTP_ORIGIN']) && $_SERVER['HTTP_ORIGIN'] != '') {
-		// 	echo $_SERVER['HTTP_ORIGIN'];
-		// 	foreach ($allowedOrigins as $allowedOrigin) {
-		// 		if (preg_match('#' . $allowedOrigin . '#', $_SERVER['HTTP_ORIGIN'])) {
-		// 			echo "MATCH";
-		// 			header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
-		// 			header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
-		// 			header('Access-Control-Max-Age: 1000');
-		// 			header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-		// 			break;
-		// 		}
-		// 	}
-		// }
-		// die();
-		
+		// set this to true if you want more internal information when debugging or extending
 		$verbose = false;
-		
+
 		// make sure the timezone is set correctly..
 		$now = Carbon::now()->timezone('Europe/Amsterdam');
-		
+
 		$xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
-		
-		// $xttrs_date = $now->format("D, d M Y H:i:s") . " GMT";
+
 		// conform Rfc1123 standard in GMT time
 		$xttrs_date = $now->toRfc7231String();
-		
+
 		$request_url = $transaction_request->HttpRequestUrl();
-		
+
 		$req = new BluemHttpRequest();
-		
-		// $req->setConfig(['store_body'=>true]);
-		
+
 		$req->setUrl($request_url);
 		$req->setMethod(BluemHttpRequest::METHOD_POST);
-		
-		$req->setHeader( 'Access-Control-Allow-Origin','*' );
+
+		$req->setHeader('Access-Control-Allow-Origin', '*');
 		$req->setHeader("Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8");
 		$req->setHeader("x-ttrs-date", $xttrs_date);
 		$req->setHeader("x-ttrs-files-count", "1");
 		$req->setHeader("x-ttrs-filename", $xttrs_filename);
+
 		if ($verbose) {
 			echo PHP_EOL . "<BR>URL// " . $request_url;
-			// echo PHP_EOL."<BR>// ". "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
 
 			echo PHP_EOL . "<BR>HEADER// " . "Content-Type: " . "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
 			echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-date: ' . $xttrs_date;
@@ -424,61 +437,30 @@ class Integration
 			echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-filename: ' . $xttrs_filename;
 			echo "<HR>";
 			echo PHP_EOL . "BODY: " . $transaction_request->XmlString();
+			// var_dump(libxml_get_errors());
 		}
-		// var_dump(libxml_get_errors());
-
-		// die();
 
 		$req->setBody($transaction_request->XmlString());
 		try {
-			// $statusLine = read_status_line();
-			// echo $statusLine;
-			// echo $http_response->getStatusLine();
 			$http_response = $req->send();
-			// var_dump($http_response->getHeader(), $http_response->getCookies(), $http_response->getBody());
-			// 		echo $http_response->getStatus();
-
 			if ($verbose) {
 				echo PHP_EOL . "<BR>RESPONSE// ";
-				// 	var_dump($http_response);
-				// 	try {
-				// 		//code...
 				var_dump($http_response->getBody());
 			}
-			// 	} catch (\Throwable $th) {
-			// 		//throw $th;
-			// 		echo "DOUBLE TRY";
-			// 		echo $th->getMessage();
-			// 		die();
-			// 	}
-			// }	
+
 			switch ($http_response->getStatus()) {
 				case 200: {
 						if ($http_response->getBody() == "") {
 							return new ErrorBluemResponse("Error: Empty response returned");
 						}
-						// if($verbose) {
-
-						// 	var_dump($http_response->getBody());
-
-						// }
 
 						try {
 							$response = new BluemResponse($http_response->getBody());
-							//code...
 						} catch (\Throwable $th) {
-							echo "error in creating response";
-							var_dump($th->getMessage());
-							die();
-							//throw $th;
+							return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
 						}
-						// if($verbose) {
 
-						// 					var_dump($response);
-						// die();
-						// }
 						if (!$response->Status()) {
-
 							return new ErrorBluemResponse("Error: " . ($response->Error()->ErrorMessage));
 						}
 						return $response;
@@ -486,7 +468,7 @@ class Integration
 						break;
 					}
 				case 400: {
-						return new ErrorBluemResponse('Your request was not formed correctly.'); // . $http_response->getBody());
+						return new ErrorBluemResponse('Your request was not formed correctly.'); 
 						break;
 					}
 				case 401: {
@@ -503,49 +485,33 @@ class Integration
 					}
 			}
 		} catch (Throwable $e) {
-			// echo "KAAS";_
-			// die();
-			// var_dump($e);
-			// throw new Exception('Error: ' . $e->getMessage(), 400 );
-			// echo $e->getMessage();
-			// die();
-		$error = new ErrorBluemResponse('HTTP Request Error');
+			$error = new ErrorBluemResponse('HTTP Request Error');
 			return $error;
 		}
 	}
 
 
-	public function GetMaximumAmountFromTransactionResponse($response)
-	{
 
-		if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount)) {
-
-			return (object) [
-				'amount' => (float) ($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount . ""),
-				'currency' => 'EUR'
-			];
-		}
-		return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
-	}
-
-
-
+	/** Webhook Code
+	 * 
+	 * Senders provide Bluem with a webhook URL. 
+	 * The URL will be checked for consistency and 
+	 * validity and will not be stored if any of the 
+	 * checks fails. */
+	
 	/**
 	 * Webhook for BlueM Mandate signature verification procedure
-	 * @return [type] [description]
 	 */
 	public function Webhook()
 	{
+		// set this to true if you want more internal information when debugging or extending
 		$verbose = false;
 
-		/* Senders provide Bluem with a webhook URL. The URL will be checked for consistency and validity and will not be stored if any of the checks fails. The following checks will be performed:
-	
-			*/
-
-		// todo: URL must start with https://
+		// The following checks will be performed:
+		// @todo URL must start with https://
 
 
-		// ONLY Accept post requests
+		// Check: ONLY Accept post requests
 		if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 			if ($verbose) {
 				exit("Not post");
@@ -554,9 +520,9 @@ class Integration
 			exit();
 		}
 
-		// An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK
+		// Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK
 		$postData = file_get_contents('php://input');
-		// var_dump($postData);
+		
 		if ($postData === "") {
 			if ($verbose) {
 				echo "NO POST";
@@ -565,22 +531,21 @@ class Integration
 			exit();
 		}
 
-		// check content type; it has to be: "Content-type", "text/xml; charset=UTF-8"
-
+		// Check: content type has to be: "Content-type", "text/xml; charset=UTF-8"
 
 		// Parsing XML data from POST body
 		try {
-			$xml_input = new \SimpleXMLElement($postData);
+			$xmlObject = new \SimpleXMLElement($postData);
 		} catch (Exception $e) {
 			if ($verbose) {
 				var_dump($e);
 				exit();
 			}
-			http_response_code(400); 		// could not parse XML
+			http_response_code(400); // could not parse XML
 			exit();
 		}
-		// var_dump($xml_input->EPaymentInterface->PaymentStatusUpdate);
-		// check if signature is valid in postdata
+		
+		// Check: if signature is valid in postdata
 		if (!$this->_validateWebhookSignature($postData)) {
 			if ($verbose) {
 				exit('no valid webhook sig');
@@ -591,26 +556,44 @@ class Integration
 			// echo PHP_EOL;
 			exit;
 		}
+		
+		if($verbose)
+		{
+			var_dump($xmlObject);
+		}
 
-		// valid!
-		// echo $postData;
-		// echo "<hr>Input";
-		// var_dump($xml_input);
-
-		if (!isset($xml_input->EPaymentInterface->PaymentStatusUpdate)) {
+		// @todo: finish this code
+		throw new Exception("Not implemented fully yet, please contact the developer or work around this error");
+		// @todo webhook response dependent on the interface, check the status update
+		
+		// @todo webhook response mandates
+		
+		// @todo webhook response payments
+		if (!isset($xmlObject->EPaymentInterface->PaymentStatusUpdate)) {
 			http_response_code(400);
 			exit;
 		}
-
-		$status_update = $xml_input->EPaymentInterface->PaymentStatusUpdate;
+		$status_update = $xmlObject->EPaymentInterface->PaymentStatusUpdate;
 		return $status_update;
+		
+		// @todo webhook response identity
+		
+		// @todo webhook response and more
+
+		// @todo catch exceptions
 	}
 
-
-	private function _validateWebhookSignature($xml_input)
+	/**
+	 * Validate webhook signature based on a key file 
+	 * available in the `keys` folder 
+	 *
+	 * @param  $xmlInput
+	 * @return bool
+	 */
+	private function _validateWebhookSignature($xmlInput) : bool
 	{
 		$temp_file = tmpfile();
-		fwrite($temp_file, $xml_input);
+		fwrite($temp_file, $xmlInput);
 		$temp_file_path = stream_get_meta_data($temp_file)['uri'];
 
 		$signatureValidator = new XmlSignatureValidator();
@@ -632,8 +615,8 @@ class Integration
 			$signatureValidator->loadPublicKeyFile($public_key_file_path);
 		} catch (\Throwable $th) {
 			return false;
-			// echo "Fout: " . $th->getMessage();
-			// exit;
+			// echo "Error: " . $th->getMessage();
+			
 		}
 
 		$isValid = $signatureValidator->verifyXmlFile($temp_file_path);

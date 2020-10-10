@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) Daan Rijpkema <info@daanrijpkema.com>
+ * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -17,7 +17,7 @@ use Exception;
  */
 class BluemRequest
 {
-	public $type_identifier;
+	public $typeIdentifier;
 	public $request_url_type;
 
 	public $entranceCode;
@@ -27,8 +27,15 @@ class BluemRequest
 
 	protected $createDateTime;
 
-
-	function __construct($config, $entranceCode = "", $expected_return = "")
+	/**
+	 * Initialization of any request
+	 *
+	 * @param Array $config
+	 * @param String $entranceCode
+	 * @param String $expectedReturn
+	 * 
+	 */
+	function __construct(\Stdclass $config, String $entranceCode = "", String $expectedReturn = "") 
 	{
 		$this->environment = $config->environment;
 
@@ -39,20 +46,29 @@ class BluemRequest
 
 		$this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->toDateTimeLocalString() . ".000Z";
 
-		// uniek in de tijd voor emandate; string; niet zichtbaar voor klant; 
-		// uniek kenmerk van incassant voor deze transactie
-		// structuur: prefix voor testing + klantnummer + huidige timestamp tot op de seconde
-		if ($entranceCode === "") 
+		/**
+		 *  unique identifier of payee for this transaction
+		 *  which is unique in time for any request; which is string; which should not be visible for customer; 
+		 *  structure: prefix for testing + customer number + current timestamp up to the second
+		*/
+		if ($entranceCode === "")  // if not given, create it
 		{
-		// throw new Exception("EntranceCode is required for creating this reque")	
-			$this->entranceCode = $this->entranceCode($expected_return);
+			$this->entranceCode = $this->entranceCode($expectedReturn);
 		} else {
 			$this->entranceCode = $entranceCode;
 		}
 	}
 
-
-	protected function XmlRequestInterfaceWrap($element_name,$type="TransactionRequest",$rest) {
+	/**
+	 * Construct the XML request string parent object for any request
+	 *
+	 * @param String $element_name Typically contains the interface of the current request context
+	 * @param String $type Type of request (transaction creation or status)
+	 * @param String $rest Remainder of XML element, as a string, used to chain this function
+	 * @return String Constructed XML as string
+	 */
+	protected function XmlRequestInterfaceWrap(String $element_name, String $type="TransactionRequest",String $rest) : String 
+	{
 
 		return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><'.$element_name.'
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
@@ -65,31 +81,50 @@ class BluemRequest
           >'.$rest.'</'.$element_name.'>';
 	}
 
-	protected function XmlRequestObjectWrap($element_name,$rest,$extra_attrs = [])
+	/**
+	 * Construct the XML request string objects
+	 *
+	 * @param String $element_name Typically contains the specific object of the current request context
+	 * @param String $rest Remainder of XML element, as a string, used to chain this function
+	 * @param Array $extra_attrs Any arbitrary other key-value pairs to be added as XML element attributes
+	 * @return String Constructed XML as string
+	 */
+	protected function XmlRequestObjectWrap(String $element_name,String $rest,Array $extra_attrs = []) : String
 	{
-		$res = '<'.$element_name.'
-           entranceCode="'.$this->entranceCode.'" ';
+		$res = "<{$element_name}
+           entranceCode=\"{$this->entranceCode}\"";
 		foreach ($extra_attrs as $key => $value) {
-			$res .= $key.'="'.$value.'"'.PHP_EOL;
+			$res .= "{$key}=\"{$value}\"".PHP_EOL;
 		}
 
 		$res.='>'.$rest.'</'.$element_name.'>';
 		return $res;
 	}
 	
-	public function XmlString()
+	/**
+	 * Returning the current XML string; as this is an abstract request, it will be overridden by classes that implement this.
+	 *
+	 * @return String
+	 */
+	public function XmlString() : String
 	{
 		return "";
 	}
-	public function Xml()
+
+	/**
+	 * Retrieve the final XML object based on the constructed XML String
+	 *
+	 * @return SimpleXMLElement final XML object
+	 */
+	public function Xml() : \SimpleXMLElement
 	{
 		return new \SimpleXMLElement($this->XmlString());
 	}
 
 	/**
-	 * Prints a request, for testing purposes
+	 * Prints a request as XML object with corresponding headers, in your browser, 
+	 * mostly for testing purposes
 	 *
-	 * @param      BluemRequest  $r      The Request Object
 	 */
 	public function Print()
 	{
@@ -98,24 +133,23 @@ class BluemRequest
 	}
 
 	/**
-	 * Gets the http request url.
+	 * Retrieves the http request url.
 	 *
-	 * @param      string     $call   The call identifier as a string
+	 * @throws     Exception  (invalid transaction type called for, if not create transaction or status request)
 	 *
-	 * @throws     Exception  (description)
-	 *
-	 * @return     string     The http request url.
+	 * @retum string The http request url.
 	 */
 	public function HttpRequestURL(): String
 	{
 		$request_url = "https://";
+
 		switch ($this->environment) {
-			case BLUEM_ENVIRONMENT_ACCEPTANCE: {
-					$request_url .= "acc.";
-					break;
-				}
 			case BLUEM_ENVIRONMENT_PRODUCTION: {
 					$request_url .= "";
+					break;
+				}
+			case BLUEM_ENVIRONMENT_ACCEPTANCE: {
+					$request_url .= "acc.";
 					break;
 				}
 			case BLUEM_ENVIRONMENT_TESTING:
@@ -126,7 +160,7 @@ class BluemRequest
 		}
 		$request_url .= "viamijnbank.net/{$this->request_url_type}/";
 
-		switch ($this->type_identifier) {
+		switch ($this->typeIdentifier) {
 			case 'createTransaction': {
 					$request_url .= "createTransactionWithToken";
 					break;
@@ -144,8 +178,14 @@ class BluemRequest
 		return $request_url;
 	}
 
-	// test entranceCode substrings voor bepaalde types return responses
-	private function entranceCode($expected_return, $entranceCode = "" )
+	/**
+	 * Generate an entranceCode, including test entranceCode substrings for certain types of return responses
+	 *
+	 * @param string $expectedReturn a possible expected return value (none,success,cancelled,expired,failure,open,pending) or empty string
+	 * @param string $entranceCode a set entrance code, otherwise it gets generated based on dateTime string in "YmdHisv" standardized format, in Europe/Amsterdam timezone
+	 * @return void
+	 */
+	private function entranceCode(String $expectedReturn, String $entranceCode = "" )
 	{
 		
 		// create a default entrancecode if necessary
@@ -154,9 +194,9 @@ class BluemRequest
 		}
 		
 		$prefix = "";
-		// only allow this in testing mode
+		
 		if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
-			switch ($expected_return) {
+			switch ($expectedReturn) {
 				case 'none': {
 						$prefix = "";
 						break;
@@ -191,12 +231,8 @@ class BluemRequest
 					}
 			}
 		}
-		$entranceCode = $prefix . $entranceCode; //Carbon::now()->format('YmdHisv'); //. '000';
+
+		$entranceCode = $prefix . $entranceCode; 
 		return $entranceCode;
 	}
 }
-
-
-// class BluemStatusRequest extends BluemRequest {
-// 	// for now identical to a normal request.
-// }

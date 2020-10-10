@@ -1,16 +1,15 @@
 <?php 
+
 /*
- * (c) Daan Rijpkema <info@daanrijpkema.com>
+ * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Bluem\BluemPHP;
 
-// require_once __DIR__.'/BluemRequest.php';
-
 use Carbon\Carbon;
-
 
 /**
  * 	EMandateStatusRequest
@@ -18,21 +17,18 @@ use Carbon\Carbon;
 class EmandateStatusBluemRequest extends BluemRequest
 {
 	
-	public $type_identifier = "requestStatus"; 
+	public $typeIdentifier = "requestStatus"; 
 	public $request_url_type = "mr";
     public $transaction_code = "SRX";    
     
     	
 	function __construct($config,$mandateID,$entranceCode="",$expected_return="")
 	{
-		// var_dump($entranceCode);
+		
 		parent::__construct($config,$entranceCode,$expected_return);
 
 		$this->xmlInterfaceName = "EMandateInterface";
-		
-
-
-		$this->type_identifier = "requestStatus";
+		$this->typeIdentifier = "requestStatus";
 		
 		$this->mandateID = $mandateID;
 	}
@@ -42,7 +38,7 @@ class EmandateStatusBluemRequest extends BluemRequest
 		return "SRX";
 	}
 
-	public function XmlString()
+	public function XmlString() : String
 	{
 
 		return $this->XmlRequestInterfaceWrap(
@@ -73,7 +69,7 @@ class EmandateStatusBluemRequest extends BluemRequest
  */
 class EmandateBluemRequest extends BluemRequest
 {
-    public $type_identifier = "createTransaction";   
+    public $typeIdentifier = "createTransaction";   
 	public $request_url_type = "mr";
     public $transaction_code = "TRX";    
     
@@ -96,7 +92,7 @@ class EmandateBluemRequest extends BluemRequest
 		
 		$this->xmlInterfaceName = "EMandateInterface";
 		// $this->request_url_type = "mr";
-		$this->type_identifier = "createTransaction";
+		$this->typeIdentifier = "createTransaction";
 		
 	
 		$this->merchantReturnURLBase = $config->merchantReturnURLBase;

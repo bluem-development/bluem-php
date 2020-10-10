@@ -1,21 +1,24 @@
 <?php 
 
 /*
- * (c) Daan Rijpkema <info@daanrijpkema.com>
+ * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Bluem\BluemPHP;
 
 /**
- * 	EMandateResponse
+ * 	BluemResponse
  */
 class BluemResponse extends \SimpleXMLElement
 {
 
 	/**
 	 * Return if the response is a successfull one, in boolean
+	 *
+	 * @return Bool
 	 */
 	public function Status() : Bool
 	{
@@ -28,6 +31,7 @@ class BluemResponse extends \SimpleXMLElement
 	
 	/**
 	 * Return the error message, if there is one. Else return null
+	 *
 	 */
 	public function Error()
 	{
@@ -51,10 +55,7 @@ class ErrorBluemResponse
 	public function __construct(String $error) {
 		$this->error = $error;	
 	}
-
-	public function SetErrorMessage(String $error)
-	{
-	}
+	
 	public function Status() : Bool
 	{
 		return false;
