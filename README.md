@@ -74,15 +74,47 @@ $bluem_object = new Integration($bluem_config);
 
 Flow for every of the included services (eMandates, Payments, Identity and Iban Check) is very similar and thus easy to understand once you understand and implement one of them.
 
-One creates a request object, sends it to Bluem's servers with authentication and receives a response with a URL to redirect the user to (if the request was successful). 
+### TransactionRequest (from site to Bluem)
+Your application creates a request object, sends it to Bluem's servers with authentication.
+### TransactionResponse (including TransactionURL) (from Bluem to site)
+Your application receives a response with a URL as entry point into the Bluem environment, if the request was successful. 
 
+### Bluem Environment
+Redirect client to TransactionURL, client (via checkout) to bank, confirm transaction, back to Merchant (via MerchantReturnURL with Emandates, and via DebtorReturnURL with Payments/Identity), this is trigger for StatusRequest
 The user is redirected to the response URL at the Bluem servers. In this Bluem environment, the user performs a mandate signing, payment, identity or iban check and returns to a predefined URL. 
 
+### StatusRequest (from site to Bluem)
 Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality. 
 
+### StatusUpdate (from Bluem to site)
+This response object that comes back from a callback or webhook, contains an updated status that you can process within your application. I.e. when the user has paid or verified and you have to change a product, order or process' status and go to a next step.
+
+### Webhook
 The webhook functionality allows Bluem to directly push status changes and transaction results to your site or app in a trustworthy way. Therefore your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
 
+Using the webhook functionality is highly recommended. More instructions on implementing the webhook will follow in each specific service shortly.
+
+
 ## eMandates 
+
+
+### Mandate specific configuration fields:
+The following attributes in the bluem_config are vital for proper eMandate functionality:
+Wat is localInstrumentCode (CORE, B2B), 
+
+requestType (Issuing, (Amendment/Cancellation worden eigenlijk niet gebruikt)), 
+
+sequenceType (OOFF, RCUR), 
+
+MandateID, 
+
+merchantID, 
+
+MaxAmount (for B2B), 
+
+ValidationReference
+
+
 
 ### Creating an eMandate Transaction: helper functions
 You need certain information to reference a transaction request: an ID (in this case the MandateID) and an entranceCode (basically a timestamp when you started the request). Creating this information can be done using helper functions. When creating a new transaction,  the entranceCode and MandateID will be generated within the `$bluem_object`.
@@ -99,16 +131,7 @@ Generating an entrance code:
 $entranceCode = $bluem_object->CreateEntranceCode();
 ```
 
-
-
-#### Creating Simple eMandate transactions
-When you are handling a callback and status update yourself, you can use the simple transaction type. This simply creates a transaction, tells you where to redirect. After the user finishes the transaction process, they are redirected to the fourth parameter without any further ado.
-```php
-// simple emandate transaction
-$request = $bluem_object->CreateMandateRequest($customer_id,$order_id,"simple","https://google.com");
-```
-
-#### Creating Default eMandate transactions
+#### Creating an eMandate transaction
 The default transaction returns to a callback function at a specific URL that then automatically performs a Status Update and can perform further functionalities.
 It uses the `merchantReturnURLBase` attribute, set in the parameter when creating the `$bluem_object` object to know where to redirect to expect this function.
 This process automatically adds the mandateID as a GET parameter to the return URL, so it can be picked up for the Status Update.
@@ -117,18 +140,15 @@ This process automatically adds the mandateID as a GET parameter to the return U
 // default
 $request = $bluem_object->CreateMandateRequest($customer_id,$order_id,"default");
 
-```
-#### Perform the request
-After creating any request, you will still have to perform the request:
+// After creating any request, you will still have to perform the request:
 
-```php
 $response = $bluem_object->PerformRequest($request);
 ```
 
 Tip: you can also combine the creation and performance if the request in one function call, if you do not want to manipulate or read the request object beforehand:
 ```php
-$response = $bluem_object->Mandate($customer_id, $order_id,"simple","https://google.com");
 $response = $bluem_object->Mandate($customer_id, $order_id,"default");
+
 ```
 
 If you do anything wrong or you are unauthorized, the Response object will be of type `Bluem\BluemPHP\ErrorBluemResponse` and has an `Error()` function to retrieve a string of information regarding your error that you could display to your user or handle yourself.
@@ -166,15 +186,24 @@ if (!$response->Status()) {
 }
 ```
 
-The possible statuses are ... (see bluem docs)
+The possible statuses are `Success`, `Processing`, `Pending`, `Cancelled`, `Open` and `Expired`. Refer to the Bluem documentation for more specifics on these statuses.
 
 ## Payments
 
-Working similar to eMandates, but with other parameters:
+The following attributes in the bluem_config are vital for proper eMandate functionality:
+
+What is PaymentReference, 
+
+Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
+
+
+### Create a payment transaciton 
+
+Payments is very similar to eMandates, but utilizing other parameters:
 
 ```php
     $description = "Test payment";
-    $amount = 100.00;
+    $amount = 100.00; // has to be a float
     $currency = "EUR"; // if set to null, will default to EUR
     $debtorReference = "1234";
     $dueDateTime = null; // set it automatically to two weeks in advance.
@@ -200,15 +229,19 @@ Working similar to eMandates, but with other parameters:
     
 ```
 
-Requesting a payment status:
+### Requesting a payment status:
+Similarly to requesting a Mandate status:
+
 ```php
 $bluem_object->PaymentStatus()
 ```
 
 
+
 ## Identity
 
-### Creating an identity request
+
+### Identity request types explained
 
 There are several possible IdentityRequests. One or more request types can be accessed simultaneously.
 On a successful response, the details within each type will be returned by the bank for further processing on your side.
@@ -226,7 +259,18 @@ The possibilities are:
 	"EmailRequest"
 ]
 ```
+
 For information on these specific request types, a more comprehensive guide will follow soon. For now, contact your Bluem account manager for assistance in choosing the use case that matches your desired activities.
+
+The three most commonly used cases with Identity requests are: 
+
+- Full identification (request 1 or multiple of: `Name`, `Address`, `BirthDate`, `Gender`, `EmailAddress`, `PhoneNumber`, `CustomerID`)
+- Age verify 18+ (request `AgeVerify`)
+- Safe login with iDIN (request `CustomerIDLogin`)
+
+
+
+### Creating an identity request
 
 Creating an Identity Transaction Request can be done after the Bluem object has been properly instantiated. 
 Keep in mind that the BrandID has to be compatible with Identity requests. Usually the corresponding brand ID ends with "Identity" instead of for example "Mandate" or "Payment".
@@ -362,7 +406,7 @@ Now, based on the response, you can take action:
 
 ## Iban Check
 
-Coming soon..
+Specific instructions coming soon..
 
 ## Important notes
 
