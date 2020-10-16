@@ -7,6 +7,8 @@ Utilized by a range of other applications such as WordPress and WordPress WooCom
 
 Use this to write your own applications in PHP that communicate with Bluem.
 
+**TIP:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
+
 ## Installation
 
 Run Composer to install this library and dependences:
