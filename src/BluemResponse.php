@@ -190,6 +190,9 @@ class MandateTransactionBluemResponse extends TransactionBluemResponse
 	static $transaction_type = "EMandate";
 	static $response_primary_key = "EMandate" . "Transaction";
 	static $error_response_type = "EMandate" . "ErrorResponse";
+
+	// @todo Function to retrieve Mandate ID?
+
 }
 
 class MandateStatusBluemResponse extends StatusBluemResponse
