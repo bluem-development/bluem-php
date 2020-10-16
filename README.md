@@ -208,7 +208,157 @@ $bluem_object->PaymentStatus()
 
 ## Identity
 
-Coming soon..
+### Creating an identity request
+
+There are several possible IdentityRequests. One or more request types can be accessed simultaneously.
+On a successful response, the details within each type will be returned by the bank for further processing on your side.
+The possibilities are:
+
+```json
+[
+	"CustomerIDRequest",
+	"NameRequest",
+	"AddressRequest",
+	"BirthDateRequest",
+	"AgeCheckRequest",
+	"GenderRequest",
+	"TelephoneRequest",
+	"EmailRequest"
+]
+```
+For information on these specific request types, a more comprehensive guide will follow soon. For now, contact your Bluem account manager for assistance in choosing the use case that matches your desired activities.
+
+Creating an Identity Transaction Request can be done after the Bluem object has been properly instantiated. 
+Keep in mind that the BrandID has to be compatible with Identity requests. Usually the corresponding brand ID ends with "Identity" instead of for example "Mandate" or "Payment".
+
+The `$returnURL` is vital, as Bluem will redirect the user to that location after the process within the portal is done. The next section deals with creating the callback function.
+
+```php
+$description = "Test identity"; // description is shown to customer
+$debtorReference = "1234"; // client reference/number
+$returnURL = "https://yourdomain.com/integration/identity.php?action=callback"; // provide a link here to the callback function; either in this script or another script
+
+$request = $bluem_object->CreateIdentityRequest(
+	["BirthDateRequest", "AddressRequest"],
+	$description,
+	$debtorReference,
+	$returnURL
+);
+
+$response = $bluem_object->PerformRequest($request);
+```
+
+Handling the request from then is straightforward. Keep in mind to save the returned information somewhere in the session or user data store so you can easily refer back to this identity request later. Note: It could be wise also to save what type of request you have executed to know what to do with it later.
+
+```php
+if ($response->ReceivedResponse()) {
+
+	$entranceCode = $response->GetEntranceCode();
+	$transactionID = $response->GetTransactionID();
+	$transactionURL = $response->GetTransactionURL();
+	// save this somewhere in your data store
+
+	$_SESSION['entranceCode'] = $entranceCode;
+	$_SESSION['transactionID'] = $transactionID;
+	$_SESSION['transactionURL'] = $transactionURL;
+
+	// direct the user to this place
+	header("Location: ".$transactionURL);
+
+} else {
+	// no proper response received, tell the user
+}
+
+```
+
+### The Identity Response callback
+
+Processing the Identity transaction callback function can be done after the Bluem object has been properly instantiated. 
+
+```php
+// retrieve from a store, preferably more persistent than session. 
+// this is purely for demonstrative purposes
+$transactionID = $_SESSION['transactionID'];
+$entranceCode = $_SESSION['entranceCode'];
+
+
+$statusResponse = $bluem_object->IdentityStatus(
+    $transactionID,
+    $entranceCode
+);
+
+```
+
+Now, based on the response, you can take action:
+
+```php
+
+
+
+    if ($statusResponse->ReceivedResponse()) {
+
+        $statusCode = ($statusResponse->GetStatusCode());
+
+        switch ($statusCode) {
+            case 'Success':
+                // do what you need to do in case of success!
+
+                // retrieve a report that contains the information based on the request type:
+                $identityReport = $statusResponse->GetIdentityReport();
+
+                // this contains an object with key-value pairs of relevant data from the bank:
+                /**
+                 * example contents:
+                 *  ["DateTime"]=>
+                             string(24) "2020-10-16T15:30:45.803Z"
+                            ["CustomerIDResponse"]=>
+                            string(21) "FANTASYBANK1234567890"
+                            ["AddressResponse"]=>
+                            object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
+                                ["Street"]=>
+                                string(12) "Pascalstreet"
+                                ["HouseNumber"]=>
+                                string(2) "19"
+                                ["PostalCode"]=>
+                                string(6) "0000AA"
+                                ["City"]=>
+                                string(6) "Aachen"
+                                ["CountryCode"]=>
+                                string(2) "DE"
+                            }
+                            ["BirthDateResponse"]=>
+                            string(10) "1975-07-25"
+                 */
+                // store that information and process it. 
+
+                // You can for example use the BirthDateResponse to determine the age of the user and act accordingly
+
+
+                break;
+            case 'Processing':
+            case 'Pending':
+                // do something when the request is still processing (for example tell the user to come back later to this page)
+                break;
+            case 'Cancelled':
+                // do something when the request has been canceled by the user
+                break;
+            case 'Open':
+                // do something when the request has not yet been completed by the user, redirecting to the transactionURL again 
+                break;
+            case 'Expired':
+                // do something when the request has expired
+                break;
+            default:
+                // unexpected status returned, show an error
+                break;
+        }
+    } else {
+        // no proper response received, tell the user
+    }
+
+```
+
+
 
 ## Iban Check
 

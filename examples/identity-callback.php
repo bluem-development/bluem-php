@@ -17,7 +17,14 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
 
     var_dump($_SESSION);
 
-    $statusResponse = $bluem_object->IdentityStatus($_SESSION['transactionID'], $_SESSION['entranceCode']);
+    $transactionID = $_SESSION['transactionID'];
+    $entranceCode = $_SESSION['entranceCode'];
+
+
+    $statusResponse = $bluem_object->IdentityStatus(
+        $transactionID,
+        $entranceCode
+    );
     var_dump($statusResponse);
 
 
