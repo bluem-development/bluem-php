@@ -187,7 +187,7 @@ class Integration
 	}
 
 
-		/**
+	/**
 	 * For mandates only: retreive the maximum amount from 
 	 * the AcceptanceReport to use in parsing and validating 
 	 * mandates in webshop context
@@ -455,7 +455,9 @@ class Integration
 						}
 
 						try {
-							$response = new BluemResponse($http_response->getBody());
+							switch ($transaction_request->transaction_code) {
+							}
+							$response = $this->fabricateResponseObject($transaction_request->transaction_code, $http_response->getBody());
 						} catch (\Throwable $th) {
 							return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
 						}
@@ -468,7 +470,7 @@ class Integration
 						break;
 					}
 				case 400: {
-						return new ErrorBluemResponse('Your request was not formed correctly.'); 
+						return new ErrorBluemResponse('Your request was not formed correctly.');
 						break;
 					}
 				case 401: {
@@ -498,7 +500,7 @@ class Integration
 	 * The URL will be checked for consistency and 
 	 * validity and will not be stored if any of the 
 	 * checks fails. */
-	
+
 	/**
 	 * Webhook for BlueM Mandate signature verification procedure
 	 */
@@ -522,7 +524,7 @@ class Integration
 
 		// Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK
 		$postData = file_get_contents('php://input');
-		
+
 		if ($postData === "") {
 			if ($verbose) {
 				echo "NO POST";
@@ -544,7 +546,7 @@ class Integration
 			http_response_code(400); // could not parse XML
 			exit();
 		}
-		
+
 		// Check: if signature is valid in postdata
 		if (!$this->_validateWebhookSignature($postData)) {
 			if ($verbose) {
@@ -556,18 +558,17 @@ class Integration
 			// echo PHP_EOL;
 			exit;
 		}
-		
-		if($verbose)
-		{
+
+		if ($verbose) {
 			var_dump($xmlObject);
 		}
 
 		// @todo: finish this code
 		throw new Exception("Not implemented fully yet, please contact the developer or work around this error");
 		// @todo webhook response dependent on the interface, check the status update
-		
+
 		// @todo webhook response mandates
-		
+
 		// @todo webhook response payments
 		if (!isset($xmlObject->EPaymentInterface->PaymentStatusUpdate)) {
 			http_response_code(400);
@@ -575,9 +576,9 @@ class Integration
 		}
 		$status_update = $xmlObject->EPaymentInterface->PaymentStatusUpdate;
 		return $status_update;
-		
+
 		// @todo webhook response identity
-		
+
 		// @todo webhook response and more
 
 		// @todo catch exceptions
@@ -590,7 +591,7 @@ class Integration
 	 * @param  $xmlInput
 	 * @return bool
 	 */
-	private function _validateWebhookSignature($xmlInput) : bool
+	private function _validateWebhookSignature($xmlInput): bool
 	{
 		$temp_file = tmpfile();
 		fwrite($temp_file, $xmlInput);
@@ -616,7 +617,7 @@ class Integration
 		} catch (\Throwable $th) {
 			return false;
 			// echo "Error: " . $th->getMessage();
-			
+
 		}
 
 		$isValid = $signatureValidator->verifyXmlFile($temp_file_path);
@@ -627,4 +628,56 @@ class Integration
 		}
 		return false;
 	}
+
+	/**
+	 * Create the proper response object class
+	 *
+	 * @param [type] $type
+	 * @param [type] $response_xml
+	 * @return MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|IdentityTransactionBluemResponse|IdentityStatusBluemResponse|Exception
+	 */
+	private function fabricateResponseObject($type, $response_xml)
+	{
+		switch ($type) {
+			case 'SRX':
+			case 'SUD':
+				return new MandateStatusBluemResponse($response_xml);
+			case 'TRX':
+			case 'TRS':
+				return new MandateTransactionBluemResponse($response_xml);
+			case 'PSU':
+			case 'PSX':
+				return new PaymentStatusBluemResponse($response_xml);
+			case 'PTS':
+			case 'PTX':
+				return new PaymentTransactionBluemResponse($response_xml);
+			case 'ITX':
+			case 'ITX':
+				return new IdentityTransactionBluemResponse($response_xml);
+			case 'ISU':
+			case 'ISX':
+				return new IdentityStatusBluemResponse($response_xml);
+			default:
+				throw new Exception("Invalid transaction type requested");
+		}
+	}
+
+
+	/**
+	 * Retrieve a list of all possible identity request types, which can be useful for reference
+	 *
+	 * @return void
+	 */
+    public function GetIdentityRequestTypes() {
+        return [
+			"CustomerIDRequest",
+			"NameRequest",
+			"AddressRequest",
+			"BirthDateRequest",
+			"AgeCheckRequest",
+			"GenderRequest",
+			"TelephoneRequest",
+			"EmailRequest"
+		];
+    }	
 }

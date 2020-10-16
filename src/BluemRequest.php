@@ -92,9 +92,9 @@ class BluemRequest
 	protected function XmlRequestObjectWrap(String $element_name,String $rest,Array $extra_attrs = []) : String
 	{
 		$res = "<{$element_name}
-           entranceCode=\"{$this->entranceCode}\"";
+           entranceCode=\"{$this->entranceCode}\" ";
 		foreach ($extra_attrs as $key => $value) {
-			$res .= "{$key}=\"{$value}\"".PHP_EOL;
+			$res .= "{$key}=\"{$value}\" ".PHP_EOL;
 		}
 
 		$res.='>'.$rest.'</'.$element_name.'>';

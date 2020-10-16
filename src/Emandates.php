@@ -164,7 +164,7 @@ class EmandateBluemRequest extends BluemRequest
 		$this->automatically_redirect = "1";
 
 	}
-	public function XmlString()
+	public function XmlString() : String
 	{
 		return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
