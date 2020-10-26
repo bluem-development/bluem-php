@@ -17,6 +17,8 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
 
     var_dump($_SESSION);
 
+    // retrieve from a store, preferably more persistent than session. 
+    // this is purely for demonstrative purposes
     $transactionID = $_SESSION['transactionID'];
     $entranceCode = $_SESSION['entranceCode'];
 
