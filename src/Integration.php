@@ -455,8 +455,6 @@ class Integration
 						}
 
 						try {
-							switch ($transaction_request->transaction_code) {
-							}
 							$response = $this->fabricateResponseObject($transaction_request->transaction_code, $http_response->getBody());
 						} catch (\Throwable $th) {
 							return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
