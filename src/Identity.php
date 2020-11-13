@@ -40,7 +40,7 @@ class IdentityBluemRequest extends BluemRequest
         $this->debtorReference = $debtorReference;
         $this->debtorReturnURL = $debtorReturnURL;
 
-        $this->debtorReturnURL = $this->debtorReturnURL."?transactionID={$this->mandateID}"; 
+        $this->debtorReturnURL = $this->debtorReturnURL."?transactionID={$this->debtorReference}"; 
     }
     
     private function getIdinRequestCategory($category,$active=true)
