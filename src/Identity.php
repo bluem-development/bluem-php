@@ -34,13 +34,17 @@ class IdentityBluemRequest extends BluemRequest
     ) {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
+        // override specific brand ID
+        $this->brandID = $config->IDINBrandId;
+        
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         
         $this->description= $description;
         $this->debtorReference = $debtorReference;
         $this->debtorReturnURL = $debtorReturnURL;
 
-        $this->debtorReturnURL = $this->debtorReturnURL."?transactionID={$this->debtorReference}"; 
+        $this->debtorReturnURL = $this->debtorReturnURL;
+        //."?transactionID={$this->mandateID}"; 
     }
     
     private function getIdinRequestCategory($category,$active=true)
@@ -143,6 +147,9 @@ class IdentityStatusBluemRequest extends BluemRequest
     public function __construct($config, $entranceCode, $expectedReturn, $transactionID)
     {
         parent::__construct($config, $entranceCode, $expectedReturn);
+
+        // override specific brand ID
+        $this->brandID = $config->IDINBrandId;
 
         $this->transactionID = $transactionID;
     }
