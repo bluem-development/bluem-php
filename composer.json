@@ -2,7 +2,7 @@
     "name": "daanrijpkema/bluem-php",
     "type": "package",
     "description": "Bluem PHP interface",
-    "keywords": ["bluem","php","interface","wrapper","emandate","epayment"],
+    "keywords": ["bluem","php","interface","wrapper","emandate","epayment","idin"],
     "homepage": "https://daanrijpkema.com",
     "license": "GPL-3.0-or-later",
     "authors": [

@@ -247,7 +247,16 @@ $bluem_object->PaymentStatus($transactionID, $entranceCode);
 
 
 
-## Identity
+## Identity (iDIN)
+
+### Configuring iDIN
+
+Make sure that there is a `IDINBrandId` property set in config to utilize iDIN in parallel to other Bluem services.
+The BrandID of different services might differ: e.g. CompanyPayment, CompanyMandate and CompanyIdentity.
+Set it like this:
+```php
+$config->IDINBrandId = "CompanyIdentity";
+```
 
 
 ### Identity request types explained
