@@ -1,6 +1,5 @@
 <?php
-
-/*
+/**
  * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
  *
  * This source file is subject to the license that is bundled
@@ -35,7 +34,12 @@ class IdentityBluemRequest extends BluemRequest
         parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID
-        $this->brandID = $config->IDINBrandId;
+        if (isset($config->IDINBrandId) && $config->IDINBrandId!=="") {
+
+            $this->brandID = $config->IDINBrandId;
+        } else {
+            $this->brandID = $config->brandId;
+        }
         
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         
@@ -43,8 +47,7 @@ class IdentityBluemRequest extends BluemRequest
         $this->debtorReference = $debtorReference;
         $this->debtorReturnURL = $debtorReturnURL;
 
-        $this->debtorReturnURL = $this->debtorReturnURL;
-        //."?transactionID={$this->mandateID}"; 
+        $this->debtorReturnURL = $this->debtorReturnURL . "?transactionID={$this->debtorReference}";
     }
     
     private function getIdinRequestCategory($category,$active=true)
