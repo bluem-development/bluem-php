@@ -35,6 +35,9 @@ $bluem_config->eMandateReason = "eMandateReason" ;   // Brief description of the
 $bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collection: CORE or B2B
 $bluem_config->merchantReturnURLBase = "https://website.com";;  // URL to return to after finishing the process
 
+// If you are using iDIN next to other services, you can set a specific iDIN brandID here: 
+$bluem_config->IDINbrandID = "";                      
+
 /** Initialize */
 $bluem_object = new Integration($bluem_config);
 
