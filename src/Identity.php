@@ -152,7 +152,13 @@ class IdentityStatusBluemRequest extends BluemRequest
         parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID
-        $this->brandID = $config->IDINBrandID;
+        if (isset($config->IDINBrandID) && $config->IDINBrandID!=="") {
+
+            $this->brandID = $config->IDINBrandID;
+        } else {
+            $this->brandID = $config->brandID;
+        }
+        // $this->brandID = $config->IDINBrandID;
 
         $this->transactionID = $transactionID;
     }

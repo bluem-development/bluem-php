@@ -19,16 +19,21 @@ class PaymentStatusBluemRequest extends BluemRequest
     public $typeIdentifier = "requestStatus";
     public $transaction_code = "PSX";
 
-    public function TransactionType(): String
-    {
-        return $this->transaction_code;
-    }
-
     function __construct($config, $transactionID, $expected_return = "", $entranceCode = "")
     {
         parent::__construct($config,  $entranceCode, $expected_return);
+        if (isset($config->paymentBrandID) && $config->paymentBrandID!=="") {
 
+            $this->brandID = $config->paymentBrandID;
+        } else {
+            $this->brandID = $config->brandID;
+        }
         $this->transactionID = $transactionID;
+    }
+
+    public function TransactionType(): String
+    {
+        return $this->transaction_code;
     }
 
     public function XmlString(): String
@@ -69,6 +74,14 @@ class PaymentBluemRequest extends BluemRequest
         String $expected_return = "none"
     ) {
         parent::__construct($config, $entranceCode, $expected_return);
+
+
+        if (isset($config->paymentBrandID) && $config->paymentBrandID!=="") {
+
+            $this->brandID = $config->paymentBrandID;
+        } else {
+            $this->brandID = $config->brandID;
+        }
 
         $this->description = $description;
 
