@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
@@ -12,19 +12,32 @@ namespace Bluem\BluemPHP;
 
 class IbanBluemRequest extends BluemRequest
 {
-	private $xmlInterfaceName = "IBANCheckInterface";
+    private $xmlInterfaceName = "IBANCheckInterface";
 
-	public $request_url_type = "icr";
-    public $typeIdentifier = "createTransaction";   
-    
-    public $transaction_code = "INX";    
+    private $_inputIban;
+    private $_inputName;
+    private $_debtorReference;
 
-	public function TransactionType() : String
-	{
+    public $request_url_type = "icr";
+    public $typeIdentifier = "createTransaction";
+
+    public $transaction_code = "INX";
+
+    public function TransactionType() : String
+    {
         return "INX";
-	}
+    }
 
-	
+    public function __construct(
+        String $_inputIban, String $_inputName, String $_debtorReference = ""
+    )
+    {
+
+        $this->_inputIban = $_inputIban;
+        $this->_inputName = $_inputName;
+        $this->_debtorReference = $_debtorReference;
+    }
+
     public function XmlString() : String
     {
         return $this->XmlRequestInterfaceWrap(
@@ -34,9 +47,13 @@ class IbanBluemRequest extends BluemRequest
                 'IBANCheckTransactionRequest',
                 '',    // onbekend
                 [
-                    // onbekend
+                   'IBAN'=>$this->_inputIban,
+                   'AssumedName'=>$this->_inputName,
+                   'DebtorReference'=>$this->_debtorReference
                 ]
             )
         );
     }
 }
+
+

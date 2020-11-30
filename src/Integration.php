@@ -459,9 +459,8 @@ class Integration
 						} catch (\Throwable $th) {
 							return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
 						}
-
 						if (!$response->Status()) {
-							return new ErrorBluemResponse("Error: " . ($response->Error()->ErrorMessage));
+							return new ErrorBluemResponse("Error: " . ($response->Error->ErrorMessage));
 						}
 						return $response;
 
