@@ -28,10 +28,10 @@ class IbanBluemRequest extends BluemRequest
         return "INX";
     }
 
-    public function __construct(
-        String $_inputIban, String $_inputName, String $_debtorReference = ""
+    public function __construct($config, $entranceCode, String $_inputIban, String $_inputName, String $_debtorReference = ""
     )
     {
+        parent::__construct($config, $entranceCode, "");
 
         $this->_inputIban = $_inputIban;
         $this->_inputName = $_inputName;
@@ -45,12 +45,10 @@ class IbanBluemRequest extends BluemRequest
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'IBANCheckTransactionRequest',
-                '',    // onbekend
-                [
-                   'IBAN'=>$this->_inputIban,
-                   'AssumedName'=>$this->_inputName,
-                   'DebtorReference'=>$this->_debtorReference
-                ]
+                PHP_EOL.'<IBAN>'.$this->_inputIban.'</IBAN>'.PHP_EOL.
+                '<AssumedName>'.$this->_inputName.'</AssumedName>'.PHP_EOL.
+                '<DebtorReference>'.$this->_debtorReference.'</DebtorReference>'.PHP_EOL,
+                []
             )
         );
     }

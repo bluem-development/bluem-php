@@ -166,10 +166,9 @@ class StatusBluemResponse extends BluemResponse
 {
     public function GetStatusCode()
     {
-        $parent_key = $this->getParentXmlElement(); //"{$this->response_primary_key}Update";
-        echo $parent_key;
-        $child_key = $this->getChildXmlElement(); //"{$this->response_primary_key}";
-        echo $child_key;
+        $parent_key = $this->getParentXmlElement();
+        $child_key = $this->getChildXmlElement();
+
         if (isset($this->{$parent_key}->{$child_key}->Status)) {
             return $this->{$parent_key}->{$child_key}->Status . "";
         }
@@ -269,14 +268,58 @@ class IdentityTransactionBluemResponse extends TransactionBluemResponse
     public static $error_response_type = "Identity" . "ErrorResponse";
 }
 
+class IBANNameCheckBluemResponse extends TransactionBluemResponse
+{
+    public static $transaction_type = "IBANCheckTransactionResponse";
+    public static $response_primary_key = "IBANCheckTransaction";
+    public static $error_response_type = "IBANCheckResult";
 
-// 	@todo add IBAN check response type
-    // static $error_response_type = "IBANCheckErrorResponse";
+    public function GetIBANResult() {
+        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->IBANResult)) {
+            return $this->{$this->getParentXmlElement()}->IBANCheckResult->IBANResult . "";
+        }
 
+    }
 
+    public function GetNameResult() {
+        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->NameResult)) {
+            return $this->{$this->getParentXmlElement()}->IBANCheckResult->NameResult . "";
+        }
+        return false;
+    }
+    public function GetAccountStatus() {
+        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->AccountStatus)) {
+            return $this->{$this->getParentXmlElement()}->IBANCheckResult->AccountStatus . "";
+        }
+        return false;
+    }
 
+    public function GetAccountType() {
+        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->AccountType)) {
+            return $this->{$this->getParentXmlElement()}->AccountDetails->AccountType . "";
+        }
+        return false;
+    }
+    public function GetIsJointAccount() {
+        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->IsJointAccount)) {
+            return $this->{$this->getParentXmlElement()}->AccountDetails->IsJointAccount . "";
+        }
+        return false;
+    }
+    public function GetNumberOfAccountHolders() {
+        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->NumberOfAccountHolders)) {
+            return $this->{$this->getParentXmlElement()}->AccountDetails->NumberOfAccountHolders . "";
+        }
+        return false;
+    }
+    public function GetCountryName() {
+        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->CountryName)) {
+            return $this->{$this->getParentXmlElement()}->AccountDetails->CountryName . "";
+        }
+        return false;
+    }
+}
 
-    
 /* Response:
  *
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>

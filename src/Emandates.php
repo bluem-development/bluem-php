@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
@@ -16,52 +16,51 @@ use Carbon\Carbon;
  */
 class EmandateStatusBluemRequest extends BluemRequest
 {
-	
-	public $typeIdentifier = "requestStatus"; 
-	public $request_url_type = "mr";
-    public $transaction_code = "SRX";    
-    
-    	
-	function __construct($config,$mandateID,$entranceCode="",$expected_return="")
-	{
-		
-		parent::__construct($config,$entranceCode,$expected_return);
+    public $typeIdentifier = "requestStatus";
+    public $request_url_type = "mr";
+	public $transaction_code = "SRX";
 
-		$this->xmlInterfaceName = "EMandateInterface";
-		$this->typeIdentifier = "requestStatus";
-		
-		$this->mandateID = $mandateID;
-	}
+    public function __construct(
+		$config, $mandateID, $entranceCode="", $expected_return=""
+	)
+    {
+        parent::__construct(
+            $config, $entranceCode, $expected_return
+        );
 
-	public function TransactionType()
-	{
-		return "SRX";
-	}
+        $this->xmlInterfaceName = "EMandateInterface";
+        $this->typeIdentifier = "requestStatus";
+        
+        $this->mandateID = $mandateID;
+    }
 
-	public function XmlString() : String
-	{
+    public function TransactionType()
+    {
+        return "SRX";
+    }
 
-		return $this->XmlRequestInterfaceWrap(
+    public function XmlString() : String
+    {
+        return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'StatusRequest',
             $this->XmlRequestObjectWrap(
                 'EMandateStatusRequest',
                 '<MandateID>'.$this->mandateID.'</MandateID>'
             )
-		);
+        );
 
-/* // Reference
-		return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<EMandateInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="StatusRequest"
-    mode="direct" senderID="'.$this->senderID.'" version="1.0" createDateTime="'.$this->createDateTime.'"
-    messageCount="1">
-    <EMandateStatusRequest entranceCode="'.$this->entranceCode.'">
-        <MandateID>'.$this->mandateID.'</MandateID>
-    </EMandateStatusRequest>
-</EMandateInterface>';
-*/
-	}
-	
+        /* // Reference
+                return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <EMandateInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="StatusRequest"
+            mode="direct" senderID="'.$this->senderID.'" version="1.0" createDateTime="'.$this->createDateTime.'"
+            messageCount="1">
+            <EMandateStatusRequest entranceCode="'.$this->entranceCode.'">
+                <MandateID>'.$this->mandateID.'</MandateID>
+            </EMandateStatusRequest>
+        </EMandateInterface>';
+        */
+    }
 }
 
 /**
@@ -69,104 +68,102 @@ class EmandateStatusBluemRequest extends BluemRequest
  */
 class EmandateBluemRequest extends BluemRequest
 {
-    public $typeIdentifier = "createTransaction";   
-	public $request_url_type = "mr";
-    public $transaction_code = "TRX";    
+    public $typeIdentifier = "createTransaction";
+    public $request_url_type = "mr";
+    public $transaction_code = "TRX";
     
-	private $localInstrumentCode;
-	private $merchantReturnURLBase;
-	private $merchantReturnURL;
-	private $sequenceType;
-	private $eMandateReason;
-	private $debtorReference;
-	private $purchaseID;
-	private $sendOption;
+    private $localInstrumentCode;
+    private $merchantReturnURLBase;
+    private $merchantReturnURL;
+    private $sequenceType;
+    private $eMandateReason;
+    private $debtorReference;
+    private $purchaseID;
+    private $sendOption;
 
-	
-	protected $merchantID;
-	protected $merchantSubID;
-	
-	function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none") {
-		
-		parent::__construct($config,"",$expected_return);
-		
-		$this->xmlInterfaceName = "EMandateInterface";
-		// $this->request_url_type = "mr";
-		$this->typeIdentifier = "createTransaction";
-		
-	
-		$this->merchantReturnURLBase = $config->merchantReturnURLBase;
-		
-		// $this->request_type = $request_type;	
-		// if($this->request_type==="simple" && $simple_redirect_url!=="") {
-		// 	$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}"; 
-		// }
+    
+    protected $merchantID;
+    protected $merchantSubID;
+    
+    public function __construct($config, $customer_id, $order_id, $mandateID, String $expected_return="none")
+    {
+        parent::__construct($config, "", $expected_return);
+        
+        $this->xmlInterfaceName = "EMandateInterface";
+        // $this->request_url_type = "mr";
+        $this->typeIdentifier = "createTransaction";
+        
+    
+        $this->merchantReturnURLBase = $config->merchantReturnURLBase;
+        
+        // $this->request_type = $request_type;
+        // if($this->request_type==="simple" && $simple_redirect_url!=="") {
+        // 	$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}";
+        // }
 
-		$now = Carbon::now()->timezone('Europe/Amsterdam');
-		
-		$this->localInstrumentCode = $config->localInstrumentCode; // CORE | B2B ,  conform gegeven standaard
-		
-		$this->mandateID = $mandateID;
+        $now = Carbon::now()->timezone('Europe/Amsterdam');
+        
+        $this->localInstrumentCode = $config->localInstrumentCode; // CORE | B2B ,  conform gegeven standaard
+        
+        $this->mandateID = $mandateID;
 
-		// https uniek returnurl voor klant
-		$this->merchantReturnURL = $this->merchantReturnURLBase."?mandateID={$this->mandateID}"; 
-		if(isset($config->sequenceType)) {
-			$this->sequenceType = $config->sequenceType;
-		} else {
-			$this->sequenceType = "RCUR";
-		}
-		
-		// reden van de machtiging; configurabel per partij
-		if(isset($config->eMandateReason)) {
-			$this->eMandateReason = $config->eMandateReason;
-		} else {
-			$this->eMandateReason = "Incasso machtiging";
-		}
-		// $this->eMandateReason = ; // TODO: uit config halen
-		
-		// Klantreferentie bijv naam of nummer
-		$this->debtorReference = $customer_id; 
-		
-		// inkoop/contract/order/klantnummer
-		/* PurchaseID is verplichtveld van de banken. 
-		Dit vertalen het naar de klant als ‘inkoopnummer’ of ‘ordernummer’ (afh. Bank). 
-		Wij presenteren het niet op de checkout, omdat wij zien dat veel partijen 
-		echt niet weten wat ze er in moeten zetten. Wij adviseren dan altijd klantnummer. 
-		En dat doet dan ook veel partijen */
+        // https uniek returnurl voor klant
+        $this->merchantReturnURL = $this->merchantReturnURLBase."?mandateID={$this->mandateID}";
+        if (isset($config->sequenceType)) {
+            $this->sequenceType = $config->sequenceType;
+        } else {
+            $this->sequenceType = "RCUR";
+        }
+        
+        // reden van de machtiging; configurabel per partij
+        if (isset($config->eMandateReason)) {
+            $this->eMandateReason = $config->eMandateReason;
+        } else {
+            $this->eMandateReason = "Incasso machtiging";
+        }
+        // $this->eMandateReason = ; // TODO: uit config halen
+        
+        // Klantreferentie bijv naam of nummer
+        $this->debtorReference = $customer_id;
+        
+        // inkoop/contract/order/klantnummer
+        /* PurchaseID is verplichtveld van de banken.
+        Dit vertalen het naar de klant als ‘inkoopnummer’ of ‘ordernummer’ (afh. Bank).
+        Wij presenteren het niet op de checkout, omdat wij zien dat veel partijen
+        echt niet weten wat ze er in moeten zetten. Wij adviseren dan altijd klantnummer.
+        En dat doet dan ook veel partijen */
         if (isset($config->purchaseIDPrefix) && $config->purchaseIDPrefix!=="") {
             $purchaseIDPrefix = $config->purchaseIDPrefix."-";
         } else {
-			$purchaseIDPrefix = "";
-		}
-		$this->purchaseID = substr("{$purchaseIDPrefix}{$this->debtorReference}-{$order_id}",0,34);  // INKOOPNUMMER
+            $purchaseIDPrefix = "";
+        }
+        $this->purchaseID = substr("{$purchaseIDPrefix}{$this->debtorReference}-{$order_id}", 0, 34);  // INKOOPNUMMER
 
-		
-		// todo: move to mandate-specifics; as it is only necessary there
-		if(isset($config->merchantID)) {
+        
+        // todo: move to mandate-specifics; as it is only necessary there
+        if (isset($config->merchantID)) {
+            $this->merchantID = $config->merchantID;
+        } else {
+            $this->merchantID = "";
+        }
 
-			$this->merchantID = $config->merchantID;
-		} else {
-			$this->merchantID = "";
-		}
+        // override with hardcoded merchantID when in test environment, according to documentation
+        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+            $this->merchantID = "0020000387";
+        }
 
-		// override with hardcoded merchantID when in test environment, according to documentation
-		if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
-			$this->merchantID = "0020000387";
-		}
-
-		if(isset($config->merchantSubID)) {
-			$this->merchantSubID = $config->merchantSubID;
-		} else {
-			$this->merchantSubID = "0";
-		}
+        if (isset($config->merchantSubID)) {
+            $this->merchantSubID = $config->merchantSubID;
+        } else {
+            $this->merchantSubID = "0";
+        }
 
 
-		$this->automatically_redirect = "1";
-
-	}
-	public function XmlString() : String
-	{
-		return $this->XmlRequestInterfaceWrap(
+        $this->automatically_redirect = "1";
+    }
+    public function XmlString() : String
+    {
+        return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
@@ -177,44 +174,41 @@ class EmandateBluemRequest extends BluemRequest
 				<EMandateReason>'.$this->eMandateReason.'</EMandateReason>
 				<DebtorReference>'.$this->debtorReference.'</DebtorReference>
 				<PurchaseID>'.$this->purchaseID.'</PurchaseID>',
-				[
-					// 'entranceCode'=>$this->entranceCode,  always sent already
-					'requestType'=>"Issuing",
-					'localInstrumentCode'=>$this->localInstrumentCode,
-					'merchantID'=>$this->merchantID,
-					'merchantSubID'=>$this->merchantSubID,
-				]
+                [
+                    // 'entranceCode'=>$this->entranceCode,  always sent already
+                    'requestType'=>"Issuing",
+                    'localInstrumentCode'=>$this->localInstrumentCode,
+                    'merchantID'=>$this->merchantID,
+                    'merchantSubID'=>$this->merchantSubID,
+                ]
             )
-		);
-/* OLD: 		
+        );
+        /* OLD:
 
-		$raw = '<?xml version="1.0"?>
-<EMandateInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-type="TransactionRequest" 
-mode="direct" 
-senderID="'.$this->senderID.'" 
-version="1.0" 
-createDateTime="'.$this->createDateTime.'" 
-messageCount="1">
-<EMandateTransactionRequest entranceCode="'.$this->entranceCode.'" 
-requestType="Issuing" 
-localInstrumentCode="'.$this->localInstrumentCode.'" 
-merchantID="'.$this->merchantID.'" 
-merchantSubID="'.$this->merchantSubID.'" 
-language="nl" 
-sendOption="none">
+                $raw = '<?xml version="1.0"?>
+        <EMandateInterface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        type="TransactionRequest"
+        mode="direct"
+        senderID="'.$this->senderID.'"
+        version="1.0"
+        createDateTime="'.$this->createDateTime.'"
+        messageCount="1">
+        <EMandateTransactionRequest entranceCode="'.$this->entranceCode.'"
+        requestType="Issuing"
+        localInstrumentCode="'.$this->localInstrumentCode.'"
+        merchantID="'.$this->merchantID.'"
+        merchantSubID="'.$this->merchantSubID.'"
+        language="nl"
+        sendOption="none">
 
-</EMandateTransactionRequest>
-</EMandateInterface>';
-		return $raw;
-		*/
-	}
+        </EMandateTransactionRequest>
+        </EMandateInterface>';
+                return $raw;
+                */
+    }
 
-	public function TransactionType() : String
-	{
+    public function TransactionType() : String
+    {
         return "TRX";
-	}
-	
-
-	
+    }
 }

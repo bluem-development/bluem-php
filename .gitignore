@@ -1,6 +1,8 @@
 composer.phar
 /vendor/
 vendor
+.phpdoc
+docs
 
 
 examples/initialization.php

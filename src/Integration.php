@@ -654,6 +654,9 @@ class Integration
 			case 'ISU':
 			case 'ISX':
 				return new IdentityStatusBluemResponse($response_xml);
+			case 'INS':
+			case 'INX':
+				return new IBANNameCheckBluemResponse($response_xml);
 			default:
 				throw new Exception("Invalid transaction type requested");
 		}
@@ -676,5 +679,25 @@ class Integration
 			"TelephoneRequest",
 			"EmailRequest"
 		];
-    }	
+	}	
+	
+
+
+	/* IBAN SPECIFIC */
+
+
+	public function CreateIBANNameCheckRequest($iban,$name,$debtorReference="") {
+
+		$entranceCode = $this->CreateEntranceCode();
+// var_dump($iban);
+// die();
+		$request = new IbanBluemRequest($this->configuration,$entranceCode,$iban,$name,$debtorReference);
+		return $request;
+	}
+
+	public function IBANNameCheck($iban,$name,$debtorReference="") {
+		$r = $this->CreateIBANNameCheckRequest($iban,$name,$debtorReference);
+		$response = $this->PerformRequest($r);
+		return $response;
+	}
 }
