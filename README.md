@@ -11,7 +11,7 @@ Use this to write your own applications in PHP that communicate with Bluem.
 
 ## Installation
 
-Run Composer to install this library and dependences:
+Run Composer to install this library and dependencies:
 
 ```bash
 composer require daanrijpkema/bluem-php
@@ -89,12 +89,12 @@ The user is redirected to the response URL at the Bluem servers. In this Bluem e
 Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality. 
 
 ### StatusUpdate (from Bluem to site)
-This response object that comes back from a callback or webhook, contains an updated status that you can process within your application. I.e. when the user has paid or verified and you have to change a product, order or process' status and go to a next step.
+This response object that comes back from a callback or webhook, contains an updated status that you can process within your application. I.e. when the user has paid or verified, and you have to change a product, order or process' status and go to a next step.
 
 ### Webhook
-The webhook functionality allows Bluem to directly push status changes and transaction results to your site or app in a trustworthy way. Therefore your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
+The webhook functionality allows Bluem to directly push status changes and transaction results to your site or app in a trustworthy way. Therefore, your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
 
-Explanation that webhook is only needed for Mandate and Payment, online stores/portals that need to know directly the status, for those cases that client closes the browser at bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification (there is no place where the end user can close the browser).
+Explanation that webhook is only needed for Mandate and Payment, online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification (there is no place where the end user can close the browser).
 
 **Using the webhook functionality is highly recommended.** More instructions on implementing the webhook will follow in each specific service shortly.
 
@@ -206,7 +206,7 @@ What is PaymentReference,
 Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
 
 
-### Create a payment transaciton 
+### Create a payment transaction 
 
 Payments is very similar to eMandates, but utilizing other parameters:
 
