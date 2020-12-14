@@ -27,6 +27,8 @@ class BluemRequest
 
     protected $createDateTime;
 
+    public $context;
+
     /**
      * Initialization of any request
      *
@@ -58,6 +60,15 @@ class BluemRequest
         }
     }
 
+    public function getContext()
+    {
+        return $this->context;
+    }
+
+    public function retrievePossibleBICs()
+    {
+        return $this->context->BICs();
+    }
     /**
      * Construct the XML request string parent object for any request
      *

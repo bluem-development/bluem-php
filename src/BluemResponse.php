@@ -29,14 +29,12 @@ class BluemResponse extends \SimpleXMLElement
      *
      * @var String
      */
-
     public static $transaction_type;
 
     /** Error response type used to differentiate the specific type of response
      *
      * @var String
      */
-
     public static $error_response_type;
 
     /**

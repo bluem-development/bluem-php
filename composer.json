@@ -3,13 +3,13 @@
     "type": "package",
     "description": "Bluem PHP interface",
     "keywords": ["bluem","php","interface","wrapper","emandate","epayment","idin"],
-    "homepage": "https://daanrijpkema.com",
+    "homepage": "https://daanrijpkema.github.io/bluem-php/",
     "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Daan Rijpkema",
             "email": "info@daanrijpkema.com",
-            "homepage": "https://daanrijpkema.com",
+            "homepage": "https://daanrijpkema.com/",
             "role": "Developer"
         }
 	],

@@ -24,14 +24,18 @@ class EmandateStatusBluemRequest extends BluemRequest
 		$config, $mandateID, $entranceCode="", $expected_return=""
 	)
     {
+        
+        
         parent::__construct(
             $config, $entranceCode, $expected_return
         );
-
+        
         $this->xmlInterfaceName = "EMandateInterface";
         $this->typeIdentifier = "requestStatus";
         
         $this->mandateID = $mandateID;
+
+        $this->context = new MandatesContext($config->localInstrumentCode);
     }
 
     public function TransactionType()
