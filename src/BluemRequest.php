@@ -38,7 +38,7 @@ class BluemRequest
      * @param String $entranceCode
      * @param String $expectedReturn
      */
-    function __construct(\Stdclass $config, String $entranceCode = "", String $expectedReturn = "")
+    public function __construct(\Stdclass $config, String $entranceCode = "", String $expectedReturn = "")
     {
         $this->environment = $config->environment;
 
@@ -54,8 +54,7 @@ class BluemRequest
          *  which is unique in time for any request; which is string; which should not be visible for customer;
          *  structure: prefix for testing + customer number + current timestamp up to the second
         */
-        if ($entranceCode === "")  // if not given, create it
-        {
+        if ($entranceCode === "") {  // if not given, create it
             $this->entranceCode = $this->entranceCode($expectedReturn);
         } else {
             $this->entranceCode = $entranceCode;
@@ -76,9 +75,8 @@ class BluemRequest
      * @param String $rest Remainder of XML element, as a string, used to chain this function
      * @return String Constructed XML as string
      */
-    protected function XmlRequestInterfaceWrap(String $element_name, String $type="TransactionRequest",String $rest) : String
+    protected function XmlRequestInterfaceWrap(String $element_name, String $type="TransactionRequest", String $rest) : String
     {
-
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><'.$element_name.'
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         type="'.$type.'"
@@ -98,7 +96,7 @@ class BluemRequest
      * @param Array $extra_attrs Any arbitrary other key-value pairs to be added as XML element attributes
      * @return String Constructed XML as string
      */
-    protected function XmlRequestObjectWrap(String $element_name,String $rest,Array $extra_attrs = []) : String
+    protected function XmlRequestObjectWrap(String $element_name, String $rest, array $extra_attrs = []) : String
     {
         $res = "<{$element_name}
            entranceCode=\"{$this->entranceCode}\" ";
@@ -152,34 +150,34 @@ class BluemRequest
         $request_url = "https://";
 
         switch ($this->environment) {
-            case BLUEM_ENVIRONMENT_PRODUCTION: {
-                    $request_url .= "";
-                    break;
-                }
-            case BLUEM_ENVIRONMENT_ACCEPTANCE: {
-                    $request_url .= "acc.";
-                    break;
-                }
-            case BLUEM_ENVIRONMENT_TESTING:
-            default: {
-                    $request_url .= "test.";
-                    break;
-                }
+        case BLUEM_ENVIRONMENT_PRODUCTION: {
+                $request_url .= "";
+                break;
+            }
+        case BLUEM_ENVIRONMENT_ACCEPTANCE: {
+                $request_url .= "acc.";
+                break;
+            }
+        case BLUEM_ENVIRONMENT_TESTING:
+        default: {
+                $request_url .= "test.";
+                break;
+            }
         }
         $request_url .= "viamijnbank.net/{$this->request_url_type}/";
 
         switch ($this->typeIdentifier) {
-            case 'createTransaction': {
-                    $request_url .= "createTransactionWithToken";
-                    break;
-                }
-            case 'requestStatus': {
-                    $request_url .= "requestTransactionStatusWithToken";
-                    break;
-                }
-            default:
-                throw new \Exception("Invalid transactiontype called for", 1);
+        case 'createTransaction': {
+                $request_url .= "createTransactionWithToken";
                 break;
+            }
+        case 'requestStatus': {
+                $request_url .= "requestTransactionStatusWithToken";
+                break;
+            }
+        default:
+            throw new \Exception("Invalid transactiontype called for", 1);
+            break;
         }
         $request_url .= "?token={$this->accessToken}";
 
@@ -193,50 +191,52 @@ class BluemRequest
      * @param string $entranceCode a set entrance code, otherwise it gets generated based on dateTime string in "YmdHisv" standardized format, in Europe/Amsterdam timezone
      * @return void
      */
-    private function entranceCode(String $expectedReturn, String $entranceCode = "" )
+    private function entranceCode(String $expectedReturn, String $entranceCode = "")
     {
 
         // create a default entrancecode if necessary
-        if($entranceCode =="" ) {
-            $entranceCode = Carbon::now()->timezone('Europe/Amsterdam')->format("YmdHisv");
+        if ($entranceCode =="") {
+            $entranceCode = Carbon::now()
+                ->timezone('Europe/Amsterdam')
+                ->format("YmdHisv");
         }
 
         $prefix = "";
 
         if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
             switch ($expectedReturn) {
-                case 'none': {
-                        $prefix = "";
-                        break;
-                    }
-                case 'success': {
-                        $prefix = "HIO100OIH";
-                        break;
-                    }
-                case 'cancelled': {
-                        $prefix = "HIO200OIH";
-                        break;
-                    }
-                case 'expired': {
-                        $prefix = "HIO300OIH";
-                        break;
-                    }
-                case 'failure': {
-                        $prefix = "HIO500OIH";
-                        break;
-                    }
-                case 'open': {
-                        $prefix = "HIO400OIH";
-                        break;
-                    }
-                case 'pending': {
-                        $prefix = "HIO600OIH";
-                        break;
-                    }
-                default: {
-                        $prefix = "";
-                        break;
-                    }
+            case 'none': {
+                    $prefix = "";
+                    break;
+                }
+            case 'success': {
+                    $prefix = "HIO100OIH";
+                    break;
+                }
+            case 'cancelled': {
+                    $prefix = "HIO200OIH";
+                    break;
+                }
+            case 'expired': {
+                    $prefix = "HIO300OIH";
+                    break;
+                }
+            case 'failure': {
+                    $prefix = "HIO500OIH";
+                    break;
+                }
+            case 'open': {
+                    $prefix = "HIO400OIH";
+                    break;
+                }
+            case 'pending': {
+                    $prefix = "HIO600OIH";
+                    break;
+                }
+            default: {
+                    $prefix = "";
+                    break;
+                }
             }
         }
 
@@ -262,32 +262,38 @@ class BluemRequest
     {
         return $this->context->getBICCodes();
     }
-
+    /**
+     * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
+     *
+     * @param [type] $BIC
+     * @return void
+     */
     public function selectDebtorWallet($BIC)
     {
         $possibleBICs = $this->context->getBICCodes();
-        // var_dump($possibleBICs);
-        // echo "POSSIBLE BICS";
-        // die();
-        if(!in_array($BIC,$possibleBICs)) {
+
+        if (!in_array($BIC, $possibleBICs)) {
             throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
-        } 
+        }
         $this->debtorWallet = $BIC;
     }
 
+    /**
+     * Create the XML element necessary to be added to the request XML string.
+     *
+     * @return string
+     */
     public function XmlWrapDebtorWallet()
     {
-        
-        if(is_null($this->debtorWallet)) {
-        }
-        echo "kaas";
-        var_dump($this->context);
-        var_dump($this->debtorWallet);
-        if($this->debtorWallet=="") {
+        if (is_null($this->debtorWallet)) {
             return "";
-        } 
+        }
 
-        if(!isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName=="") {
+        if ($this->debtorWallet=="") {
+            return "";
+        }
+
+        if (!isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName=="") {
             return '';
         }
 
@@ -297,24 +303,5 @@ class BluemRequest
         $res .= "</{$this->context->debtorWalletElementName}>";
         $res .= "</DebtorWallet>";
         return $res;
-
     }
-
-    // public function getDebtorWallet()
-    // {
-
-    //     var_dump($this->debtorWallet);
-    //     die();
-    //     if (is_null($this->debtorWallet)) {
-    //         return '';
-    //     }
-
-    //     // @todo: check if valid BIC is set;
-
-
-
-    //     return $this->debtorWallet;
-
-    // }
-
 }
