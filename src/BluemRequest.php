@@ -27,6 +27,8 @@ class BluemRequest
 
     protected $createDateTime;
 
+    public $debtorWallet = null;
+
     public $context;
 
     /**
@@ -65,10 +67,7 @@ class BluemRequest
         return $this->context;
     }
 
-    public function retrievePossibleBICs()
-    {
-        return $this->context->BICs();
-    }
+
     /**
      * Construct the XML request string parent object for any request
      *
@@ -106,7 +105,6 @@ class BluemRequest
         foreach ($extra_attrs as $key => $value) {
             $res .= "{$key}=\"{$value}\" ".PHP_EOL;
         }
-
         $res.='>'.$rest.'</'.$element_name.'>';
         return $res;
     }
@@ -245,4 +243,78 @@ class BluemRequest
         $entranceCode = $prefix . $entranceCode;
         return $entranceCode;
     }
+    /**
+     * Retrieve array of objects with IssuerID and IssuerName of banks from the context
+     *
+     * @return array
+     */
+    public function retrieveBICObjects()
+    {
+        return $this->context->BICs();
+    }
+
+    /**
+     * Retrieve array of BIC codes (IssuerIDs) of banks from context
+     *
+     * @return array
+     */
+    public function retrieveBICCodes()
+    {
+        return $this->context->getBICCodes();
+    }
+
+    public function selectDebtorWallet($BIC)
+    {
+        $possibleBICs = $this->context->getBICCodes();
+        // var_dump($possibleBICs);
+        // echo "POSSIBLE BICS";
+        // die();
+        if(!in_array($BIC,$possibleBICs)) {
+            throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
+        } 
+        $this->debtorWallet = $BIC;
+    }
+
+    public function XmlWrapDebtorWallet()
+    {
+        
+        if(is_null($this->debtorWallet)) {
+        }
+        echo "kaas";
+        var_dump($this->context);
+        var_dump($this->debtorWallet);
+        if($this->debtorWallet=="") {
+            return "";
+        } 
+
+        if(!isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName=="") {
+            return '';
+        }
+
+        $res = "<DebtorWallet>";
+        $res .= "<{$this->context->debtorWalletElementName}>";
+        $res .= "<BIC>".$this->debtorWallet."</BIC>";
+        $res .= "</{$this->context->debtorWalletElementName}>";
+        $res .= "</DebtorWallet>";
+        return $res;
+
+    }
+
+    // public function getDebtorWallet()
+    // {
+
+    //     var_dump($this->debtorWallet);
+    //     die();
+    //     if (is_null($this->debtorWallet)) {
+    //         return '';
+    //     }
+
+    //     // @todo: check if valid BIC is set;
+
+
+
+    //     return $this->debtorWallet;
+
+    // }
+
 }

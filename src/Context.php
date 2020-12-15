@@ -24,6 +24,19 @@ class BluemContext
     {
         $this->BICs = $BICs;
     }
+
+    public function getBICs()
+    {
+        return $this->BICs;
+    }
+
+    public function getBICCodes() {
+        $codes = [];
+        foreach($this->BICs as $BIC) {
+            $codes[] = $BIC->issuerID;
+        }
+        return $codes;
+    }
 }
 
 
@@ -31,6 +44,8 @@ class BluemContext
 
 class PaymentsContext extends BluemContext
 {
+    public $debtorWalletElementName = "IDEAL";
+
     /**
      * Constructor
      *
@@ -56,16 +71,16 @@ class PaymentsContext extends BluemContext
         );
     }
 
-    public function getBICs()
-    {
-        return $this->BICs;
-    }
+   
 }
 
 
 
 class MandatesContext extends BluemContext
 {
+
+    public $debtorWalletElementName = "INCASSOMACHTIGEN";
+
     private $possibleMandateTypes = ['CORE','B2B'];
     /**
      * Constructor
@@ -110,6 +125,7 @@ class MandatesContext extends BluemContext
 
 class IdentityContext extends BluemContext
 {
+    public $debtorWalletElementName = "IDIN";
     /**
      * Constructor
      *

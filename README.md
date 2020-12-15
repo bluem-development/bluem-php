@@ -99,6 +99,28 @@ Explanation that webhook is only needed for Mandate and Payment, online stores/p
 **Using the webhook functionality is highly recommended.** More instructions on implementing the webhook will follow in each specific service shortly.
 
 
+### DebtorWallet: preselecting a bank for Mandate, Payment or Identity request
+
+It is possible to preselect a Bank by IssuerID (BIC) when creating a Mandate, Payment or Identity request. This can be used if you want to user to select the given bank in your own interface and skip the bank selection within the Bluem portal interface.
+
+To preselect a bank in a request, use the following function on a request object (supported for Mandates, Payments and Identity only) for an example BIC:
+
+```php
+$BIC = "INGBNL2A";
+$request->selectDebtorWallet($BIC);
+```
+Parameter has to be a valid BIC code of a supported bank. An invalid BIC code will trigger an exception. **Please note that supported BICs differ per service as not every bank offers the same services!** The supported BIC codes per service can also be requested from a Bluem object, given the service context. Below is a list of supported contexts for this function.
+
+```php
+$MandatesBICs = $bluem_object->retrieveBICsForContext("Mandates"); // also specific to localInstrumentCode, see notes.
+$PaymentsBICs = $bluem_object->retrieveBICsForContext("Payments");
+$IdentityBICs = $bluem_object->retrieveBICsForContext("Identity");
+```
+Input of a different context will trigger an exception. If valid, the result is an array of `Bluem\BluemPHP\BIC` objects with attributes `IssuerID` and `IssuerName`: the BIC and Bank name respectively. You can use this to populate your user inteface.
+
+Please note that the BIC list will vary when a different `localInstrumentCode` is configured. The localInstrumentCode `CORE` and `B2B` are supported by different banks. Based on your configuration, the right BIC list is loaded from context automatically and used to verify the debtorWallet.
+
+
 ## eMandates 
 
 

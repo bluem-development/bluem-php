@@ -40,45 +40,77 @@ if (!defined("BLUEM_ENVIRONMENT_TESTING")) {
 if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
     define("BLUEM_ENVIRONMENT_ACCEPTANCE", "acc");
 }
+if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
+    define("BLUEM_STATIC_MERCHANT_ID","0020009469");
+}
 
 /**
  * BlueM Integration main class
  */
 class Integration
 {
-    private $configuration;
+    private $_config;
 
     public $environment;
 
     /**
      * Constructs a new instance.
      */
-    function __construct($configuration = null)
+    function __construct($_config = null)
     {
-        if (is_null($configuration)) {
+        if (is_null($_config)) {
             throw new Exception("No valid configuration given to instantiate Bluem Integration");
             exit;
         }
-
         // validating configuration
-        if (!in_array($configuration->environment, [BLUEM_ENVIRONMENT_TESTING, BLUEM_ENVIRONMENT_ACCEPTANCE, BLUEM_ENVIRONMENT_PRODUCTION])) {
+        if (!in_array(
+                $_config->environment,
+                [
+                    BLUEM_ENVIRONMENT_TESTING, BLUEM_ENVIRONMENT_ACCEPTANCE, BLUEM_ENVIRONMENT_PRODUCTION
+                ]
+            )
+        ) {
             throw new Exception("Invalid environment setting, should be either 'test', 'acc' or 'prod'");
         }
 
-        $this->configuration = $configuration;
-
-        if ($this->configuration->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
-            $this->configuration->accessToken = $configuration->production_accessToken;
-        } elseif ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {
-            $this->configuration->accessToken = $configuration->test_accessToken;
-
-            // @todo: hardcode merchantID in case of test. It is always the bluem merchant ID then.
+        if(
+            !in_array(
+                $_config->localInstrumentCode, 
+                ['B2B', 'CORE']
+            )
+        )
+        {
+            // default localInstrumentCode 
+            $_config->localInstrumentCode = "CORE";
         }
-        $this->environment = $this->configuration->environment;
-        // @todo Only use one environment variable. Right now it is saved in both $this->environment and $this->configuration->environment
+        $this->_config = $_config;
+
+        if ($this->_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
+
+            $this->_config->accessToken = $_config->production_accessToken;
+
+        } elseif ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
+
+            $this->_config->accessToken = $_config->test_accessToken;
+            
+            // hardcoded merchantID in case of test. 
+            // It is always the bluem merchant ID then.
+            $this->merchantID = BLUEM_STATIC_MERCHANT_ID;
+        }
+
+        $this->environment = $this->_config->environment;
+        // @todo Only use one environment variable. Right now it is saved in both $this->environment and $this->_config->environment
 
         // this is given by the bank (default 0)
-        $this->configuration->merchantSubID = "0";
+        $this->_config->merchantSubID = "0";
+
+        // if an invalid possible return status is given, set it to a default value (for testing purposes only)
+        $possibleReturnStatuses = ["none", "success", "cancelled", "expired", "failure", "open", "pending"];
+        if($this->_config->expectedReturnStatus!=="" && !in_array($this->_config->expectedReturnStatus,$possibleReturnStatuses)) {
+            $this->_config->expectedReturnStatus = "success";
+        }
+
+
         // @todo get this from settings in the future
     }
 
@@ -111,13 +143,13 @@ class Integration
         }
 
         $r = new EmandateBluemRequest(
-            $this->configuration,
+            $this->_config,
             $customer_id,
             $order_id,
             $mandate_id,
-            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->configuration->expected_return) ?
-                $this->configuration->expected_return : "")
+            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->_config->expected_return) ?
+                $this->_config->expected_return : "")
         );
         return $r;
     }
@@ -159,12 +191,12 @@ class Integration
     {
 
         $r = new EMandateStatusBluemRequest(
-            $this->configuration,
+            $this->_config,
             $mandateID,
             $entranceCode,
-            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->configuration->expected_return) ?
-                $this->configuration->expected_return : "")
+            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->_config->expected_return) ?
+                $this->_config->expected_return : "")
         );
 
         $response = $this->PerformRequest($r);
@@ -180,7 +212,7 @@ class Integration
     public function CreateMandateID(String $order_id, String $customer_id): String
     {
         // veteranen search team, specific
-        if ($this->configuration->senderID === "S1300") {
+        if ($this->_config->senderID === "S1300") {
             return "M" . Carbon::now()->timezone('Europe/Amsterdam')->format('YmdHis');
         }
 
@@ -212,10 +244,6 @@ class Integration
         return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
     }
 
-
-
-
-
     /**-------------- PAYMENT SPECIFIC FUNCTIONS --------------*/
     /**
      * Create a payment request object
@@ -242,7 +270,7 @@ class Integration
         }
 
         $r = new PaymentBluemRequest(
-            $this->configuration,
+            $this->_config,
             $description,
             $debtorReference,
             $amount,
@@ -250,9 +278,9 @@ class Integration
             $currency,
             $this->CreatePaymentTransactionID($debtorReference),
             $entranceCode,
-            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->configuration->expected_return) ?
-                $this->configuration->expected_return : "")
+            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->_config->expected_return) ?
+                $this->_config->expected_return : "")
         );
         return $r;
     }
@@ -303,11 +331,11 @@ class Integration
     {
 
         $r = new PaymentStatusBluemRequest(
-            $this->configuration,
+            $this->_config,
             $transactionID,
-            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->configuration->expected_return) ?
-                $this->configuration->expected_return : ""),
+            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->_config->expected_return) ?
+                $this->_config->expected_return : ""),
             $entranceCode
         );
 
@@ -344,11 +372,11 @@ class Integration
     ): IdentityBluemRequest {
 
         $r = new IdentityBluemRequest(
-            $this->configuration,
+            $this->_config,
             "",
-            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->configuration->expected_return) ?
-                $this->configuration->expected_return : ""),
+            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->_config->expected_return) ?
+                $this->_config->expected_return : ""),
             $requestCategory,
             $description,
             $debtorReference,
@@ -369,11 +397,11 @@ class Integration
     {
 
         $r = new IdentityStatusBluemRequest(
-            $this->configuration,
+            $this->_config,
             $entranceCode,
-            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->configuration->expected_return) ?
-                $this->configuration->expected_return : ""),
+            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->_config->expected_return) ?
+                $this->_config->expected_return : ""),
             $transactionID
         );
 
@@ -401,9 +429,13 @@ class Integration
         return Carbon::now()->format("YmdHisv"); // . "000";
     }
 
-    /**
-     * Perform a request to the BlueM API given a request object and return its response
-     * @param BluemRequest $transaction_request The Request Object
+    /** 
+     * Perform a request to the BlueM API given a request
+     * object and return its response
+     *
+     * @param  BluemRequest $transaction_request The Request Object
+     *
+     * @return ErrorBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|IdentityTransactionBluemResponse|IdentityStatusBluemResponse|IBANNameCheckBluemResponse|Exception
      */
     public function PerformRequest(BluemRequest $transaction_request)
     {
@@ -414,7 +446,7 @@ class Integration
         // make sure the timezone is set correctly..
         $now = Carbon::now()->timezone('Europe/Amsterdam');
 
-        $xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
+        $xttrs_filename = $transaction_request->transaction_code . "-{$this->_config->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
 
         // conform Rfc1123 standard in GMT time
         $xttrs_date = $now->toRfc7231String();
@@ -492,7 +524,6 @@ class Integration
             return $error;
         }
     }
-
 
 
     /** Webhook Code
@@ -601,7 +632,7 @@ class Integration
         $signatureValidator = new XmlSignatureValidator();
 
         // @todo Check if keyfile has to be chosen according to env
-        // if ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING) {
+        // if ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
         // $public_key_file = "webhook.bluem.nl_pub_cert_test.crt";
         // } else {
         // $public_key_file = "webhook.bluem.nl_pub_key_production.crt";
@@ -635,34 +666,34 @@ class Integration
      *
      * @param [type] $type
      * @param [type] $response_xml
-     * @return MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|IdentityTransactionBluemResponse|IdentityStatusBluemResponse|Exception
+     * @return MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|IdentityTransactionBluemResponse|IdentityStatusBluemResponse|IBANNameCheckBluemResponse|Exception
      */
     private function fabricateResponseObject($type, $response_xml)
     {
         switch ($type) {
-            case 'SRX':
-            case 'SUD':
-                return new MandateStatusBluemResponse($response_xml);
-            case 'TRX':
-            case 'TRS':
-                return new MandateTransactionBluemResponse($response_xml);
-            case 'PSU':
-            case 'PSX':
-                return new PaymentStatusBluemResponse($response_xml);
-            case 'PTS':
-            case 'PTX':
-                return new PaymentTransactionBluemResponse($response_xml);
-            case 'ITX':
-            case 'ITX':
-                return new IdentityTransactionBluemResponse($response_xml);
-            case 'ISU':
-            case 'ISX':
-                return new IdentityStatusBluemResponse($response_xml);
-            case 'INS':
-            case 'INX':
-                return new IBANNameCheckBluemResponse($response_xml);
-            default:
-                throw new Exception("Invalid transaction type requested");
+        case 'SRX':
+        case 'SUD':
+            return new MandateStatusBluemResponse($response_xml);
+        case 'TRX':
+        case 'TRS':
+            return new MandateTransactionBluemResponse($response_xml);
+        case 'PSU':
+        case 'PSX':
+            return new PaymentStatusBluemResponse($response_xml);
+        case 'PTS':
+        case 'PTX':
+            return new PaymentTransactionBluemResponse($response_xml);
+        case 'ITX':
+        case 'ITX':
+            return new IdentityTransactionBluemResponse($response_xml);
+        case 'ISU':
+        case 'ISX':
+            return new IdentityStatusBluemResponse($response_xml);
+        case 'INS':
+        case 'INX':
+            return new IBANNameCheckBluemResponse($response_xml);
+        default:
+            throw new Exception("Invalid transaction type requested");
         }
     }
 
@@ -695,7 +726,7 @@ class Integration
         $entranceCode = $this->CreateEntranceCode();
 // var_dump($iban);
 // die();
-        $request = new IbanBluemRequest($this->configuration,$entranceCode,$iban,$name,$debtorReference);
+        $request = new IbanBluemRequest($this->_config,$entranceCode,$iban,$name,$debtorReference);
         return $request;
     }
 
@@ -704,4 +735,55 @@ class Integration
         $response = $this->PerformRequest($r);
         return $response;
     }
+
+
+
+
+    /**
+     * Retrieve array of BIC codes (IssuerIDs) of banks from context
+     *
+     * @return array
+     */
+    public function retrieveBICCodesForContext($contextName)
+    {
+        $context = $this->_retrieveContext($contextName);
+        return $context->getBICCodes();
+    }
+
+    /**
+     * Retrieve array of BIC codes (IssuerIDs) of banks from context
+     *
+     * @return array
+     */
+    public function retrieveBICsForContext($contextName)
+    {
+        $context = $this->_retrieveContext($contextName);
+        return $context->getBICs();
+    }
+
+    public function _retrieveContext($context)
+    {
+        $localInstrumentCode = $this->config->localInstrumentCode;
+        switch ($context) {
+        case 'Mandates':
+            $context = new MandatesContext($localInstrumentCode);
+            break;
+        case 'Payments':
+            $context = new PaymentsContext();
+            break;
+        case 'Identity':
+            $context = new IdentityContext();
+            break;
+        default:
+            $contexts = ["Mandates","Payments","Identity"];
+            throw new Exception(
+                "Invalid Context requested, should be 
+                one of the following: ".
+                implode(",",$contexts)
+            );
+            break;
+        }
+        return $context;
+    }
+
 }

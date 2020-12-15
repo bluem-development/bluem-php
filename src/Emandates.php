@@ -164,6 +164,9 @@ class EmandateBluemRequest extends BluemRequest
 
 
         $this->automatically_redirect = "1";
+
+
+        $this->context = new MandatesContext($config->localInstrumentCode);
     }
     public function XmlString() : String
     {
@@ -177,7 +180,8 @@ class EmandateBluemRequest extends BluemRequest
 				<SequenceType>'.$this->sequenceType.'</SequenceType>
 				<EMandateReason>'.$this->eMandateReason.'</EMandateReason>
 				<DebtorReference>'.$this->debtorReference.'</DebtorReference>
-				<PurchaseID>'.$this->purchaseID.'</PurchaseID>',
+                <PurchaseID>'.$this->purchaseID.'</PurchaseID>'.
+                $this->XmlWrapDebtorWallet(),
                 [
                     // 'entranceCode'=>$this->entranceCode,  always sent already
                     'requestType'=>"Issuing",

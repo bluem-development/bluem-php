@@ -29,6 +29,8 @@ class PaymentStatusBluemRequest extends BluemRequest
             $this->brandID = $config->brandID;
         }
         $this->transactionID = $transactionID;
+
+        $this->context = new PaymentsContext();
     }
 
     public function TransactionType(): String
@@ -110,6 +112,8 @@ class PaymentBluemRequest extends BluemRequest
         // added entranceCode as well, useful. Defined in generic bluem request class
 
         $this->paymentReference = "{$this->debtorReference}{$this->transactionID}";
+
+        $this->context = new PaymentsContext();
     }
 
     /**
@@ -129,19 +133,23 @@ class PaymentBluemRequest extends BluemRequest
 
     public function XmlString(): String
     {
-
+        var_dump($this->debtorWallet);
+        // echo "YOO";
+var_dump($this->XmlWrapDebtorWallet());
+die();
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'PaymentTransactionRequest',
                 '<PaymentReference>' . $this->paymentReference . '</PaymentReference>
-            <DebtorReference>' . $this->debtorReference . '</DebtorReference>
-            <Description>' . $this->description . '</Description>
-            <Currency>' . $this->currency . '</Currency>
-            <Amount>' . $this->amount . '</Amount>
-            <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
-            <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>',
+                <DebtorReference>' . $this->debtorReference . '</DebtorReference>
+                <Description>' . $this->description . '</Description>
+                <Currency>' . $this->currency . '</Currency>
+                <Amount>' . $this->amount . '</Amount>
+                <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
+                <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>'.
+                $this->XmlWrapDebtorWallet(),
                 [
                     'documentType' => "PayRequest",
                     'sendOption' => "none",

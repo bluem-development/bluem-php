@@ -36,7 +36,7 @@ $bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collectio
 $bluem_config->merchantReturnURLBase = "https://website.com";;  // URL to return to after finishing the process
 
 // If you are using iDIN next to other services, you can set a specific iDIN brandID here: 
-$bluem_config->IDINbrandID = "";                      
+$bluem_config->IDINbrandID = "";
 
 /** Initialize */
 $bluem_object = new Integration($bluem_config);

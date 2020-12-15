@@ -123,7 +123,8 @@ class IdentityBluemRequest extends BluemRequest
                 ($this->requestCategory).'
                 <Description>' . $this->description . '</Description>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
-                <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>',
+                <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>'.
+                $this->XmlWrapDebtorWallet(),
                 [
                     'sendOption'=>"none",
                     'language'=>"nl",
