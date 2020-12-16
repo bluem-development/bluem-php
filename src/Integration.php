@@ -97,8 +97,9 @@ class Integration
             // It is always the bluem merchant ID then.
             $this->merchantID = BLUEM_STATIC_MERCHANT_ID;
         }
-
+        
         $this->environment = $this->_config->environment;
+        
         // @todo Only use one environment variable. Right now it is saved in both $this->environment and $this->_config->environment
 
         // this is given by the bank (default 0)
@@ -124,7 +125,7 @@ class Integration
      * @param $customer_id
      * @param $order_id
      * @param boolean $mandate_id
-     * @return void
+     * @return 
      */
     public function CreateMandateRequest(
         $customer_id,

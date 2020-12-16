@@ -29,6 +29,21 @@ class BluemRequest
 
     public $debtorWallet = null;
 
+    private $_debtorAdditionalData = [];
+    private $_possibleDebtorAdditionalDataKeys = [
+        "EmailAddress",
+        "MobilePhoneNumber",
+        "CustomerProvidedDebtorIBAN",
+        "CustomerNumber",
+        "CustomerName",
+        "AttentionOf",
+        "Salutation",
+        "CustomerAddressLine1",
+        "CustomerAddressLine2",
+        "DebtorBankID",
+        "DynamicData",
+    ];
+
     public $context;
 
     /**
@@ -297,11 +312,72 @@ class BluemRequest
             return '';
         }
 
-        $res = "<DebtorWallet>";
+        $res = PHP_EOL."<DebtorWallet>".PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
         $res .= "<BIC>".$this->debtorWallet."</BIC>";
-        $res .= "</{$this->context->debtorWalletElementName}>";
-        $res .= "</DebtorWallet>";
+        $res .= "</{$this->context->debtorWalletElementName}>".PHP_EOL;
+        $res .= "</DebtorWallet>".PHP_EOL;
         return $res;
     }
+
+
+    
+    public function XmlWrapDebtorAdditionalData()
+    {
+        if(count($this->_debtorAdditionalData)==0)
+        {
+            return '';
+        }
+
+        $res = PHP_EOL."<DebtorAdditionalData>".PHP_EOL;
+        
+
+        foreach ($this->_debtorAdditionalData as $key => $value) {
+
+            if (!in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
+                continue;
+            }
+
+            // @todo: add specific regex pattern checks for value of each type.
+
+            $res.= "<{$key}>";
+            $res.= $value;
+            $res.= "</{$key}>".PHP_EOL;
+
+        }
+        $res.="</DebtorAdditionalData>".PHP_EOL;
+
+        return $res;
+    }
+
+    public function addAdditionalData($key,$value)
+    {
+        if (!in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
+            throw new Exception(
+                "Incorrect key added as DebtorAdditionalData
+                to request."
+            );
+        }
+
+        $this->_debtorAdditionalData[$key] = $value;
+
+        return $this; // allow function chaining
+    }
+
+
+    /*
+    <DebtorAdditionalData>
+    <EmailAddress>{0,1}</EmailAddress>
+    <MobilePhoneNumber>{0,1}</MobilePhoneNumber>
+    <CustomerProvidedDebtorIBAN>{0,1}</CustomerProvidedDebtorIBAN>
+    <CustomerNumber>{0,1}</CustomerNumber>
+    <CustomerName>{0,1}</CustomerName>
+    <AttentionOf>{0,1}</AttentionOf>
+    <Salutation>{0,1}</Salutation>
+    <CustomerAddressLine1>{0,1}</CustomerAddressLine1>
+    <CustomerAddressLine2>{0,1}</CustomerAddressLine2>
+    <DebtorBankID>{0,1}</DebtorBankID>
+    <DynamicData>{0,1}</DynamicData>
+    </DebtorAdditionalData>
+    */
 }
