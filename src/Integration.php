@@ -124,7 +124,7 @@ class Integration
      * @param $customer_id
      * @param $order_id
      * @param boolean $mandate_id
-     * @return void
+     *
      */
     public function CreateMandateRequest(
         $customer_id,

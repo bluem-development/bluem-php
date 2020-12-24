@@ -181,7 +181,8 @@ class EmandateBluemRequest extends BluemRequest
 				<EMandateReason>'.$this->eMandateReason.'</EMandateReason>
 				<DebtorReference>'.$this->debtorReference.'</DebtorReference>
                 <PurchaseID>'.$this->purchaseID.'</PurchaseID>'.
-                $this->XmlWrapDebtorWallet(),
+                $this->XmlWrapDebtorWallet().
+                $this->XmlWrapDebtorAdditionalData(),
                 [
                     // 'entranceCode'=>$this->entranceCode,  always sent already
                     'requestType'=>"Issuing",
