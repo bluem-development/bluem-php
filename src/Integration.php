@@ -41,7 +41,7 @@ if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
     define("BLUEM_ENVIRONMENT_ACCEPTANCE", "acc");
 }
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
-    define("BLUEM_STATIC_MERCHANT_ID","0020009469");
+    define("BLUEM_STATIC_MERCHANT_ID", "0020009469");
 }
 
 /**
@@ -64,23 +64,21 @@ class Integration
         }
         // validating configuration
         if (!in_array(
-                $_config->environment,
-                [
-                    BLUEM_ENVIRONMENT_TESTING, BLUEM_ENVIRONMENT_ACCEPTANCE, BLUEM_ENVIRONMENT_PRODUCTION
-                ]
-            )
+            $_config->environment,
+            [
+                BLUEM_ENVIRONMENT_TESTING, BLUEM_ENVIRONMENT_ACCEPTANCE, BLUEM_ENVIRONMENT_PRODUCTION
+            ]
+        )
         ) {
             throw new Exception("Invalid environment setting, should be either 'test', 'acc' or 'prod'");
         }
 
-        if(
-            !in_array(
-                $_config->localInstrumentCode, 
-                ['B2B', 'CORE']
-            )
+        if (!in_array(
+            $_config->localInstrumentCode,
+            ['B2B', 'CORE']
         )
-        {
-            // default localInstrumentCode 
+        ) {
+            // default localInstrumentCode
             $_config->localInstrumentCode = "CORE";
         }
         $this->_config = $_config;
@@ -92,14 +90,13 @@ class Integration
         } elseif ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
 
             $this->_config->accessToken = $_config->test_accessToken;
-            
-            // hardcoded merchantID in case of test. 
+            // hardcoded merchantID in case of test.
             // It is always the bluem merchant ID then.
             $this->merchantID = BLUEM_STATIC_MERCHANT_ID;
         }
-        
+
         $this->environment = $this->_config->environment;
-        
+
         // @todo Only use one environment variable. Right now it is saved in both $this->environment and $this->_config->environment
 
         // this is given by the bank (default 0)
@@ -118,14 +115,14 @@ class Integration
     /**-------------- MANDATE SPECIFIC FUNCTIONS --------------*/
 
     /**
-     * Create a Mandate Request given a customer ID, order ID 
-     * and Mandate ID and return the request object 
+     * Create a Mandate Request given a customer ID, order ID
+     * and Mandate ID and return the request object
      * WITHOUT sending it
      *
      * @param $customer_id
      * @param $order_id
      * @param boolean $mandate_id
-     * @return 
+     * @return
      */
     public function CreateMandateRequest(
         $customer_id,
@@ -156,7 +153,7 @@ class Integration
     }
 
     /**
-     * Create a Mandate Request given a customer ID, order ID 
+     * Create a Mandate Request given a customer ID, order ID
      * and Mandate ID and return the request object,
      * sending it and returning the response
      *
@@ -206,7 +203,7 @@ class Integration
 
     /**
      * Create a mandate ID in the required structure, based on the order ID, customer ID and the current timestamp.
-     * 
+     *
      * @param String $order_id    The order ID
      * @param String $customer_id The customer ID
      */
@@ -225,8 +222,8 @@ class Integration
 
 
     /**
-     * For mandates only: retreive the maximum amount from 
-     * the AcceptanceReport to use in parsing and validating 
+     * For mandates only: retreive the maximum amount from
+     * the AcceptanceReport to use in parsing and validating
      * mandates in webshop context
      *
      * @param $response
@@ -413,7 +410,7 @@ class Integration
     /**
      * Create a Identity Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.
      * @param String $debtorReference
-     * @return String Identity Transaction ID 
+     * @return String Identity Transaction ID
      */
     public function CreateIdentityTransactionID(String $debtorReference): String
     {
@@ -430,7 +427,7 @@ class Integration
         return Carbon::now()->format("YmdHisv"); // . "000";
     }
 
-    /** 
+    /**
      * Perform a request to the BlueM API given a request
      * object and return its response
      *
@@ -528,10 +525,10 @@ class Integration
 
 
     /** Webhook Code
-     * 
-     * Senders provide Bluem with a webhook URL. 
-     * The URL will be checked for consistency and 
-     * validity and will not be stored if any of the 
+     *
+     * Senders provide Bluem with a webhook URL.
+     * The URL will be checked for consistency and
+     * validity and will not be stored if any of the
      * checks fails. */
 
     /**
@@ -618,8 +615,8 @@ class Integration
     }
 
     /**
-     * Validate webhook signature based on a key file 
-     * available in the `keys` folder 
+     * Validate webhook signature based on a key file
+     * available in the `keys` folder
      *
      * @param  $xmlInput
      * @return bool
@@ -715,8 +712,8 @@ class Integration
             "TelephoneRequest",
             "EmailRequest"
         ];
-    }	
-    
+    }
+
 
 
     /* IBAN SPECIFIC */
@@ -778,7 +775,7 @@ class Integration
         default:
             $contexts = ["Mandates","Payments","Identity"];
             throw new Exception(
-                "Invalid Context requested, should be 
+                "Invalid Context requested, should be
                 one of the following: ".
                 implode(",",$contexts)
             );
