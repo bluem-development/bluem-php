@@ -73,10 +73,11 @@ class Integration
             throw new Exception("Invalid environment setting, should be either 'test', 'acc' or 'prod'");
         }
 
-        if (!in_array(
-            $_config->localInstrumentCode,
-            ['B2B', 'CORE']
-        )
+        if (!isset($_config->localInstrumentCode)
+            || !in_array(
+                $_config->localInstrumentCode,
+                ['B2B', 'CORE']
+            )
         ) {
             // default localInstrumentCode
             $_config->localInstrumentCode = "CORE";
@@ -86,10 +87,14 @@ class Integration
         if ($this->_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
 
             $this->_config->accessToken = $_config->production_accessToken;
+            // @todo consider throwing an exception if these tokens are missing.
+
 
         } elseif ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
 
             $this->_config->accessToken = $_config->test_accessToken;
+            // @todo consider throwing an exception if these tokens are missing.
+
             // hardcoded merchantID in case of test.
             // It is always the bluem merchant ID then.
             $this->merchantID = BLUEM_STATIC_MERCHANT_ID;
