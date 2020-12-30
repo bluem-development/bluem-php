@@ -133,10 +133,6 @@ class PaymentBluemRequest extends BluemRequest
 
     public function XmlString(): String
     {
-        var_dump($this->debtorWallet);
-        // echo "YOO";
-var_dump($this->XmlWrapDebtorWallet());
-die();
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
