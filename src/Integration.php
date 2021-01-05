@@ -89,7 +89,6 @@ class Integration
             $this->_config->accessToken = $_config->production_accessToken;
             // @todo consider throwing an exception if these tokens are missing.
 
-
         } elseif ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
 
             $this->_config->accessToken = $_config->test_accessToken;
