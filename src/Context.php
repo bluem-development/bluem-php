@@ -66,7 +66,8 @@ class PaymentsContext extends BluemContext
                 new BIC("RBRBNL21", "RegioBank"),
                 new BIC("SNSBNL2A", "SNS"),
                 new BIC("TRIONL2U", "Triodos Bank"),
-                new BIC("FVLBNL22", "Van Lanschot")
+                new BIC("FVLBNL22", "Van Lanschot"),
+                new BIC("REVOLT21", "Revolut")
             ]
         );
     }
