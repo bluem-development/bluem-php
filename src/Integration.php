@@ -370,12 +370,13 @@ class Integration
         $requestCategory,
         string $description,
         $debtorReference,
-        $debtorReturnURL
+        $debtorReturnURL,
+        $entranceCode = ""
     ): IdentityBluemRequest {
 
         $r = new IdentityBluemRequest(
             $this->_config,
-            "",
+            $entranceCode,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
                 isset($this->_config->expected_return) ?
                 $this->_config->expected_return : ""),

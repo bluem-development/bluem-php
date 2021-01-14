@@ -36,6 +36,8 @@ class IbanBluemRequest extends BluemRequest
         $this->_inputIban = $_inputIban;
         $this->_inputName = $_inputName;
         $this->_debtorReference = $_debtorReference;
+
+        $this->context = new IBANCheckContext();
     }
 
     public function XmlString() : String

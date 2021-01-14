@@ -48,6 +48,9 @@ class IdentityBluemRequest extends BluemRequest
         $this->debtorReturnURL = $debtorReturnURL;
 
         $this->debtorReturnURL = $this->debtorReturnURL . "?transactionID={$this->debtorReference}";
+
+        
+        $this->context = new IdentityContext();
     }
     
     private function getIdinRequestCategory($category,$active=true)

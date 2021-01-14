@@ -69,6 +69,8 @@ class BluemRequest
          *  which is unique in time for any request; which is string; which should not be visible for customer;
          *  structure: prefix for testing + customer number + current timestamp up to the second
         */
+        // @todo Validate input entrance code if not emptystring, based on XSD
+
         if ($entranceCode === "") {  // if not given, create it
             $this->entranceCode = $this->entranceCode($expectedReturn);
         } else {
@@ -206,7 +208,7 @@ class BluemRequest
      * @param string $entranceCode a set entrance code, otherwise it gets generated based on dateTime string in "YmdHisv" standardized format, in Europe/Amsterdam timezone
      * @return void
      */
-    private function entranceCode(String $expectedReturn, String $entranceCode = "")
+    private function entranceCode(String $expectedReturn='none', String $entranceCode = "")
     {
 
         // create a default entrancecode if necessary
@@ -220,6 +222,7 @@ class BluemRequest
 
         if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
             switch ($expectedReturn) {
+            case '':
             case 'none': {
                     $prefix = "";
                     break;

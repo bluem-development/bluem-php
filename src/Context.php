@@ -20,7 +20,7 @@ class BluemContext
      *
      * @param [type] $BICs
      */
-    public function __construct($BICs)
+    public function __construct($BICs=[])
     {
         $this->BICs = $BICs;
     }
@@ -146,5 +146,10 @@ class IdentityContext extends BluemContext
             ]
         );
     }
+}
+
+class IBANCheckContext extends BluemContext {
+
+    // no context preset yet
 }
 
