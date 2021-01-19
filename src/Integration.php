@@ -766,7 +766,7 @@ class Integration
 
     public function _retrieveContext($context)
     {
-        $localInstrumentCode = $this->config->localInstrumentCode;
+        $localInstrumentCode = $this->_config->localInstrumentCode;
         switch ($context) {
         case 'Mandates':
             $context = new MandatesContext($localInstrumentCode);
