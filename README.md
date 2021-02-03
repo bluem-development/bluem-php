@@ -361,7 +361,7 @@ Processing the Identity transaction callback function can be done after the Blue
 
 ```php
 // retrieve from a store, preferably more persistent than session. 
-// this is purely for demonstrative purposes
+// the code below is is purely for demonstrative purposes
 $transactionID = $_SESSION['transactionID'];
 $entranceCode = $_SESSION['entranceCode'];
 
@@ -390,26 +390,18 @@ if ($statusResponse->ReceivedResponse()) {
             // this contains an object with key-value pairs of relevant data from the bank:
             /**
              * example contents:
-             *  ["DateTime"]=>
-                         string(24) "2020-10-16T15:30:45.803Z"
-                        ["CustomerIDResponse"]=>
-                        string(21) "FANTASYBANK1234567890"
-                        ["AddressResponse"]=>
-                        object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
-                            ["Street"]=>
-                            string(12) "Pascalstreet"
-                            ["HouseNumber"]=>
-                            string(2) "19"
-                            ["PostalCode"]=>
-                            string(6) "0000AA"
-                            ["City"]=>
-                            string(6) "Aachen"
-                            ["CountryCode"]=>
-                            string(2) "DE"
-                        }
-                        ["BirthDateResponse"]=>
-                        string(10) "1975-07-25"
-                */
+             *  "DateTime": string(24) "2020-10-16T15:30:45.803Z"
+             *  "CustomerIDResponse": string(21) "FANTASYBANK1234567890"
+             *  "AddressResponse": 
+             *  object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
+             *      "Street": string(12) "Pascalstreet"
+             *      "HouseNumber": string(2) "19"
+             *      "PostalCode": string(6) "0000AA"
+             *      "City": string(6) "Aachen"
+             *      "CountryCode": string(2) "DE"
+             *  }
+             *  "BirthDateResponse": string(10) "1975-07-25"
+             *  */
             // store that information and process it. 
 
             // You can for example use the BirthDateResponse to determine the age of the user and act accordingly
@@ -438,13 +430,7 @@ if ($statusResponse->ReceivedResponse()) {
 }
 ```
 
-
-
-## Iban Check
-
-Specific instructions coming soon..
-
-## Important notes
+## Important miscellaneous notes
 
 ### Enable secure Webhook reception through a certificate check
 To be able to use webhook functionality, retrieve a copy of the Webhook certificate provided by Bluem and put it in a folder named `keys`, writeable by the code in this library.
