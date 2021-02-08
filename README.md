@@ -460,7 +460,7 @@ if ($statusResponse->ReceivedResponse()) {
 ```
 ## IBAN-Name check
 
-
+This service allows you to verify if a name and IBAN combination are matching and valid, which can be useful when you are validating user registration, input or within a checkout procedure. A simple example of such a request and its result can be found below:
 
 ```php
 
@@ -476,18 +476,22 @@ $request = $bluem->CreateIBANNameCheckRequest(
 );
 
 $response = $bluem->PerformRequest($request);
-var_dump($response);
+// var_dump($response);
 
 switch ($response->GetIBANResult()) {
 case 'INVALID':
     echo "IBAN $iban and name $name do not match";
     break;
 case 'KNOWN':
+    // handle how the response should be taken in
     break;
 }
-
-
 ```
+
+### Use-cases for IBAN-Name checking and Edge cases
+More details on how to use IBAN-Name checking will follow shortly.
+
+
 ## Important miscellaneous notes
 
 ### Enable secure Webhook reception through a certificate check
