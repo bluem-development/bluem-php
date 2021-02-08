@@ -27,7 +27,7 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
         $transactionID,
         $entranceCode
     );
-    var_dump($statusResponse);
+    // var_dump($statusResponse);
 
 
     if ($statusResponse->ReceivedResponse()) {

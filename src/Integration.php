@@ -296,7 +296,7 @@ class Integration
      * @param  $dueDateTime
      * @param string $currency
      * @param  $entranceCode
-     * @return void
+     * @return PaymentTransactionBluemResponse
      */
     public function Payment(
         string $description,

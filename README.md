@@ -1,9 +1,9 @@
-# bluem-php
+# Bluem-php for PAYMENT, MANDATES, IDIN & IBAN-Name check
 
-A PHP interface for utilizing the Bluem services eMandate, ePayments, iDIN and IBAN check.
+A PHP interface for utilizing the Bluem services ePayments, eMandates, iDIN and/or IBAN-Name check.
 Utilize this library to write your own applications in PHP that communicate with Bluem, without having to handle the flow yourself.
 
-Utilized by other applications as well: 
+Utilized by other applications as well:
 
 - [WordPress and WooCommerce plug-in](https://github.com/daanrijpkema/bluem-woocommerce), available for Bluem customers.
 
@@ -36,57 +36,63 @@ Then you can retrieve an object to utilize all functions as below. It is suggest
 $config = new Stdclass();
 
 // Fill in prod, test or acc for production, test or acceptance environment.
-$config->environment = ... 
+$config->environment = ...
 
 // The sender ID, issued by BlueM. Starts with an S, followed by a number.
-$config->senderID = ... 
+$config->senderID = ...
 
 // The access token to communicate with BlueM, for the test environment.
-$config->test_accessToken = ... 
+$config->test_accessToken = ...
 
 // The access token to communicate with BlueM, for the production environment.
-$config->production_accessToken = ... 
+$config->production_accessToken = ...
 
-// the merchant ID, to be found on the contract you have with the bank for receiving direct debit mandates.
-$config->merchantID = ... 
+// the merchant ID (for eMandates), to be found on the contract you have with the bank for receiving direct debit mandates.
+$config->merchantID = ...
 
 // The slug of the thank you page to which should be referred after completing process. If your ORDERID is processed in the URL it will be filled in for you
-$config->thanksPage = ... 
+$config->thanksPage = ...
+// Not applicable for IBAN-Name check
 
 // What status would you like to get back for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending
-$config->expectedReturnStatus = ... 
+$config->expectedReturnStatus = ...
+// Not applicable for IBAN-Name check
 
 // What's your BrandID? Set at BlueM
-$config->brandID = ... 
+$config->brandID = ...
+// Not applicable for IBAN-Name check
 
+// eMANDATES Specific:
 // Brief description of the debt collection at the time of issue
-$config->eMandateReason = ... 
+$config->eMandateReason = ...
 
 // Choose type of collection: CORE or B2B
-$config->localInstrumentCode = ... 
+$config->localInstrumentCode = ...
 
 // URL to return to after finishing the process
 $config->merchantReturnURLBase = ...;
+// Not applicable for IBAN-Name check
 
 $bluem = new Integration($config);
 ```
 
 ## General concept
 
-This library makes it easy to perform communication with Bluem for its services (eMandates, Payments, Identity and Iban Check). The flow for each service is very similar and thus easy to understand once you understand and implement one of them.
+This library makes it easy to perform communication with Bluem for its services (ePayments, eMandates, iDIN and IBAN-Name Check). The flow for each service is very similar and thus easy to understand once you understand and implement one of them.
 
 1. **TransactionRequest (from site to Bluem)**: Your application creates a request object, sends it to Bluem's servers with authentication.
-2. **TransactionResponse (including TransactionURL) (from Bluem to site)**: Your application receives a response with a URL as entry point into the Bluem environment, if the request was successful. 
+2. **TransactionResponse (including TransactionURL) (from Bluem to site)**: Your application receives a response with a URL as entry point into the Bluem environment, if the request was successful.
 3. **Bluem Environment**: Redirect client to TransactionURL, client (via checkout) to bank, confirm transaction, back to Merchant (via MerchantReturnURL with Emandates, and via DebtorReturnURL with Payments/Identity), this is trigger for StatusRequest
-The user is redirected to the response URL at the Bluem servers. In this Bluem environment, the user performs a mandate signing, payment, identity or iban check and returns to a predefined URL. 
-4. **StatusRequest (from site to Bluem)**: Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality. 
+The user is redirected to the response URL at the Bluem servers. In this Bluem environment, the user performs a payment/mandate signing or identity/IDIN check and returns to a predefined URL.
+4. **StatusRequest (from site to Bluem)**: Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality.
 5. **StatusUpdate (from Bluem to site)**: This response object that comes back from a callback or webhook, contains an updated status that you can process within your application. I.e. when the user has paid or verified, and you have to change a product, order or process' status and go to a next step.
 6. **Webhook**: The webhook functionality allows Bluem to directly push status changes and transaction results to your site or app in a trustworthy way. Therefore, your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
 
-The Webhook is only needed for Mandate and Payment, online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification (there is no place where the end user can close the browser).
+The Webhook is only needed for ePayments and eMandates: online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification (there is no place where the end user can close the browser).
 
 **Using the webhook functionality is highly recommended.** More instructions on implementing the webhook will follow in each specific service shortly.
 
+Please note that the flow for the IBAN-Name check is shorter: Only a TransactionRequest and the results come directly back in the TransactionResponse. This is as the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
 
 ### DebtorWallet: preselecting a bank for Mandate, Payment or Identity request
 
@@ -98,7 +104,9 @@ To preselect a bank in a request, use the following function on a request object
 $BIC = "INGBNL2A";
 $request->selectDebtorWallet($BIC);
 ```
-Parameter has to be a valid BIC code of a supported bank. An invalid BIC code will trigger an exception. **Please note that supported BICs differ per service as not every bank offers the same services!** The supported BIC codes per service can also be requested from a Bluem object, given the service context. Below is a list of supported contexts for this function.
+Parameter has to be a valid BIC code of a supported bank. An invalid BIC code will trigger an exception. **Please note that supported BICs differ per service as not every bank offers the same services!** The supported BIC codes per service can also be requested from a Bluem object, given the service context. **As appendix to this Documentation file, you can find a full list of all BICs per context.**
+
+Illustrated here is that a list of BICs per context can also be retrieved programmatically:
 
 ```php
 $MandatesBICs = $bluem->retrieveBICsForContext("Mandates"); // also specific to localInstrumentCode, see notes.
@@ -110,7 +118,86 @@ Input of a different context will trigger an exception. If valid, the result is 
 Please note that the BIC list will vary when a different `localInstrumentCode` is configured. The localInstrumentCode `CORE` and `B2B` are supported by different banks. Based on your configuration, the right BIC list is loaded from context automatically and used to verify the debtorWallet.
 
 
-## eMandates 
+## Payments
+
+The following attributes in the bluem_config are vital for proper eMandate functionality:
+
+What is PaymentReference,
+
+Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
+
+
+### Create a payment transaction
+
+Payments is very similar to eMandates, but utilizing other parameters:
+
+```php
+    $description = "Test payment"; // a concise description with possible references to order name and such
+    $amount = 100.00;	 // as a float
+    $currency = "EUR"; // if set to null, will default to EUR as string
+    $debtorReference = "1234023"; 
+    $dueDateTime = null; // set it automatically a day in advance. if you want to set it, use a datetime string in "YYYY-MM-DD H:i:s" format
+
+    $entranceCode = $bluem->CreateEntranceCode();
+
+    // To create AND perform a request:
+    $request = $bluem->CreatePaymentRequest(
+        $description,
+        $debtorReference,
+        $amount,
+        $dueDateTime,
+        $currency,
+        $entranceCode
+    );
+    // Or, to create and perform a request together in shorthand:
+    $response = $bluem->Payment(
+        $description,
+		$debtorReference,
+		$amount,
+		$dueDateTime,
+        $currency
+    );
+
+```
+
+### Requesting a payment status:
+Similarly to requesting a Mandate status (see below):
+
+```php
+$statusResponse = $bluem->PaymentStatus($transactionID, $entranceCode);
+
+if ($statusresponse->ReceivedResponse()) {
+
+    $statuscode = ($statusresponse->GetStatusCode());
+
+    // add your own logic in each case:
+    switch ($statuscode) {
+        case 'Success':
+            // do something when the payment is successful directly
+        case 'Processing':
+        case 'Pending':
+            // do something when the request is still processing (for example tell the user to come back later to this page)
+            break;
+        case 'Cancelled':
+            // do something when the request has been canceled by the user
+            break;
+        case 'Open':
+            // do something when the request has not yet been completed by the user, redirecting to the transactionURL again 
+            break;
+        case 'Expired':
+            // do something when the request has expired
+            break;
+        default:
+            // unexpected status returned, show an error
+            break;
+    }
+
+}
+```
+
+
+
+## eMandates
 
 
 ### Mandate specific configuration fields:
@@ -118,15 +205,15 @@ The following attributes in the bluem_config are vital for proper eMandate funct
 
 - Local Instrument Code (CORE, B2B)
 
-- requestType (Issuing, (Amendment/Cancellation worden eigenlijk niet gebruikt)), 
+- requestType (Issuing, (Amendment/Cancellation worden eigenlijk niet gebruikt)),
 
-= sequenceType (OOFF, RCUR), 
+= sequenceType (OOFF, RCUR),
 
-MandateID, 
+MandateID,
 
-merchantID, 
+merchantID,
 
-MaxAmount (for B2B), 
+MaxAmount (for B2B),
 
 ValidationReference
 
@@ -183,7 +270,7 @@ if ($response->ReceivedResponse()) {
 
     // TODO: redirect to the above transaction URL
     header("Location: ". $transactionURL); // or something of thes ort.
-} else { 
+} else {
     // TODO: no proper status given, show an error.
     exit("Error: " . $response->Error()); // for example
 }
@@ -208,54 +295,6 @@ if (!$response->Status()) {
 ```
 
 The possible statuses are `Success`, `Processing`, `Pending`, `Cancelled`, `Open` and `Expired`. Refer to the Bluem documentation for more specifics on these statuses.
-
-## Payments
-
-The following attributes in the bluem_config are vital for proper eMandate functionality:
-
-What is PaymentReference, 
-
-Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
-
-
-### Create a payment transaction 
-
-Payments is very similar to eMandates, but utilizing other parameters:
-
-```php
-    $description = "Test payment";
-    $amount = 100.00; // has to be a float
-    $currency = "EUR"; // if set to null, will default to EUR
-    $debtorReference = "1234";
-    $dueDateTime = null; // set it automatically to two weeks in advance.
-
-    // To create AND perform a request:
-    $request = $bluem->CreatePaymentRequest(
-        $description,
-		$debtorReference,
-		$amount,
-		$dueDateTime,
-        $currency
-    );
-    $response = $bluem->PerformRequest($request);
-
-    // Or, to create and perform a request together in shorthand:
-    $response = $bluem->Payment(
-        $description,
-		$debtorReference,
-		$amount,
-		$dueDateTime,
-        $currency
-    );
-    
-```
-
-### Requesting a payment status:
-Similarly to requesting a Mandate status:
-
-```php
-$bluem->PaymentStatus($transactionID, $entranceCode);
-```
 
 
 
@@ -292,17 +331,17 @@ The possibilities are:
 
 For information on these specific request types, a more comprehensive guide will follow soon. For now, contact your Bluem account manager for assistance in choosing the use case that matches your desired activities.
 
-The three most commonly used cases with Identity requests are: 
+The three most commonly used cases with Identity requests are:
 
-- Full identification (request 1 or multiple of: `Name`, `Address`, `BirthDate`, `Gender`, `EmailAddress`, `PhoneNumber`, `CustomerID`)
-- Age verify 18+ (request `AgeVerify`)
-- Safe login with iDIN (request `CustomerIDLogin`)
+1. Full identification (request 1 or multiple of: `Name`, `Address`, `BirthDate`, `Gender`, `EmailAddress`, `PhoneNumber`, `CustomerID`). This is used for KYC, Wwft, AML compliance and for Account Creation.
+2. Age verify 18+ (request `AgeVerify`) **and cannot be combined with the other request categories**.
+3. Safe login with iDIN (request `CustomerIDLogin`) **and cannot be combined with the other request categories**; Here you utilize iDIN login as an alternative safe login method next to a traditional user name – password login. Please note that use of Safe login with iDIN requires the first time a Full identification.
 
 
 
 ### Creating an identity request
 
-Creating an Identity Transaction Request can be done after the Bluem object has been properly instantiated. 
+Creating an Identity Transaction Request can be done after the Bluem object has been properly instantiated.
 Keep in mind that the BrandID has to be compatible with Identity requests. Usually the corresponding brand ID ends with "Identity" instead of for example "Mandate" or "Payment".
 
 The `$returnURL` is vital, as Bluem will redirect the user to that location after the process within the portal is done. The next section deals with creating the callback function.
@@ -347,10 +386,10 @@ if ($response->ReceivedResponse()) {
 
 ### The Identity Response callback
 
-Processing the Identity transaction callback function can be done after the Bluem object has been properly instantiated. 
+Processing the Identity transaction callback function can be done after the Bluem object has been properly instantiated.
 
 ```php
-// retrieve from a store, preferably more persistent than session. 
+// retrieve from a store, preferably more persistent than session.
 // the code below is is purely for demonstrative purposes
 $transactionID = $_SESSION['transactionID'];
 $entranceCode = $_SESSION['entranceCode'];
@@ -382,7 +421,7 @@ if ($statusResponse->ReceivedResponse()) {
              * example contents:
              *  "DateTime": string(24) "2020-10-16T15:30:45.803Z"
              *  "CustomerIDResponse": string(21) "FANTASYBANK1234567890"
-             *  "AddressResponse": 
+             *  "AddressResponse":
              *  object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
              *      "Street": string(12) "Pascalstreet"
              *      "HouseNumber": string(2) "19"
@@ -392,7 +431,7 @@ if ($statusResponse->ReceivedResponse()) {
              *  }
              *  "BirthDateResponse": string(10) "1975-07-25"
              *  */
-            // store that information and process it. 
+            // store that information and process it.
 
             // You can for example use the BirthDateResponse to determine the age of the user and act accordingly
 
@@ -406,7 +445,7 @@ if ($statusResponse->ReceivedResponse()) {
             // do something when the request has been canceled by the user
             break;
         case 'Open':
-            // do something when the request has not yet been completed by the user, redirecting to the transactionURL again 
+            // do something when the request has not yet been completed by the user, redirecting to the transactionURL again
             break;
         case 'Expired':
             // do something when the request has expired
@@ -419,9 +458,77 @@ if ($statusResponse->ReceivedResponse()) {
     // no proper response received, tell the user
 }
 ```
+## IBAN-Name check
 
+
+
+```php
+
+
+$iban = "NL99ABNA1234012428";
+$name = "H. de Vries";
+$debtorReference = "1234";
+
+$request = $bluem->CreateIBANNameCheckRequest(
+    $iban,
+    $name,
+    $debtorReference
+);
+
+$response = $bluem->PerformRequest($request);
+var_dump($response);
+
+switch ($response->GetIBANResult()) {
+case 'INVALID':
+    echo "IBAN $iban and name $name do not match";
+    break;
+case 'KNOWN':
+    break;
+}
+
+
+```
 ## Important miscellaneous notes
 
 ### Enable secure Webhook reception through a certificate check
 To be able to use webhook functionality, retrieve a copy of the Webhook certificate provided by Bluem and put it in a folder named `keys`, writeable by the code in this library.
 
+## Appendices
+### List of all supported BICs per context
+#### ePayments
+- ABN AMRO  <BR> BIC: `ABNANL2A`
+- ASN Bank  <BR> BIC: `ASNBNL21`
+- bunq  <BR> BIC: `BUNQNL2A`
+- Handelsbanken <BR> BIC: `HANDNL2A`
+- ING   <BR> BIC: `INGBNL2A`
+- Knab  <BR> BIC: `KNABNL2H`
+- Moneyou   <BR> BIC: `MOYONL21`
+- Rabobank  <BR> BIC: `RABONL2U`
+- RegioBank <BR> BIC: `RBRBNL21`
+- SNS   <BR> BIC: `SNSBNL2A`
+- Triodos Bank  <BR> BIC: `TRIONL2U`
+- Van Lanschot  <BR> BIC: `FVLBNL22`
+- Revolut   <BR> BIC: `REVOLT21`
+#### eMandates CORE
+- ABN AMRO  <BR> BIC: `ABNANL2A`
+- ASN Bank  <BR> BIC: `ASNBNL21`
+- ING   <BR> BIC: `INGBNL2A`
+- Knab  <BR> BIC: `KNABNL2H`
+- Rabobank  <BR> BIC: `RABONL2U`
+- RegioBank <BR> BIC: `RBRBNL21`
+- SNS   <BR> BIC: `SNSBNL2A`
+- Triodos Bank  <BR> BIC: `TRIONL2U`
+#### eMandates B2B
+- ABN AMRO  <BR> BIC: `ABNANL2A`
+- ING   <BR> BIC: `INGBNL2A`
+- Rabobank  <BR> BIC: `RABONL2U`
+
+#### Identity
+- ABN AMRO  <BR> BIC: `ABNANL2A`
+- ASN Bank  <BR> BIC: `ASNBNL21`
+- bunq  <BR> BIC: `BUNQNL2A`
+- ING   <BR> BIC: `INGBNL2A`
+- Rabobank  <BR> BIC: `RABONL2U`
+- RegioBank <BR> BIC: `RBRBNL21`
+- SNS   <BR> BIC: `SNSBNL2A`
+- Triodos Bank  <BR> BIC: `TRIONL2U`
