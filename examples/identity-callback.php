@@ -12,13 +12,9 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
     /** Callback example: */
     // parse the callback functionality here. THis is done in one file for simplicity's sake. It is recommended to do this in a separate file
 
-
-    echo "<HR>CALLBACK ";
-
-    var_dump($_SESSION);
-
     // retrieve from a store, preferably more persistent than session. 
     // this is purely for demonstrative purposes
+    // if you are to use session, make sure it is sanitized
     $transactionID = $_SESSION['transactionID'];
     $entranceCode = $_SESSION['entranceCode'];
 
