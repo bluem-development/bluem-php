@@ -38,13 +38,13 @@ $config = new Stdclass();
 // Fill in prod, test or acc for production, test or acceptance environment.
 $config->environment = ... 
 
-// The sender ID, issued by BlueM. Starts with an S, followed by a number.
+// The sender ID, issued by Bluem. Starts with an S, followed by a number.
 $config->senderID = ... 
 
-// The access token to communicate with BlueM, for the test environment.
+// The access token to communicate with Bluem, for the test environment.
 $config->test_accessToken = ... 
 
-// The access token to communicate with BlueM, for the production environment.
+// The access token to communicate with Bluem, for the production environment.
 $config->production_accessToken = ... 
 
 // the merchant ID, to be found on the contract you have with the bank for receiving direct debit mandates.
@@ -56,7 +56,7 @@ $config->thanksPage = ...
 // What status would you like to get back for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending
 $config->expectedReturnStatus = ... 
 
-// What's your BrandID? Set at BlueM
+// What's your BrandID? Set at Bluem
 $config->brandID = ... 
 
 // Brief description of the debt collection at the time of issue
