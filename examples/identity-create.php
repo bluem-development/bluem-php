@@ -17,12 +17,14 @@ returns:
 	"NameRequest",
 	"AddressRequest",
 	"BirthDateRequest",
-	"AgeCheckRequest",
 	"GenderRequest",
 	"TelephoneRequest",
 	"EmailRequest"
-	]
-	*/
+	"AgeCheckRequest",
+]
+
+	Use either AgeCheckRequest OR the others in a request.
+*/
 
 /* Creating an identity request, example */
 $description = "Test identity"; // description is shown to customer
