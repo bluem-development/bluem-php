@@ -45,7 +45,7 @@ if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
 }
 
 /**
- * Bluem Integration main class
+ * BlueM Integration main class
  */
 class Integration
 {
@@ -264,7 +264,8 @@ class Integration
         Float $amount,
         $dueDateTime = null,
         String $currency = "EUR",
-        $entranceCode = null
+        $entranceCode = null,
+        $debtorReturnURL = ""
     ): PaymentBluemRequest {
 
         if (is_null($entranceCode)) {
@@ -282,7 +283,8 @@ class Integration
             $entranceCode,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
                 isset($this->_config->expected_return) ?
-                $this->_config->expected_return : "")
+                $this->_config->expected_return : ""),
+                $debtorReturnURL
         );
         return $r;
     }
@@ -296,7 +298,7 @@ class Integration
      * @param  $dueDateTime
      * @param string $currency
      * @param  $entranceCode
-     * @return PaymentTransactionBluemResponse
+     * @return void
      */
     public function Payment(
         string $description,
@@ -433,7 +435,7 @@ class Integration
     }
 
     /**
-     * Perform a request to the Bluem API given a request
+     * Perform a request to the BlueM API given a request
      * object and return its response
      *
      * @param  BluemRequest $transaction_request The Request Object
@@ -537,7 +539,7 @@ class Integration
      * checks fails. */
 
     /**
-     * Webhook for Bluem Mandate signature verification procedure
+     * Webhook for BlueM Mandate signature verification procedure
      */
     public function Webhook()
     {

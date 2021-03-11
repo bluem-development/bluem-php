@@ -73,7 +73,8 @@ class PaymentBluemRequest extends BluemRequest
         $currency = null,
         $transactionID = null,
         $entranceCode,
-        String $expected_return = "none"
+        String $expected_return = "none",
+        $debtorReturnURL =""
     ) {
         parent::__construct($config, $entranceCode, $expected_return);
 
@@ -106,8 +107,16 @@ class PaymentBluemRequest extends BluemRequest
         $this->amount = $this->parseAmount($amount);
 
         $this->transactionID = $transactionID;
-        $this->debtorReturnURL = $config->merchantReturnURLBase . "?entranceCode={$this->entranceCode}&transactionID={$this->transactionID}";
+
+        if(isset($debtorReturnURL) && $debtorReturnURL!=="") {
+            $this->debtorReturnURL = $debtorReturnURL;
+        } else {
+            $this->debtorReturnURL = $config->merchantReturnURLBase;
+        }
+        $this->debtorReturnURL .= "?entranceCode={$this->entranceCode}&transactionID={$this->transactionID}";
+        
         $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
+        
         // note! different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class
 
