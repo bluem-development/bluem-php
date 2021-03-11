@@ -284,7 +284,7 @@ class Integration
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
                 isset($this->_config->expected_return) ?
                 $this->_config->expected_return : ""),
-                $debtorReturnURL
+            $debtorReturnURL
         );
         return $r;
     }

@@ -19,7 +19,7 @@ class IdentityBluemRequest extends BluemRequest
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "ITX";
 
-    private $minAge;
+    private $minAge = "18";
 
     public function TransactionType() : String
     {

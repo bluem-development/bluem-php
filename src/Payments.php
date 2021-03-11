@@ -72,7 +72,7 @@ class PaymentBluemRequest extends BluemRequest
         $dueDateTime = null,
         $currency = null,
         $transactionID = null,
-        $entranceCode,
+        $entranceCode ="",
         String $expected_return = "none",
         $debtorReturnURL =""
     ) {
@@ -108,7 +108,7 @@ class PaymentBluemRequest extends BluemRequest
 
         $this->transactionID = $transactionID;
 
-        if(isset($debtorReturnURL) && $debtorReturnURL!=="") {
+        if (isset($debtorReturnURL) && $debtorReturnURL != "") {
             $this->debtorReturnURL = $debtorReturnURL;
         } else {
             $this->debtorReturnURL = $config->merchantReturnURLBase;
