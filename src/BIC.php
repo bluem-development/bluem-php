@@ -15,7 +15,9 @@ class BIC {
     public $issuerID;
     public $issuerName;
 
-    public function __construct($issuerID,$issuerName) {
+    public function __construct(
+        $issuerID, $issuerName
+    ) {
         $this->issuerID = $issuerID;
         $this->issuerName = $issuerName;
     }

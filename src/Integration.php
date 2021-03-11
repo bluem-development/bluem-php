@@ -107,8 +107,14 @@ class Integration
         $this->_config->merchantSubID = "0";
 
         // if an invalid possible return status is given, set it to a default value (for testing purposes only)
-        $possibleReturnStatuses = ["none", "success", "cancelled", "expired", "failure", "open", "pending"];
-        if($this->_config->expectedReturnStatus!=="" && !in_array($this->_config->expectedReturnStatus,$possibleReturnStatuses)) {
+        $possibleReturnStatuses = [
+            "none",     "success",  "cancelled",
+            "expired",  "failure",  "open",
+            "pending"
+        ];
+        if ($this->_config->expectedReturnStatus!==""
+            && !in_array($this->_config->expectedReturnStatus, $possibleReturnStatuses)
+        ) {
             $this->_config->expectedReturnStatus = "success";
         }
 
@@ -150,8 +156,8 @@ class Integration
             $order_id,
             $mandate_id,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expected_return) ?
-                $this->_config->expected_return : "")
+                isset($this->_config->expectedReturnStatus) ?
+                $this->_config->expectedReturnStatus : "")
         );
         return $r;
     }
@@ -197,8 +203,8 @@ class Integration
             $mandateID,
             $entranceCode,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expected_return) ?
-                $this->_config->expected_return : "")
+                isset($this->_config->expectedReturnStatus) ?
+                $this->_config->expectedReturnStatus : "")
         );
 
         $response = $this->PerformRequest($r);
@@ -272,6 +278,14 @@ class Integration
             $entranceCode = $this->CreateEntranceCode();
         }
 
+        // @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
+        // @todo: validate Description
+        // @todo: validate Amount
+        // @todo: validate Currency
+            // @todo: Create constants for Currencies
+        // @todo: sanitize debtorReturnURL?
+
+
         $r = new PaymentBluemRequest(
             $this->_config,
             $description,
@@ -282,8 +296,8 @@ class Integration
             $this->CreatePaymentTransactionID($debtorReference),
             $entranceCode,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expected_return) ?
-                $this->_config->expected_return : ""),
+                isset($this->_config->expectedReturnStatus) ?
+                $this->_config->expectedReturnStatus : ""),
             $debtorReturnURL
         );
         return $r;
@@ -329,7 +343,7 @@ class Integration
      *
      * @param $transactionID
      * @param $entranceCode
-     * @return void
+     * @return ErrorBluemResponse|PaymentStatusBluemResponse|Exception
      */
     public function PaymentStatus($transactionID, $entranceCode)
     {
@@ -338,8 +352,8 @@ class Integration
             $this->_config,
             $transactionID,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expected_return) ?
-                $this->_config->expected_return : ""),
+                isset($this->_config->expectedReturnStatus) ?
+                $this->_config->expectedReturnStatus : ""),
             $entranceCode
         );
 
@@ -380,8 +394,8 @@ class Integration
             $this->_config,
             $entranceCode,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expected_return) ?
-                $this->_config->expected_return : ""),
+                isset($this->_config->expectedReturnStatus) ?
+                $this->_config->expectedReturnStatus : ""),
             $requestCategory,
             $description,
             $debtorReference,
@@ -405,14 +419,18 @@ class Integration
             $this->_config,
             $entranceCode,
             ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expected_return) ?
-                $this->_config->expected_return : ""),
+                isset($this->_config->expectedReturnStatus) ?
+                $this->_config->expectedReturnStatus : ""),
             $transactionID
         );
 
         $response = $this->PerformRequest($r);
         return $response;
     }
+
+
+    // @todo: Create Identity shorthand function 
+
 
     /**
      * Create a Identity Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.

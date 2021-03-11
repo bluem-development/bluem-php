@@ -20,6 +20,7 @@ class IdentityBluemRequest extends BluemRequest
     public $transaction_code = "ITX";
 
     private $minAge = "18";
+    // @todo: should be integer
 
     public function TransactionType() : String
     {
@@ -57,7 +58,9 @@ class IdentityBluemRequest extends BluemRequest
 
         // @todo: make this a configurable setting
         $this->minAge = 18;
+        // @todo: validate this , also based on XSD
 
+        
         $this->context = new IdentityContext();
     }
     

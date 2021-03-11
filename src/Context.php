@@ -39,8 +39,11 @@ class BluemContext
     }
 }
 
-
-
+// @todo: Add Paypal context and distinguish between iDeal and Paypal contexts based on debtorWalletElementName
+// in paypal, BICs don't matter
+// so there should be an intermediate BluemBankContext
+// and BluemPayPalContext that can then be extended by PaymentsPayPalContext and PaymentsBankContext
+// and for Identity etc., if applicable, but we have to find out.
 
 class PaymentsContext extends BluemContext
 {

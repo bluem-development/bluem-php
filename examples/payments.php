@@ -12,6 +12,8 @@ $currency = "EUR"; // if set to null, will default to EUR as string
 $debtorReference = "1234023"; 
 $dueDateTime = null; // set it automatically a day in advance. if you want to set it, use a datetime string in "YYYY-MM-DD H:i:s" format
 
+$returnUrl = "";  // set this if you want to override the return URL in your own callback function location specific for payments. If empty string or not given, the config defined return URL will be used.
+
 $entranceCode = $bluem_object->CreateEntranceCode();
 
 // To create AND perform a request:
@@ -21,7 +23,8 @@ $request = $bluem_object->CreatePaymentRequest(
 	$amount,
 	$dueDateTime,
 	$currency,
-	$entranceCode
+	$entranceCode,
+	$returnUrl
 );
 
 $response = $bluem_object->PerformRequest($request);
