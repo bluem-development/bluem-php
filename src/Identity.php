@@ -8,7 +8,9 @@
 
 namespace Bluem\BluemPHP;
 
-
+/**
+ * IdentityBluemRequest object to request an Identity Transaction from the Bluem API.
+ */
 class IdentityBluemRequest extends BluemRequest
 {
     protected $xmlInterfaceName = "IdentityInterface";
@@ -16,12 +18,14 @@ class IdentityBluemRequest extends BluemRequest
     public $request_url_type = "ir";
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "ITX";
-    
+
+    private $minAge;
+
     public function TransactionType() : String
     {
         return "ITX";
     }
-    
+
     public function __construct(
         $config,
         $entranceCode,
@@ -38,6 +42,8 @@ class IdentityBluemRequest extends BluemRequest
 
             $this->brandID = $config->IDINBrandID;
         } else {
+
+            // @todo Throw an error when config is insufficiently setup
             $this->brandID = $config->brandID;
         }
         
@@ -49,7 +55,9 @@ class IdentityBluemRequest extends BluemRequest
 
         $this->debtorReturnURL = $this->debtorReturnURL . "?transactionID={$this->debtorReference}";
 
-        
+        // @todo: make this a configurable setting
+        $this->minAge = 18;
+
         $this->context = new IdentityContext();
     }
     
@@ -72,7 +80,9 @@ class IdentityBluemRequest extends BluemRequest
                     $catstring = '<BirthDateRequest action="'.$action.'"/>';
                 break;
             case 'AgeCheckRequest': // this one is exclusive, cannot be combined
-                    $catstring = '<AgeCheckRequest ageOrOlder="18" action="'.$action.'"/>';
+                    $catstring = '<AgeCheckRequest ageOrOlder="'.
+                    $this->minAge.
+                    '" action="'.$action.'"/>';
                 break;
             case 'GenderRequest':
                     $catstring = '<GenderRequest action="'.$action.'"/>';
@@ -103,7 +113,7 @@ class IdentityBluemRequest extends BluemRequest
             'EmailRequest',
         ];
 
-        // TODO: Add DocumentRequestSign & CustomerIDlogin later
+        // @todo: Add DocumentRequestSign & CustomerIDlogin later
 
         $result = "<RequestCategory>";
 
@@ -155,14 +165,13 @@ class IdentityStatusBluemRequest extends BluemRequest
     {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
-        // override specific brand ID
+        // override specific brand ID when using IDIN
         if (isset($config->IDINBrandID) && $config->IDINBrandID!=="") {
 
             $this->brandID = $config->IDINBrandID;
         } else {
             $this->brandID = $config->brandID;
         }
-        // $this->brandID = $config->IDINBrandID;
 
         $this->transactionID = $transactionID;
     }
@@ -178,8 +187,5 @@ class IdentityStatusBluemRequest extends BluemRequest
                 '<TransactionID>' . $this->transactionID . '</TransactionID>'
             )
         );
-
-        
-
     }
 }

@@ -45,7 +45,7 @@ if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
 }
 
 /**
- * BlueM Integration main class
+ * Bluem Integration main class
  */
 class Integration
 {
@@ -435,7 +435,7 @@ class Integration
     }
 
     /**
-     * Perform a request to the BlueM API given a request
+     * Perform a request to the Bluem API given a request
      * object and return its response
      *
      * @param  BluemRequest $transaction_request The Request Object
@@ -539,7 +539,7 @@ class Integration
      * checks fails. */
 
     /**
-     * Webhook for BlueM Mandate signature verification procedure
+     * Webhook for Bluem Mandate signature verification procedure
      */
     public function Webhook()
     {
