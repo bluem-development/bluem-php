@@ -9,7 +9,6 @@
 
 namespace Bluem\BluemPHP;
 
-
 class IbanBluemRequest extends BluemRequest
 {
     private $xmlInterfaceName = "IBANCheckInterface";
@@ -28,9 +27,13 @@ class IbanBluemRequest extends BluemRequest
         return "INX";
     }
 
-    public function __construct($config, $entranceCode, String $_inputIban, String $_inputName, String $_debtorReference = ""
-    )
-    {
+    public function __construct(
+        $config,
+        $entranceCode,
+        String $_inputIban,
+        String $_inputName,
+        String $_debtorReference = ""
+    ) {
         parent::__construct($config, $entranceCode, "");
 
         $this->_inputIban = $_inputIban;

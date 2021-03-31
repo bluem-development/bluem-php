@@ -19,11 +19,14 @@ class PaymentStatusBluemRequest extends BluemRequest
     public $typeIdentifier = "requestStatus";
     public $transaction_code = "PSX";
 
-    function __construct($config, $transactionID, $expected_return = "", $entranceCode = "")
-    {
-        parent::__construct($config,  $entranceCode, $expected_return);
+    public function __construct(
+        $config,
+        $transactionID,
+        $expected_return = "",
+        $entranceCode = ""
+    ) {
+        parent::__construct($config, $entranceCode, $expected_return);
         if (isset($config->paymentBrandID) && $config->paymentBrandID!=="") {
-
             $this->brandID = $config->paymentBrandID;
         } else {
             $this->brandID = $config->brandID;
@@ -80,7 +83,6 @@ class PaymentBluemRequest extends BluemRequest
 
 
         if (isset($config->paymentBrandID) && $config->paymentBrandID!=="") {
-
             $this->brandID = $config->paymentBrandID;
         } else {
             $this->brandID = $config->brandID;
@@ -114,9 +116,9 @@ class PaymentBluemRequest extends BluemRequest
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
         $this->debtorReturnURL .= "?entranceCode={$this->entranceCode}&transactionID={$this->transactionID}";
-        
+
         $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
-        
+
         // note! different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class
 

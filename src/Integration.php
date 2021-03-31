@@ -56,7 +56,7 @@ class Integration
     /**
      * Constructs a new instance.
      */
-    function __construct($_config = null)
+    public function __construct($_config = null)
     {
         if (is_null($_config)) {
             throw new Exception("No valid configuration given to instantiate Bluem Integration");
@@ -85,12 +85,9 @@ class Integration
         $this->_config = $_config;
 
         if ($this->_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
-
             $this->_config->accessToken = $_config->production_accessToken;
-            // @todo consider throwing an exception if these tokens are missing.
-
+        // @todo consider throwing an exception if these tokens are missing.
         } elseif ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
-
             $this->_config->accessToken = $_config->test_accessToken;
             // @todo consider throwing an exception if these tokens are missing.
 
@@ -197,7 +194,6 @@ class Integration
      */
     public function MandateStatus($mandateID, $entranceCode)
     {
-
         $r = new EMandateStatusBluemRequest(
             $this->_config,
             $mandateID,
@@ -241,9 +237,7 @@ class Integration
      */
     public function GetMaximumAmountFromTransactionResponse($response)
     {
-
         if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount)) {
-
             return (object) [
                 'amount' => (float) ($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount . ""),
                 'currency' => 'EUR'
@@ -273,7 +267,6 @@ class Integration
         $entranceCode = null,
         $debtorReturnURL = ""
     ): PaymentBluemRequest {
-
         if (is_null($entranceCode)) {
             $entranceCode = $this->CreateEntranceCode();
         }
@@ -282,7 +275,7 @@ class Integration
         // @todo: validate Description
         // @todo: validate Amount
         // @todo: validate Currency
-            // @todo: Create constants for Currencies
+        // @todo: Create constants for Currencies
         // @todo: sanitize debtorReturnURL?
 
 
@@ -322,7 +315,6 @@ class Integration
         string $currency = "EUR",
         $entranceCode = null
     ) {
-
         if (is_null($entranceCode)) {
             $entranceCode = $this->CreateEntranceCode();
         }
@@ -347,7 +339,6 @@ class Integration
      */
     public function PaymentStatus($transactionID, $entranceCode)
     {
-
         $r = new PaymentStatusBluemRequest(
             $this->_config,
             $transactionID,
@@ -389,7 +380,6 @@ class Integration
         $debtorReturnURL,
         $entranceCode = ""
     ): IdentityBluemRequest {
-
         $r = new IdentityBluemRequest(
             $this->_config,
             $entranceCode,
@@ -410,11 +400,10 @@ class Integration
      *
      * @param [type] $transactionID
      * @param [type] $entranceCode
-     * @return void
+     * @return IdentityStatusBluemResponse|ErrorBluemRequest
      */
     public function IdentityStatus($transactionID, $entranceCode)
     {
-
         $r = new IdentityStatusBluemRequest(
             $this->_config,
             $entranceCode,
@@ -429,7 +418,7 @@ class Integration
     }
 
 
-    // @todo: Create Identity shorthand function 
+    // @todo: Create Identity shorthand function
 
 
     /**
@@ -672,7 +661,6 @@ class Integration
         } catch (\Throwable $th) {
             return false;
             // echo "Error: " . $th->getMessage();
-
         }
 
         $isValid = $signatureValidator->verifyXmlFile($temp_file_path);
@@ -726,7 +714,8 @@ class Integration
      *
      * @return void
      */
-    public function GetIdentityRequestTypes() {
+    public function GetIdentityRequestTypes()
+    {
         return [
             "CustomerIDRequest",
             "NameRequest",
@@ -744,17 +733,18 @@ class Integration
     /* IBAN SPECIFIC */
 
 
-    public function CreateIBANNameCheckRequest($iban,$name,$debtorReference="") {
-
+    public function CreateIBANNameCheckRequest($iban, $name, $debtorReference="")
+    {
         $entranceCode = $this->CreateEntranceCode();
-// var_dump($iban);
-// die();
-        $request = new IbanBluemRequest($this->_config,$entranceCode,$iban,$name,$debtorReference);
+        // var_dump($iban);
+        // die();
+        $request = new IbanBluemRequest($this->_config, $entranceCode, $iban, $name, $debtorReference);
         return $request;
     }
 
-    public function IBANNameCheck($iban,$name,$debtorReference="") {
-        $r = $this->CreateIBANNameCheckRequest($iban,$name,$debtorReference);
+    public function IBANNameCheck($iban, $name, $debtorReference="")
+    {
+        $r = $this->CreateIBANNameCheckRequest($iban, $name, $debtorReference);
         $response = $this->PerformRequest($r);
         return $response;
     }
@@ -802,11 +792,10 @@ class Integration
             throw new Exception(
                 "Invalid Context requested, should be
                 one of the following: ".
-                implode(",",$contexts)
+                implode(",", $contexts)
             );
             break;
         }
         return $context;
     }
-
 }

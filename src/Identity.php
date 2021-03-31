@@ -33,14 +33,13 @@ class IdentityBluemRequest extends BluemRequest
         $expectedReturn,
         $requestCategory = [],
         $description="",
-        $debtorReference="",
+        $debtorReference = "",
         $debtorReturnURL = ""
     ) {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID
         if (isset($config->IDINBrandID) && $config->IDINBrandID!=="") {
-
             $this->brandID = $config->IDINBrandID;
         } else {
 
@@ -64,7 +63,7 @@ class IdentityBluemRequest extends BluemRequest
         $this->context = new IdentityContext();
     }
     
-    private function getIdinRequestCategory($category,$active=true)
+    private function getIdinRequestCategory($category, $active=true)
     {
         $action = ($active?"request":"skip");
         
@@ -120,8 +119,8 @@ class IdentityBluemRequest extends BluemRequest
 
         $result = "<RequestCategory>";
 
-        foreach ($all_cats as $cat ) {
-            $result.= $this->getIdinRequestCategory($cat,in_array($cat,$active_categories));
+        foreach ($all_cats as $cat) {
+            $result.= $this->getIdinRequestCategory($cat, in_array($cat, $active_categories));
         }
         
         $result.="</RequestCategory>";
@@ -148,7 +147,7 @@ class IdentityBluemRequest extends BluemRequest
                 ]
             )
         );
-   }
+    }
 }
 
 
@@ -170,7 +169,6 @@ class IdentityStatusBluemRequest extends BluemRequest
 
         // override specific brand ID when using IDIN
         if (isset($config->IDINBrandID) && $config->IDINBrandID!=="") {
-
             $this->brandID = $config->IDINBrandID;
         } else {
             $this->brandID = $config->brandID;
