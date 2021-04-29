@@ -50,9 +50,16 @@ class IbanBluemRequest extends BluemRequest
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'IBANCheckTransactionRequest',
-                PHP_EOL.'<IBAN>'.$this->_inputIban.'</IBAN>'.PHP_EOL.
-                '<AssumedName>'.$this->_inputName.'</AssumedName>'.PHP_EOL.
-                '<DebtorReference>'.$this->_debtorReference.'</DebtorReference>'.PHP_EOL,
+                PHP_EOL.
+                '<IBAN>'.
+                    $this->_inputIban.
+                '</IBAN>'.PHP_EOL.
+                '<AssumedName>'.
+                    $this->_inputName.
+                '</AssumedName>'.PHP_EOL.
+                '<DebtorReference>'.
+                    $this->_debtorReference.
+                '</DebtorReference>'.PHP_EOL,
                 []
             )
         );

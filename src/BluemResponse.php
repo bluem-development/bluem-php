@@ -12,12 +12,10 @@ namespace Bluem\BluemPHP;
 use Exception;
 
 /**
- * 	BluemResponse
+ *  BluemResponse
  */
 class BluemResponse extends \SimpleXMLElement
 {
-
-
     /**
      * Response Primary Key used to access the XML structure based on the specific type of response
      *
@@ -322,23 +320,23 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
  *
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <IBANCheckInterface mode="direct" senderID="S1018" version="1.0" createDateTime="2019-09-09T08:43:58.022Z" messageCount="1" type="TransactionResponse">
-	<IBANCheckTransactionResponse entranceCode="S101820190909084357980">
-		<IBAN>NL59INGB0748545824</IBAN>
-		<AssumedName>Zeland</AssumedName>
-		<DebtorReference>12345678</DebtorReference>
-		<IBANCheckResult>
-			<IBANResult>KNOWN</IBANResult>
-			<NameResult>MISTYPED</NameResult>
-			<SuggestedName>Naar Zeeland</SuggestedName>
-			<AccountStatus>ACTIVE</AccountStatus>
-		</IBANCheckResult>
-		<AccountDetails>
-			<AccountType>NATURAL_PERSON</AccountType>
-			<IsJointAccount>true</IsJointAccount>
-			<NumberOfAccountHolders>2</NumberOfAccountHolders>
-			<CountryName>Netherlands</CountryName>
-		</AccountDetails>
-	</IBANCheckTransactionResponse>
+    <IBANCheckTransactionResponse entranceCode="S101820190909084357980">
+        <IBAN>NL59INGB0748545824</IBAN>
+        <AssumedName>Zeland</AssumedName>
+        <DebtorReference>12345678</DebtorReference>
+        <IBANCheckResult>
+            <IBANResult>KNOWN</IBANResult>
+            <NameResult>MISTYPED</NameResult>
+            <SuggestedName>Naar Zeeland</SuggestedName>
+            <AccountStatus>ACTIVE</AccountStatus>
+        </IBANCheckResult>
+        <AccountDetails>
+            <AccountType>NATURAL_PERSON</AccountType>
+            <IsJointAccount>true</IsJointAccount>
+            <NumberOfAccountHolders>2</NumberOfAccountHolders>
+            <CountryName>Netherlands</CountryName>
+        </AccountDetails>
+    </IBANCheckTransactionResponse>
 </IBANCheckInterface>
  *
  */

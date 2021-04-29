@@ -9,6 +9,7 @@
 
 namespace Bluem\BluemPHP;
 
+use Bluem\BluemPHP\Validator;
 use Carbon\Carbon as Carbon;
 use Exception;
 
@@ -17,6 +18,7 @@ use Exception;
  */
 class BluemRequest
 {
+
     public $typeIdentifier;
     public $request_url_type;
 
@@ -367,6 +369,13 @@ class BluemRequest
         return $this; // allow function chaining
     }
 
+
+    public function RequestContext() {
+        return $this->context;
+    }
+    public function RequestType() {
+        return '';
+    }
 
     /*
     <DebtorAdditionalData>

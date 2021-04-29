@@ -20,16 +20,12 @@ class EmandateStatusBluemRequest extends BluemRequest
     public $request_url_type = "mr";
     public $transaction_code = "SRX";
 
+
     public function __construct(
-        $config,
-        $mandateID,
-        $entranceCode="",
-        $expected_return=""
+        $config, $mandateID, $entranceCode="", $expected_return=""
     ) {
         parent::__construct(
-            $config,
-            $entranceCode,
-            $expected_return
+            $config, $entranceCode, $expected_return
         );
 
         $this->xmlInterfaceName = "EMandateInterface";
@@ -37,7 +33,9 @@ class EmandateStatusBluemRequest extends BluemRequest
 
         $this->mandateID = $mandateID;
 
-        $this->context = new MandatesContext($config->localInstrumentCode);
+        $this->context = new MandatesContext(
+            $config->localInstrumentCode
+        );
     }
 
     public function TransactionType()
@@ -178,10 +176,10 @@ class EmandateBluemRequest extends BluemRequest
             $this->XmlRequestObjectWrap(
                 'EMandateTransactionRequest',
                 '<MandateID>'.$this->mandateID.'</MandateID>
-				<MerchantReturnURL automaticRedirect="'.$this->automatically_redirect.'">'.$this->merchantReturnURL.'</MerchantReturnURL>
-				<SequenceType>'.$this->sequenceType.'</SequenceType>
-				<EMandateReason>'.$this->eMandateReason.'</EMandateReason>
-				<DebtorReference>'.$this->debtorReference.'</DebtorReference>
+                <MerchantReturnURL automaticRedirect="'.$this->automatically_redirect.'">'.$this->merchantReturnURL.'</MerchantReturnURL>
+                <SequenceType>'.$this->sequenceType.'</SequenceType>
+                <EMandateReason>'.$this->eMandateReason.'</EMandateReason>
+                <DebtorReference>'.$this->debtorReference.'</DebtorReference>
                 <PurchaseID>'.$this->purchaseID.'</PurchaseID>'.
                 $this->XmlWrapDebtorWallet().
                 $this->XmlWrapDebtorAdditionalData(),

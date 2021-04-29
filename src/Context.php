@@ -37,6 +37,12 @@ class BluemContext
         }
         return $codes;
     }
+
+
+    public function getValidationSchema()
+    {
+        return __DIR__  .  '/../validation/';
+    }
 }
 
 // @todo: Add Paypal context and distinguish between iDeal and Paypal contexts based on debtorWalletElementName
@@ -75,7 +81,10 @@ class PaymentsContext extends BluemContext
         );
     }
 
-   
+    public function getValidationSchema()
+    {
+        return parent::getValidationSchema().'EPayment.xsd';
+    }
 }
 
 
@@ -85,7 +94,7 @@ class MandatesContext extends BluemContext
 
     public $debtorWalletElementName = "INCASSOMACHTIGEN";
 
-    private $possibleMandateTypes = ['CORE','B2B'];
+    private $_possibleMandateTypes = ['CORE','B2B'];
     /**
      * Constructor
      *
@@ -94,7 +103,7 @@ class MandatesContext extends BluemContext
     public function __construct($type="CORE")
     {
 
-        if (!in_array($type, $this->possibleMandateTypes)) {
+        if (!in_array($type, $this->_possibleMandateTypes)) {
             throw new Exception(
                 "Unknown instrument code set as mandate type;
                 should be either 'CORE' or 'B2B'"
@@ -123,6 +132,11 @@ class MandatesContext extends BluemContext
             $BICs
         );
     }
+
+    public function getValidationSchema()
+    {
+        return parent::getValidationSchema().'EMandate.xsd';
+    }
 }
 
 
@@ -150,10 +164,20 @@ class IdentityContext extends BluemContext
             ]
         );
     }
+    public function getValidationSchema()
+    {
+        return parent::getValidationSchema().'EIdentity.xsd';
+    }
 }
 
 class IBANCheckContext extends BluemContext {
 
     // no context preset yet
+
+
+    public function getValidationSchema()
+    {
+        return parent::getValidationSchema().'IBANCheck.xsd';
+    }
 }
 
