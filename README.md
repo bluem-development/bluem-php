@@ -325,7 +325,9 @@ The possibilities are:
 	"AgeCheckRequest",
 	"GenderRequest",
 	"TelephoneRequest",
-	"EmailRequest"
+	"EmailRequest",
+	"AgeCheckRequest",
+    "CustomerIDLoginRequest"
 ]
 ```
 

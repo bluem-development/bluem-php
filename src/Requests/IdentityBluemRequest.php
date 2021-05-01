@@ -62,51 +62,57 @@ class IdentityBluemRequest extends BluemRequest
 
     }
 
+    /**
+     * @param      $category
+     * @param bool $active
+     *
+     * @return string
+     * @throws \Exception
+     */
     private function getIdinRequestCategory($category, $active = true)
     {
         $action = ($active ? "request" : "skip");
 
-        $catstring = "";
         switch ($category) {
             case 'CustomerIDRequest':
-                $catstring = '<CustomerIDRequest action="' . $action . '"/>';
-                break;
+                return "<CustomerIDRequest action=\"{$action}\"/>" . '';
             case 'NameRequest':
-                $catstring = '<NameRequest action="' . $action . '"/>';
-                break;
+                return "<NameRequest action=\"{$action}\"/>" . '';
             case 'AddressRequest':
-                $catstring = '<AddressRequest action="' . $action . '"/>';
-                break;
+                return "<AddressRequest action=\"{$action}\"/>" . '';
             case 'BirthDateRequest':
-                $catstring = '<BirthDateRequest action="' . $action . '"/>';
-                break;
-            case 'AgeCheckRequest': // this one is exclusive, cannot be combined
-                $catstring = '<AgeCheckRequest ageOrOlder="' .
-                    $this->minAge .
-                    '" action="' . $action . '"/>';
-                break;
+                return "<BirthDateRequest action=\"{$action}\"/>" . '';
             case 'GenderRequest':
-                $catstring = '<GenderRequest action="' . $action . '"/>';
-                break;
+                return "<GenderRequest action=\"{$action}\"/>" . '';
             case 'TelephoneRequest':
-                $catstring = '<TelephoneRequest action="' . $action . '"/> ';
-                break;
+                return "<TelephoneRequest action=\"{$action}\"/>" . '';
             case 'EmailRequest':
-                $catstring = '<EmailRequest action="' . $action . '"/>';
-                break;
-            // CustomerIDLoginRequest login or DocumentSIgnatureRequest document sign request is exclusive, cannot be combined
+                return "<EmailRequest action=\"{$action}\"/>" . '';
+
+            // exclusive categories, cannot be combined!
+            case 'AgeCheckRequest':
+                return "<AgeCheckRequest ageOrOlder=\"{$this->minAge}\" action=\"{$action}\"/>" . '';
+            case 'CustomerIDLoginRequest':
+                return "<CustomerIDLoginRequest action=\"{$action}\"/>" . '';
+            // TODO: Add DocumentSignatureRequest (exclusive)
+
+            // default: Throw error.
             default:
                 throw new \Exception("No proper IDIN request category given", 1);
-                break;
         }
-
-        return $catstring . '';
     }
 
+    /**
+     * @param array $active_categories
+     *
+     * @return string
+     * @throws \Exception
+     */
     private function getRequestCategoryElement($active_categories = [])
     {
         $all_cats = [
             'CustomerIDRequest',
+            'CustomerIDLoginRequest',
             'NameRequest',
             'AddressRequest',
             'BirthDateRequest',
@@ -116,7 +122,7 @@ class IdentityBluemRequest extends BluemRequest
             'EmailRequest',
         ];
 
-        // @todo: Add DocumentRequestSign & CustomerIDlogin later
+        // @todo: Add DocumentRequestSign later (add after EmailRequest).
 
         $result = "<RequestCategory>";
 
@@ -132,7 +138,7 @@ class IdentityBluemRequest extends BluemRequest
 
         $result .= "</RequestCategory>";
 
-        return '' . $result . '';
+        return $result;
     }
 
     public function XmlString(): string

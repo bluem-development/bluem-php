@@ -770,13 +770,14 @@ class Bluem
     public function GetIdentityRequestTypes() {
         return [
             "CustomerIDRequest",
+            "CustomerIDLoginRequest",
             "NameRequest",
             "AddressRequest",
             "BirthDateRequest",
             "AgeCheckRequest",
             "GenderRequest",
             "TelephoneRequest",
-            "EmailRequest"
+            "EmailRequest",
         ];
     }
 
