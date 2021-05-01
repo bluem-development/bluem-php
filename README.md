@@ -26,7 +26,7 @@ Include the required autoload functions of Composer in your code, if you did not
 require_once __DIR__. '/vendor/autoload.php';
 
 // then use the library in the top of your script(s).
-use Bluem\BluemPHP\Integration;
+use Bluem\BluemPHP\Bluem;
 
 ```
 
