@@ -93,19 +93,4 @@ class BluemResponse extends \SimpleXMLElement
     {
         return static::$response_primary_key;
     }
-
-
-    // @todo only add this in transaction-based responses
-    public function GetTransactionURL()
-    {
-    }
-    public function GetTransactionID()
-    {
-    }
-    public function GetStatusCode()
-    {
-    }
-    public function GetIdentityReport()
-    {
-    }
 }
