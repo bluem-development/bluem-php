@@ -52,7 +52,7 @@ class IdentityBluemRequest extends BluemRequest
         $this->debtorReference = $debtorReference;
         $this->debtorReturnURL = $debtorReturnURL;
 
-        $this->debtorReturnURL = $this->debtorReturnURL . "?transactionID={$this->debtorReference}";
+        $this->debtorReturnURL = $this->debtorReturnURL . "?debtorReference={$this->debtorReference}";
 
         // @todo: make this a configurable setting
         $this->minAge = 18;
