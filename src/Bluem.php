@@ -417,7 +417,7 @@ class Bluem
         $entranceCode = ""
     ): IdentityBluemRequest
     {
-        // todo: heck if this is needed?
+        // todo: Check if this is needed?
         //$this->CreateIdentityTransactionID($debtorReference),
 
         return new IdentityBluemRequest(
