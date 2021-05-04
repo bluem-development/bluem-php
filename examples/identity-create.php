@@ -11,7 +11,7 @@ require_once __DIR__ . '/initialization.php';
 // to retrieve a list of all possible identity request types, which can be useful for reference
 $possible_types = $bluem_object->GetIdentityRequestTypes();
 /*
-returns: 
+returns:
 [
 	"CustomerIDRequest",
 	"NameRequest",
@@ -21,6 +21,7 @@ returns:
 	"TelephoneRequest",
 	"EmailRequest"
 	"AgeCheckRequest",
+    "CustomerIDLoginRequest",
 ]
 
 	Use either AgeCheckRequest OR the others in a request.

@@ -1,58 +1,9 @@
 <?php
 
-/*
- * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
- *
- * This source file is subject to the license that is bundled
- * with this source code in the file LICENSE.
- */
+namespace Bluem\BluemPHP\Requests;
 
-namespace Bluem\BluemPHP;
-
+use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Carbon\Carbon;
-
-class PaymentStatusBluemRequest extends BluemRequest
-{
-    protected $xmlInterfaceName = "EPaymentInterface";
-
-    public $request_url_type = "pr";
-    public $typeIdentifier = "requestStatus";
-    public $transaction_code = "PSX";
-
-    public function __construct(
-        $config, $transactionID, $expected_return = "", $entranceCode = ""
-    ) {
-        parent::__construct($config, $entranceCode, $expected_return);
-        if (isset($config->paymentBrandID)
-            && $config->paymentBrandID !== ""
-        ) {
-            $this->brandID = $config->paymentBrandID;
-        } else {
-            $this->brandID = $config->brandID;
-        }
-        $this->transactionID = $transactionID;
-
-        $this->context = new PaymentsContext();
-    }
-
-    public function TransactionType(): String
-    {
-        return $this->transaction_code;
-    }
-
-    public function XmlString(): String
-    {
-        return $this->XmlRequestInterfaceWrap(
-            $this->xmlInterfaceName,
-            'StatusRequest',
-            $this->XmlRequestObjectWrap(
-                'PaymentStatusRequest',
-                '<TransactionID>' . $this->transactionID . '</TransactionID>'
-            )
-        );
-    }
-}
-
 
 class PaymentBluemRequest extends BluemRequest
 {
@@ -61,27 +12,28 @@ class PaymentBluemRequest extends BluemRequest
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "PTX";
 
-    public function TransactionType(): String
+    public function TransactionType(): string
     {
         return $this->transaction_code;
     }
 
     public function __construct(
-        Object $config,
+        \stdclass $config,
         $description,
         $debtorReference,
         $amount,
         $dueDateTime = null,
         $currency = null,
         $transactionID = null,
-        $entranceCode ="",
-        String $expected_return = "none",
-        $debtorReturnURL =""
-    ) {
+        $entranceCode = "",
+        string $expected_return = "none",
+        $debtorReturnURL = ""
+    )
+    {
         parent::__construct($config, $entranceCode, $expected_return);
 
 
-        if (isset($config->paymentBrandID) && $config->paymentBrandID!=="") {
+        if (isset($config->paymentBrandID) && $config->paymentBrandID !== "") {
             $this->brandID = $config->paymentBrandID;
         } else {
             $this->brandID = $config->brandID;
@@ -115,9 +67,9 @@ class PaymentBluemRequest extends BluemRequest
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
         $this->debtorReturnURL .= "?entranceCode={$this->entranceCode}&transactionID={$this->transactionID}";
-        
+
         $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
-        
+
         // note! different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class
 
@@ -130,18 +82,20 @@ class PaymentBluemRequest extends BluemRequest
      * Parsing amount properly as a float, with decimals
      *
      * @param String $amount
+     *
      * @return Float
      */
-    private function parseAmount(String $amount) : String
+    private function parseAmount(string $amount): string
     {
         $amount = str_replace(',', '.', $amount);
         if (strpos($amount, '.') == false) {
             $amount .= '.00';
         }
+
         return $amount;
     }
 
-    public function XmlString(): String
+    public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
@@ -154,12 +108,12 @@ class PaymentBluemRequest extends BluemRequest
                 <Currency>' . $this->currency . '</Currency>
                 <Amount>' . $this->amount . '</Amount>
                 <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
-                <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>'.
+                <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
                 $this->XmlWrapDebtorWallet(),
                 [
                     'documentType' => "PayRequest",
-                    'sendOption' => "none",
-                    'language' => "nl"
+                    'sendOption'   => "none",
+                    'language'     => "nl",
                 ]
             )
         );

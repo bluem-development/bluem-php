@@ -1,13 +1,8 @@
 <?php
 
-/*
- * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
- *
- * This source file is subject to the license that is bundled
- * with this source code in the file LICENSE.
- */
+namespace Bluem\BluemPHP\Requests;
 
-namespace Bluem\BluemPHP;
+use Bluem\BluemPHP\Contexts\IBANCheckContext;
 
 class IbanBluemRequest extends BluemRequest
 {
@@ -22,7 +17,7 @@ class IbanBluemRequest extends BluemRequest
 
     public $transaction_code = "INX";
 
-    public function TransactionType() : String
+    public function TransactionType(): string
     {
         return "INX";
     }
@@ -30,10 +25,11 @@ class IbanBluemRequest extends BluemRequest
     public function __construct(
         $config,
         $entranceCode,
-        String $_inputIban,
-        String $_inputName,
-        String $_debtorReference = ""
-    ) {
+        string $_inputIban,
+        string $_inputName,
+        string $_debtorReference = ""
+    )
+    {
         parent::__construct($config, $entranceCode, "");
 
         $this->_inputIban = $_inputIban;
@@ -43,28 +39,25 @@ class IbanBluemRequest extends BluemRequest
         $this->context = new IBANCheckContext();
     }
 
-    public function XmlString() : String
+    public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'IBANCheckTransactionRequest',
-                PHP_EOL.
-                '<IBAN>'.
-                    $this->_inputIban.
-                '</IBAN>'.PHP_EOL.
-                '<AssumedName>'.
-                    $this->_inputName.
-                '</AssumedName>'.PHP_EOL.
-                '<DebtorReference>'.
-                    $this->_debtorReference.
-                '</DebtorReference>'.PHP_EOL,
+                PHP_EOL .
+                '<IBAN>' .
+                $this->_inputIban .
+                '</IBAN>' . PHP_EOL .
+                '<AssumedName>' .
+                $this->_inputName .
+                '</AssumedName>' . PHP_EOL .
+                '<DebtorReference>' .
+                $this->_debtorReference .
+                '</DebtorReference>' . PHP_EOL,
                 []
             )
         );
     }
 }
-
-
-// @this has to be extended

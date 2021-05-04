@@ -17,10 +17,13 @@
 		"issues": "https://github.com/daanrijpkema/bluem-php"
 	},
 	"require": {
-		"php": ">=5.4",
+		"php": ">=7.0",
 		"nesbot/carbon": "^2.31",
 		"pear/http_request2": "v2.4.2",
-        "selective/xmldsig": "^1.0"
+        "selective/xmldsig": "^1.0",
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "ext-simplexml": "*"
     },
     "autoload": {
         "psr-4": {

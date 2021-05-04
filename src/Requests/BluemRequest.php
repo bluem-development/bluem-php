@@ -7,14 +7,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Bluem\BluemPHP;
+namespace Bluem\BluemPHP\Requests;
 
-use Bluem\BluemPHP\Validator;
+use Bluem\BluemPHP\Validators\Validator;
 use Carbon\Carbon as Carbon;
 use Exception;
 
 /**
- * 	BluemRequest
+ * BluemRequest
  */
 class BluemRequest
 {
@@ -46,16 +46,18 @@ class BluemRequest
         "DynamicData",
     ];
 
+    protected $transactionID;
+
     public $context;
 
     /**
-     * Initialization of any request
+     * BluemRequest constructor.
      *
-     * @param Array $config
-     * @param String $entranceCode
-     * @param String $expectedReturn
+     * @param \stdclass $config
+     * @param string    $entranceCode
+     * @param string    $expectedReturn
      */
-    public function __construct(\Stdclass $config, String $entranceCode = "", String $expectedReturn = "")
+    public function __construct(\stdclass $config, string $entranceCode = "", string $expectedReturn = "")
     {
         $this->environment = $config->environment;
 
@@ -70,7 +72,7 @@ class BluemRequest
          *  unique identifier of payee for this transaction
          *  which is unique in time for any request; which is string; which should not be visible for customer;
          *  structure: prefix for testing + customer number + current timestamp up to the second
-        */
+         */
         // @todo Validate input entrance code if not emptystring, based on XSD
 
         if ($entranceCode === "") {  // if not given, create it
@@ -90,48 +92,54 @@ class BluemRequest
      * Construct the XML request string parent object for any request
      *
      * @param String $element_name Typically contains the interface of the current request context
-     * @param String $type Type of request (transaction creation or status)
-     * @param String $rest Remainder of XML element, as a string, used to chain this function
+     * @param String $type         Type of request (transaction creation or status)
+     * @param String $rest         Remainder of XML element, as a string, used to chain this function
+     *
      * @return String Constructed XML as string
      */
-    protected function XmlRequestInterfaceWrap(String $element_name, String $type="TransactionRequest", String $rest) : String
+    protected function XmlRequestInterfaceWrap(string $element_name,
+        string $type = "TransactionRequest",
+        string $rest): string
     {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><'.$element_name.'
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><' . $element_name . '
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        type="'.$type.'"
+        type="' . $type . '"
         mode="direct"
-        senderID="'.$this->senderID.'"
+        senderID="' . $this->senderID . '"
         version="1.0"
-        createDateTime="'.$this->createDateTime.'"
+        createDateTime="' . $this->createDateTime . '"
         messageCount="1"
-          >'.$rest.'</'.$element_name.'>';
+          >' . $rest . '</' . $element_name . '>';
     }
 
     /**
      * Construct the XML request string objects
      *
      * @param String $element_name Typically contains the specific object of the current request context
-     * @param String $rest Remainder of XML element, as a string, used to chain this function
-     * @param Array $extra_attrs Any arbitrary other key-value pairs to be added as XML element attributes
+     * @param String $rest         Remainder of XML element, as a string, used to chain this function
+     * @param Array  $extra_attrs  Any arbitrary other key-value pairs to be added as XML element attributes
+     *
      * @return String Constructed XML as string
      */
-    protected function XmlRequestObjectWrap(String $element_name, String $rest, array $extra_attrs = []) : String
+    protected function XmlRequestObjectWrap(string $element_name, string $rest, array $extra_attrs = []): string
     {
         $res = "<{$element_name}
            entranceCode=\"{$this->entranceCode}\" ";
         foreach ($extra_attrs as $key => $value) {
-            $res .= "{$key}=\"{$value}\" ".PHP_EOL;
+            $res .= "{$key}=\"{$value}\" " . PHP_EOL;
         }
-        $res.='>'.$rest.'</'.$element_name.'>';
+        $res .= '>' . $rest . '</' . $element_name . '>';
+
         return $res;
     }
 
     /**
-     * Returning the current XML string; as this is an abstract request, it will be overridden by classes that implement this.
+     * Returning the current XML string; as this is an abstract request, it will be overridden by classes that
+     * implement this.
      *
      * @return String
      */
-    public function XmlString() : String
+    public function XmlString(): string
     {
         return "";
     }
@@ -141,7 +149,7 @@ class BluemRequest
      *
      * @return SimpleXMLElement final XML object
      */
-    public function Xml() : \SimpleXMLElement
+    public function Xml(): \SimpleXMLElement
     {
         return new \SimpleXMLElement($this->XmlString());
     }
@@ -164,21 +172,24 @@ class BluemRequest
      *
      * @retum string The http request url.
      */
-    public function HttpRequestURL(): String
+    public function HttpRequestURL(): string
     {
         $request_url = "https://";
 
         switch ($this->environment) {
-        case BLUEM_ENVIRONMENT_PRODUCTION: {
+            case BLUEM_ENVIRONMENT_PRODUCTION:
+            {
                 $request_url .= "";
                 break;
             }
-        case BLUEM_ENVIRONMENT_ACCEPTANCE: {
+            case BLUEM_ENVIRONMENT_ACCEPTANCE:
+            {
                 $request_url .= "acc.";
                 break;
             }
-        case BLUEM_ENVIRONMENT_TESTING:
-        default: {
+            case BLUEM_ENVIRONMENT_TESTING:
+            default:
+            {
                 $request_url .= "test.";
                 break;
             }
@@ -186,17 +197,19 @@ class BluemRequest
         $request_url .= "viamijnbank.net/{$this->request_url_type}/";
 
         switch ($this->typeIdentifier) {
-        case 'createTransaction': {
+            case 'createTransaction':
+            {
                 $request_url .= "createTransactionWithToken";
                 break;
             }
-        case 'requestStatus': {
+            case 'requestStatus':
+            {
                 $request_url .= "requestTransactionStatusWithToken";
                 break;
             }
-        default:
-            throw new \Exception("Invalid transactiontype called for", 1);
-            break;
+            default:
+                throw new \Exception("Invalid transactiontype called for", 1);
+                break;
         }
         $request_url .= "?token={$this->accessToken}";
 
@@ -206,15 +219,18 @@ class BluemRequest
     /**
      * Generate an entranceCode, including test entranceCode substrings for certain types of return responses
      *
-     * @param string $expectedReturn a possible expected return value (none,success,cancelled,expired,failure,open,pending) or empty string
-     * @param string $entranceCode a set entrance code, otherwise it gets generated based on dateTime string in "YmdHisv" standardized format, in Europe/Amsterdam timezone
-     * @return void
+     * @param string $expectedReturn a possible expected return value
+     *                               (none,success,cancelled,expired,failure,open,pending) or empty string
+     * @param string $entranceCode   a set entrance code, otherwise it gets generated based on dateTime string in
+     *                               "YmdHisv" standardized format, in Europe/Amsterdam timezone
+     *
+     * @return string
      */
-    private function entranceCode(String $expectedReturn='none', String $entranceCode = "")
+    private function entranceCode(string $expectedReturn = 'none', string $entranceCode = "")
     {
 
         // create a default entrancecode if necessary
-        if ($entranceCode =="") {
+        if ($entranceCode == "") {
             $entranceCode = Carbon::now()
                 ->timezone('Europe/Amsterdam')
                 ->format("YmdHisv");
@@ -224,36 +240,40 @@ class BluemRequest
 
         if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
             switch ($expectedReturn) {
-            case '':
-            case 'none': {
-                    $prefix = "";
-                    break;
-                }
-            case 'success': {
+                case 'success':
+                {
                     $prefix = "HIO100OIH";
                     break;
                 }
-            case 'cancelled': {
+                case 'cancelled':
+                {
                     $prefix = "HIO200OIH";
                     break;
                 }
-            case 'expired': {
+                case 'expired':
+                {
                     $prefix = "HIO300OIH";
                     break;
                 }
-            case 'failure': {
+                case 'failure':
+                {
                     $prefix = "HIO500OIH";
                     break;
                 }
-            case 'open': {
+                case 'open':
+                {
                     $prefix = "HIO400OIH";
                     break;
                 }
-            case 'pending': {
+                case 'pending':
+                {
                     $prefix = "HIO600OIH";
                     break;
                 }
-            default: {
+                case '':
+                case 'none':
+                default:
+                {
                     $prefix = "";
                     break;
                 }
@@ -261,8 +281,10 @@ class BluemRequest
         }
 
         $entranceCode = $prefix . $entranceCode;
+
         return $entranceCode;
     }
+
     /**
      * Retrieve array of objects with IssuerID and IssuerName of banks from the context
      *
@@ -282,10 +304,12 @@ class BluemRequest
     {
         return $this->context->getBICCodes();
     }
+
     /**
      * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
      *
      * @param [type] $BIC
+     *
      * @return void
      */
     public function selectDebtorWallet($BIC)
@@ -309,33 +333,32 @@ class BluemRequest
             return "";
         }
 
-        if ($this->debtorWallet=="") {
+        if ($this->debtorWallet == "") {
             return "";
         }
 
-        if (!isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName=="") {
+        if (!isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName == "") {
             return '';
         }
 
-        $res = PHP_EOL."<DebtorWallet>".PHP_EOL;
+        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
-        $res .= "<BIC>".$this->debtorWallet."</BIC>";
-        $res .= "</{$this->context->debtorWalletElementName}>".PHP_EOL;
-        $res .= "</DebtorWallet>".PHP_EOL;
+        $res .= "<BIC>" . $this->debtorWallet . "</BIC>";
+        $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+        $res .= "</DebtorWallet>" . PHP_EOL;
+
         return $res;
     }
 
 
-    
     public function XmlWrapDebtorAdditionalData()
     {
-        if(count($this->_debtorAdditionalData)==0)
-        {
+        if (count($this->_debtorAdditionalData) == 0) {
             return '';
         }
 
-        $res = PHP_EOL."<DebtorAdditionalData>".PHP_EOL;
-        
+        $res = PHP_EOL . "<DebtorAdditionalData>" . PHP_EOL;
+
 
         foreach ($this->_debtorAdditionalData as $key => $value) {
 
@@ -345,17 +368,17 @@ class BluemRequest
 
             // @todo: add specific regex pattern checks for value of each type.
 
-            $res.= "<{$key}>";
-            $res.= $value;
-            $res.= "</{$key}>".PHP_EOL;
+            $res .= "<{$key}>";
+            $res .= $value;
+            $res .= "</{$key}>" . PHP_EOL;
 
         }
-        $res.="</DebtorAdditionalData>".PHP_EOL;
+        $res .= "</DebtorAdditionalData>" . PHP_EOL;
 
         return $res;
     }
 
-    public function addAdditionalData($key,$value)
+    public function addAdditionalData($key, $value)
     {
         if (!in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
             throw new Exception(
@@ -370,10 +393,13 @@ class BluemRequest
     }
 
 
-    public function RequestContext() {
+    public function RequestContext()
+    {
         return $this->context;
     }
-    public function RequestType() {
+
+    public function RequestType()
+    {
         return '';
     }
 

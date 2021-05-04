@@ -1,9 +1,9 @@
-<?php 
+<?php
 /**
  * Bluem-PHP examples: initialisation
  * This file contains examples and annotations for using the `bluem-php` package.
  * All to-do's are for your reference where action on your part is still required.
- * 
+ *
  * Code is courtesy of and property of Bluem Payment Services
  * Author: Daan Rijpkema (info@daanrijpkema.com)
  */
@@ -12,15 +12,13 @@
 // @todo require composer here instead of directly requiring the file, by uncommenting this line and commenting/removing the one below
 require_once __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__.'/../src/Integration.php';
-
-use Bluem\BluemPHP\Integration;
+use Bluem\BluemPHP\Bluem;
 
 $bluem_config = new Stdclass();
 // @todo: make actual Bluem class for this. with constructor parameters and validation
 
-/** 
- * Creating the right configuration, with documentation: 
+/**
+ * Creating the right configuration, with documentation:
  * */
 
 $bluem_config->environment = "test" ;                // Fill in "prod", "test" or "acc" for production, test or acceptance environment.
@@ -36,7 +34,7 @@ $bluem_config->eMandateReason = "eMandateReason" ;   // Brief description of the
 $bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collection: CORE or B2B
 $bluem_config->merchantReturnURLBase = "https://website.com";  // URL to return to after finishing the process
 
-// If you are using iDIN next to other services, you can set a specific iDIN brandID here: 
+// If you are using iDIN next to other services, you can set a specific iDIN brandID here:
 $bluem_config->IDINbrandID = "";
 
 /** Initialize */
