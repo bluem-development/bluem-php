@@ -1,5 +1,10 @@
 # Bluem-php for PAYMENT, MANDATES, IDIN & IBAN-Name check
 
+
+- @todo: update namespace usage in examples here and in `/examples` folder
+- @todo: full review of readme file
+
+
 A PHP interface for utilizing the Bluem services ePayments, eMandates, iDIN and/or IBAN-Name check.
 Utilize this library to write your own applications in PHP that communicate with Bluem, without having to handle the flow yourself.
 
@@ -73,7 +78,7 @@ $config->localInstrumentCode = ...
 $config->merchantReturnURLBase = ...;
 // Not applicable for IBAN-Name check
 
-$bluem = new Integration($config);
+$bluem = new Bluem($config);
 ```
 
 ## General concept
@@ -460,6 +465,15 @@ if ($statusResponse->ReceivedResponse()) {
     // no proper response received, tell the user
 }
 ```
+
+
+### CustomerIDLoginRequest
+
+It is also possible to use this library for performing a login request for your application, using a customized flow.
+Detailed instructions will follow here shortly.
+
+[] @todo: update this section
+
 ## IBAN-Name check
 
 This service allows you to verify if a name and IBAN combination are matching and valid, which can be useful when you are validating user registration, input or within a checkout procedure. A simple example of such a request and its result can be found below:

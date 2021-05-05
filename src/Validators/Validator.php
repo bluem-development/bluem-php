@@ -5,6 +5,8 @@ namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Contexts\BluemContext;
 
+// @todo: consider removing subclasses
+
 class Validator
 {
     /**
