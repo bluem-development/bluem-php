@@ -66,7 +66,7 @@ class Bluem
      *
      * @throws Exception
      */
-    function __construct($_config = null)
+    public function __construct($_config = null)
     {
         if (is_null($_config)) {
             throw new Exception(
@@ -103,12 +103,9 @@ class Bluem
 
 
         if ($this->_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
-
             $this->_config->accessToken = $_config->production_accessToken;
-            // @todo consider throwing an exception if these tokens are missing.
-
+        // @todo consider throwing an exception if these tokens are missing.
         } elseif ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
-
             $this->_config->accessToken = $_config->test_accessToken;
             // @todo consider throwing an exception if these tokens are missing.
 
@@ -219,7 +216,6 @@ class Bluem
      */
     public function MandateStatus($mandateID, $entranceCode)
     {
-
         $r = new EMandateStatusBluemRequest(
             $this->_config,
             $mandateID,
@@ -298,7 +294,6 @@ class Bluem
         $entranceCode = null,
         $debtorReturnURL = ""
     ): PaymentBluemRequest {
-
         if (is_null($entranceCode)) {
             $entranceCode = $this->CreateEntranceCode();
         }
@@ -307,7 +302,7 @@ class Bluem
         // @todo: validate Description
         // @todo: validate Amount
         // @todo: validate Currency
-            // @todo: Create constants for Currencies
+        // @todo: Create constants for Currencies
         // @todo: sanitize debtorReturnURL?
 
         return new PaymentBluemRequest(
@@ -346,7 +341,6 @@ class Bluem
         string $currency = "EUR",
         $entranceCode = null
     ) {
-
         if (is_null($entranceCode)) {
             $entranceCode = $this->CreateEntranceCode();
         }
@@ -415,8 +409,7 @@ class Bluem
         $debtorReference,
         $debtorReturnURL,
         $entranceCode = ""
-    ): IdentityBluemRequest
-    {
+    ): IdentityBluemRequest {
         // todo: Check if this is needed?
         //$this->CreateIdentityTransactionID($debtorReference),
 
@@ -712,7 +705,6 @@ class Bluem
         } catch (\Throwable $th) {
             return false;
             // echo "Error: " . $th->getMessage();
-
         }
 
         $isValid = $signatureValidator->verifyXmlFile($temp_file_path);
@@ -767,7 +759,8 @@ class Bluem
      *
      * @return string[]
      */
-    public function GetIdentityRequestTypes() {
+    public function GetIdentityRequestTypes()
+    {
         return [
             "CustomerIDRequest",
             "CustomerIDLoginRequest",
@@ -805,8 +798,9 @@ class Bluem
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
      * @throws \HTTP_Request2_LogicException
      */
-    public function IBANNameCheck($iban,$name,$debtorReference="") {
-        $r = $this->CreateIBANNameCheckRequest($iban,$name,$debtorReference);
+    public function IBANNameCheck($iban, $name, $debtorReference="")
+    {
+        $r = $this->CreateIBANNameCheckRequest($iban, $name, $debtorReference);
         $response = $this->PerformRequest($r);
         return $response;
     }
@@ -864,11 +858,10 @@ class Bluem
             throw new Exception(
                 "Invalid Context requested, should be
                 one of the following: ".
-                implode(",",$contexts)
+                implode(",", $contexts)
             );
         }
 
         return $context;
     }
-
 }

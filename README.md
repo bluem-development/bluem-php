@@ -1,5 +1,17 @@
 # Bluem-php for PAYMENT, MANDATES, IDIN & IBAN-Name check
 
+## NOTE for version 2.0.1:
+Major release with more stability, validation and features.
+
+Please note:
+
+The main Integration class is now called Bluem, so to include it, use something like:
+```php
+$bluem = new Bluem($config);
+```
+or use a class alias to ensure code functioning.
+
+Furthermore all generally available functions are still available.
 
 - @todo: update namespace usage in examples here and in `/examples` folder
 - @todo: full review of readme file
