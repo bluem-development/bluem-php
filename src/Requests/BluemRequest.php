@@ -18,7 +18,6 @@ use Exception;
  */
 class BluemRequest
 {
-
     public $typeIdentifier;
     public $request_url_type;
 
@@ -97,9 +96,11 @@ class BluemRequest
      *
      * @return String Constructed XML as string
      */
-    protected function XmlRequestInterfaceWrap(string $element_name,
+    protected function XmlRequestInterfaceWrap(
+        string $element_name,
         string $type = "TransactionRequest",
-        string $rest): string
+        string $rest
+    ): string
     {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><' . $element_name . '
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -361,7 +362,6 @@ class BluemRequest
 
 
         foreach ($this->_debtorAdditionalData as $key => $value) {
-
             if (!in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
                 continue;
             }
@@ -371,7 +371,6 @@ class BluemRequest
             $res .= "<{$key}>";
             $res .= $value;
             $res .= "</{$key}>" . PHP_EOL;
-
         }
         $res .= "</DebtorAdditionalData>" . PHP_EOL;
 

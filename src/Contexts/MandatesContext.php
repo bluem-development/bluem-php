@@ -20,7 +20,6 @@ class MandatesContext extends BluemContext
      */
     public function __construct($type = "CORE")
     {
-
         if (!in_array($type, $this->_possibleMandateTypes)) {
             throw new Exception(
                 "Unknown instrument code set as mandate type;

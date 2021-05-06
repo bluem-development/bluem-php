@@ -9,9 +9,10 @@ The main Integration class is now called Bluem, so to include it, use something 
 ```php
 $bluem = new Bluem($config);
 ```
-or use a class alias to ensure code functioning.
+Or use a class alias to ensure code functioning.
 
-Furthermore all generally available functions are still available.
+Furthermore, all generally available functions are still available.
+
 
 - @todo: update namespace usage in examples here and in `/examples` folder
 - @todo: full review of readme file

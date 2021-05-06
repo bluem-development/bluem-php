@@ -28,8 +28,7 @@ class IbanBluemRequest extends BluemRequest
         string $_inputIban,
         string $_inputName,
         string $_debtorReference = ""
-    )
-    {
+    ) {
         parent::__construct($config, $entranceCode, "");
 
         $this->_inputIban = $_inputIban;

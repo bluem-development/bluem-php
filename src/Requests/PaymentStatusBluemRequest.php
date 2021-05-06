@@ -17,8 +17,7 @@ class PaymentStatusBluemRequest extends BluemRequest
         $transactionID,
         $expected_return = "",
         $entranceCode = ""
-    )
-    {
+    ) {
         parent::__construct($config, $entranceCode, $expected_return);
         if (isset($config->paymentBrandID)
             && $config->paymentBrandID !== ""

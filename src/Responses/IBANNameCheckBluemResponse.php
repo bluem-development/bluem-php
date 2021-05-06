@@ -96,4 +96,3 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
 </IBANCheckInterface>
  *
  */
-

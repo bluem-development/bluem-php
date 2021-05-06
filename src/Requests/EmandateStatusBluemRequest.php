@@ -19,8 +19,7 @@ class EmandateStatusBluemRequest extends BluemRequest
         $mandateID,
         $entranceCode = "",
         $expected_return = ""
-    )
-    {
+    ) {
         parent::__construct(
             $config,
             $entranceCode,

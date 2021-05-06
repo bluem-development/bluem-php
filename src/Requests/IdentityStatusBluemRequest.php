@@ -23,7 +23,6 @@ class IdentityStatusBluemRequest extends BluemRequest
 
         // override specific brand ID when using IDIN
         if (isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
-
             $this->brandID = $config->IDINBrandID;
         } else {
             $this->brandID = $config->brandID;

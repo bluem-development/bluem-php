@@ -35,7 +35,8 @@ class BIC
      * @param String $issuerName The issuer name
      */
     public function __construct(
-        String $issuerID, String $issuerName
+        String $issuerID,
+        String $issuerName
     ) {
         $this->issuerID = $issuerID;
         $this->issuerName = $issuerName;

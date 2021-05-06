@@ -32,13 +32,11 @@ class IdentityBluemRequest extends BluemRequest
         $description = "",
         $debtorReference = "",
         $debtorReturnURL = ""
-    )
-    {
+    ) {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID
         if (isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
-
             $this->brandID = $config->IDINBrandID;
         } else {
 
@@ -59,7 +57,6 @@ class IdentityBluemRequest extends BluemRequest
         // @todo: validate this , also based on XSD
 
         $this->context = new IdentityContext();
-
     }
 
     /**

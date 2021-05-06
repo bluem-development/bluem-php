@@ -129,7 +129,10 @@ class Bluem
             "pending"
         ];
         if ($this->_config->expectedReturnStatus!==""
-            && !in_array($this->_config->expectedReturnStatus, $possibleReturnStatuses)
+            && !in_array(
+                $this->_config->expectedReturnStatus,
+                $possibleReturnStatuses
+            )
         ) {
             $this->_config->expectedReturnStatus = "success";
         }
@@ -138,7 +141,10 @@ class Bluem
         // @todo get this from settings in the future
     }
 
-    /**-------------- MANDATE SPECIFIC FUNCTIONS --------------*/
+    /*
+    *  MANDATE SPECIFIC FUNCTIONS
+    *
+    */
 
     /**
      * Create a Mandate Request given a customer ID, order ID

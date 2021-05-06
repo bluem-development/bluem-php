@@ -28,8 +28,7 @@ class PaymentBluemRequest extends BluemRequest
         $entranceCode = "",
         string $expected_return = "none",
         $debtorReturnURL = ""
-    )
-    {
+    ) {
         parent::__construct($config, $entranceCode, $expected_return);
 
 

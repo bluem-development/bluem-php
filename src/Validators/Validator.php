@@ -113,7 +113,6 @@ class Validator
             //The file is valid
             return true;
         }
-
     }
 
     /**
