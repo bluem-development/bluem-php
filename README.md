@@ -4,6 +4,11 @@
 
 Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
 
+- If you use the [Preselection of banks using the DebtorWallet](https://github.com/DaanRijpkema/bluem-php#debtorwallet-preselecting-a-bank-for-mandate-payment-or-identity-request), you will have to update this library to ensure Triodos is no longer an option for iDIN. If you do not do this, customers that select Triodos will be presented with an error.
+
+- If you use the Bluem portal, you don't need to take action. This change is already applied within the Bluem portal.
+
+
 ## Important note for version 2.0.1:
 Major release with more stability, validation and features.
 
@@ -142,9 +147,8 @@ Please note that the BIC list will vary when a different `localInstrumentCode` i
 
 The following attributes in the bluem_config are vital for proper eMandate functionality:
 
-What is PaymentReference,
-
-Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
+- PaymentReference: a reference visible within the administration, which can be used to identify the customer and the transaction details.
+- Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
 
 
 ### Create a payment transaction
