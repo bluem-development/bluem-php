@@ -1,11 +1,13 @@
-# Bluem-php for PAYMENT, MANDATES, IDIN & IBAN-Name check
+# Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
 
-## NOTE for version 2.0.1:
+## Important note for version 2.0.2:
+
+Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
+
+## Important note for version 2.0.1:
 Major release with more stability, validation and features.
 
-Please note:
-
-The main Integration class is now called Bluem, so to include it, use something like:
+Please note: The main Integration class is called Bluem, so to include it, use something like:
 ```php
 $bluem = new Bluem($config);
 ```
@@ -564,4 +566,5 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
 - SNS   <BR> BIC: `SNSBNL2A`
-- Triodos Bank  <BR> BIC: `TRIONL2U`
+
+Please note: Triodos Bank with BIC: `TRIONL2U` does not support Identity anymore as of 1st of June 2021.
