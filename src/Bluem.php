@@ -90,6 +90,35 @@ class Bluem
             );
         }
 
+        // @todo add more validation for missing settings,
+        // like a missing BrandID and such - do this in a
+        // structured way like unit tests.
+
+        // validating essentials:
+        if (!isset($_config->senderID)) {
+            throw new Exception("senderID not set; please add this to your configuration when instantiating the Bluem integration");
+        }
+        if (!isset($_config->brandID)) {
+            throw new Exception("brandID not set; please add this to your configuration when instantiating the Bluem integration");
+        }
+
+        // only required if mode is set to Test
+        if ($_config->environment === BLUEM_ENVIRONMENT_TESTING
+            && (!isset($_config->test_accessToken)
+                || $_config->test_accessToken ==="")
+        ) {
+            throw new Exception("test_accessToken not set correctly; please add this to your configuration when instantiating the Bluem integration");
+        }
+
+        // secondary values, possibly automatically inferred/defaulting
+        // only required if mode is set to PROD
+        // production_accessToken
+
+        // merchantID
+        // eMandateReason
+        // merchantReturnURLBase
+        // localInstrumentCode
+
         if (!isset($_config->localInstrumentCode)
             || !in_array(
                 $_config->localInstrumentCode,
@@ -100,10 +129,6 @@ class Bluem
             $_config->localInstrumentCode = "CORE";
         }
 
-
-        // @todo add more validation for missing settings, 
-        // like a missing BrandID and such - do this in a 
-        // structured way like unit tests.
 
 
         $this->_config = $_config;
@@ -130,6 +155,7 @@ class Bluem
         $this->_config->merchantSubID = "0";
         // @todo verify when this merchantSubID is ever set by the user.
 
+        // expectedReturnStatus
         // if an invalid possible return status is given, set it to a default value (for testing purposes only)
         $possibleReturnStatuses = [
             "none",     "success",  "cancelled",

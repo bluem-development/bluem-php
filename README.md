@@ -1,7 +1,37 @@
 # Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
 
-## Prerequisites
-PHP 7.0+ is required for this library.
+A PHP interface for utilizing the Bluem services ePayments, eMandates, iDIN and/or IBAN-Name check.
+Utilize this library to write your own applications in PHP that communicate with Bluem, without having to handle the flow yourself.
+
+Utilized by other applications as well:
+
+- [WordPress and WooCommerce plug-in](https://github.com/daanrijpkema/bluem-woocommerce), available for Bluem customers.
+
+**TIP:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
+## Notes per version
+PHP 7.0+ is required for all versions of this library.
+
+Please use the major git releases for the stable versions of this plugin.
+## Notes version 2.0.2:
+
+Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
+
+- If you use the [Preselection of banks using the DebtorWallet](https://github.com/DaanRijpkema/bluem-php#debtorwallet-preselecting-a-bank-for-mandate-payment-or-identity-request), you will have to update this library to ensure Triodos is no longer an option for iDIN. If you do not do this, customers that select Triodos will be presented with an error.
+
+- If you use the Bluem portal, you don't need to take action. This change is already applied within the Bluem portal.
+
+
+### Notes version 2.0.1:
+Major release with more stability, validation and features.
+
+Please note: The main Integration class is called Bluem, so to include it, use something like:
+```php
+$bluem = new Bluem($config);
+```
+Or use a class alias to ensure code functioning. This is a refactor since version 1.x.
+
+Furthermore, all generally available functions are still available.
+
 
 ## Frequently asked questions
 
@@ -23,43 +53,9 @@ This method can be used when creating iDIN and when creating iDEAL requests; you
 - You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience, and that it ensures integrity and a valid webshop experience.
 
 
-### Can I connect the Identity service with a payment service like Emandates or iDEAL?
+### Can I connect the Identity service with a payment service like Emandates or iDEAL so the user is only redirected once?
 - No, you cannot, as these are separate processes.
 
-
-## Important note for version 2.0.2:
-
-Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
-
-- If you use the [Preselection of banks using the DebtorWallet](https://github.com/DaanRijpkema/bluem-php#debtorwallet-preselecting-a-bank-for-mandate-payment-or-identity-request), you will have to update this library to ensure Triodos is no longer an option for iDIN. If you do not do this, customers that select Triodos will be presented with an error.
-
-- If you use the Bluem portal, you don't need to take action. This change is already applied within the Bluem portal.
-
-
-## Important note for version 2.0.1:
-Major release with more stability, validation and features.
-
-Please note: The main Integration class is called Bluem, so to include it, use something like:
-```php
-$bluem = new Bluem($config);
-```
-Or use a class alias to ensure code functioning.
-
-Furthermore, all generally available functions are still available.
-
-
-- @todo: update namespace usage in examples here and in `/examples` folder
-- @todo: full review of readme file
-
-
-A PHP interface for utilizing the Bluem services ePayments, eMandates, iDIN and/or IBAN-Name check.
-Utilize this library to write your own applications in PHP that communicate with Bluem, without having to handle the flow yourself.
-
-Utilized by other applications as well:
-
-- [WordPress and WooCommerce plug-in](https://github.com/daanrijpkema/bluem-woocommerce), available for Bluem customers.
-
-**TIP:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
 
 ## Installation
 This library can be installed through [Composer](https://getcomposer.org). Run Composer to install this library and dependencies from your project folder.

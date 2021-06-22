@@ -38,5 +38,5 @@ $bluem_config->merchantReturnURLBase = "https://website.com";  // URL to return 
 $bluem_config->IDINBrandID = "";
 
 /** Initialize */
-$bluem_object = new Integration($bluem_config);
+$bluem_object = new Bluem($bluem_config);
 

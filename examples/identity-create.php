@@ -28,13 +28,17 @@ returns:
 */
 
 /* Creating an identity request, example */
-$description = "Test identity"; // description is shown to customer
-$debtorReference = "1234"; // client reference/number
+/* Description to be shown to the customer */
+$description = "Test identity"; 
 
-$returnURL = "https://yourdomain.com/integration/identity.php?action=callback"; // provide a link here to the callback function; either in this script or another script
+/* Debtor Reference: client or customer reference/number. This is an optional value
+    and can also be left empty. */
+$debtorReference = "1234"; 
+
+/* provide a link here to the callback function; either in this script or another script */
+$returnURL = "https://yourdomain.com/integration/identity.php?action=callback"; 
 
 session_start();
-
 
 // To create AND perform a request:
 $request = $bluem_object->CreateIdentityRequest(
