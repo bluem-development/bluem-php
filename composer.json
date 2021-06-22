@@ -2,28 +2,26 @@
     "name": "daanrijpkema/bluem-php",
     "type": "package",
     "description": "Bluem PHP interface",
-    "keywords": ["bluem","php","interface","wrapper","emandate","epayment","idin"],
+    "keywords": ["bluem", "php", "interface", "wrapper", "emandate", "epayment", "idin"],
     "homepage": "https://daanrijpkema.github.io/bluem-php/",
     "license": "GPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "Daan Rijpkema",
-            "email": "info@daanrijpkema.com",
-            "homepage": "https://daanrijpkema.com/",
-            "role": "Developer"
-        }
-	],
-	"support": {
-		"issues": "https://github.com/daanrijpkema/bluem-php"
-	},
-	"require": {
-		"php": ">=7.0",
-		"nesbot/carbon": "^2.31",
-		"pear/http_request2": "v2.4.2",
-        "selective/xmldsig": "^1.0",
+    "authors": [{
+        "name": "Daan Rijpkema",
+        "email": "info@daanrijpkema.com",
+        "homepage": "https://daanrijpkema.com/",
+        "role": "Developer"
+    }],
+    "support": {
+        "issues": "https://github.com/daanrijpkema/bluem-php"
+    },
+    "require": {
+        "php": ">=7.0",
+        "nesbot/carbon": "^2.31",
+        "pear/http_request2": "v2.4.2",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "ext-simplexml": "*"
+        "ext-simplexml": "*",
+        "robrichards/xmlseclibs": "^3.1"
     },
     "autoload": {
         "psr-4": {
