@@ -1,3 +1,5 @@
+![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
+
 # Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
 
 A PHP interface for utilizing the Bluem services ePayments, eMandates, iDIN and/or IBAN-Name check.
@@ -6,13 +8,15 @@ Utilize this library to write your own applications in PHP that communicate with
 Utilized by other applications as well:
 
 - [WordPress and WooCommerce plug-in](https://github.com/daanrijpkema/bluem-woocommerce), available for Bluem customers.
+- [Magento2 module](https://github.com/DaanRijpkema/bluem-magento/), available for Bluem customers.
+
 
 **TIP:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
 ## Notes per version
 PHP 7.0+ is required for all versions of this library.
 
 Please use the major git releases for the stable versions of this plugin.
-## Notes version 2.0.2:
+### Notes version 2.0.2:
 
 Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
 
