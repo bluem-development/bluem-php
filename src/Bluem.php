@@ -99,6 +99,13 @@ class Bluem
             // defaulting localInstrumentCode
             $_config->localInstrumentCode = "CORE";
         }
+
+
+        // @todo add more validation for missing settings, 
+        // like a missing BrandID and such - do this in a 
+        // structured way like unit tests.
+
+
         $this->_config = $_config;
 
 
@@ -121,6 +128,7 @@ class Bluem
 
         // this is given by the bank (default 0)
         $this->_config->merchantSubID = "0";
+        // @todo verify when this merchantSubID is ever set by the user.
 
         // if an invalid possible return status is given, set it to a default value (for testing purposes only)
         $possibleReturnStatuses = [

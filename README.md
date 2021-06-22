@@ -1,5 +1,32 @@
 # Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
 
+## Prerequisites
+PHP 7.0+ is required for this library.
+
+## Frequently asked questions
+
+### I get the message "Unauthorized: Check your account credentials" - what should I do
+Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. If you have checked that the credentials are correct but you still receive this message, please contact your Bluem account manager.
+
+### How can I make the experience of identifying more user-friendly?
+What you can do, is the following:
+
+- You can reduce the amount of steps required by performing the selection of the bank within your own application and interface by utilizing the preselection feature from the PHP library on the request object as so:
+
+```php
+    $BIC = "INGBNL2A";
+    $request->selectDebtorWallet($BIC);
+```
+See the section **DebtorWallet: preselecting a bank for Mandate, Payment or Identity request** for more information.
+This method can be used when creating iDIN and when creating iDEAL requests; you could store the selected bank ("Issuer") on user level and use it when creating a request for your user.
+- You can inform the user WHY this is necessary and refer to the new laws and rules, in your own website/application or refer to the news/public announcements.
+- You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience, and that it ensures integrity and a valid webshop experience.
+
+
+### Can I connect the Identity service with a payment service like Emandates or iDEAL?
+- No, you cannot, as these are separate processes.
+
+
 ## Important note for version 2.0.2:
 
 Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
