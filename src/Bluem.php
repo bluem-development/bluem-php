@@ -74,105 +74,29 @@ class Bluem
             );
             exit;
         }
+
+        
         // validating configuration
-        if (!in_array(
-            $_config->environment,
-            [
-                BLUEM_ENVIRONMENT_TESTING,
-                BLUEM_ENVIRONMENT_ACCEPTANCE,
-                BLUEM_ENVIRONMENT_PRODUCTION
-            ]
-        )
-        ) {
-            throw new Exception(
-                "Invalid environment setting, should be either
-                'test', 'acc' or 'prod'"
-            );
-        }
-
-        // @todo add more validation for missing settings,
-        // like a missing BrandID and such - do this in a
-        // structured way like unit tests.
-
-        // validating essentials:
-        if (!isset($_config->senderID)) {
-            throw new Exception("senderID not set; please add this to your configuration when instantiating the Bluem integration");
-        }
-        if (!isset($_config->brandID)) {
-            throw new Exception("brandID not set; please add this to your configuration when instantiating the Bluem integration");
-        }
-
-        // only required if mode is set to Test
-        if ($_config->environment === BLUEM_ENVIRONMENT_TESTING
-            && (!isset($_config->test_accessToken)
-                || $_config->test_accessToken ==="")
-        ) {
-            throw new Exception("test_accessToken not set correctly; please add this to your configuration when instantiating the Bluem integration");
-        }
-
+        // essential validation
+        $_config = $this->_validateEnvironment($_config);
+        $_config = $this->_validateSenderID($_config);
+        $_config = $this->_validateTest_accessToken($_config);
+        $_config = $this->_validateProduction_accessToken($_config);
+        $_config = $this->_validateBrandID($_config);
+        
         // secondary values, possibly automatically inferred/defaulting
-        // only required if mode is set to PROD
-        // production_accessToken
-
-        // merchantID
-        // eMandateReason
-        // merchantReturnURLBase
-        // localInstrumentCode
-
-        if (!isset($_config->localInstrumentCode)
-            || !in_array(
-                $_config->localInstrumentCode,
-                ['B2B', 'CORE']
-            )
-        ) {
-            // defaulting localInstrumentCode
-            $_config->localInstrumentCode = "CORE";
-        }
-
-
+        $_config = $this->_validateMerchantID($_config);
+        $_config = $this->_validateThanksPage($_config);
+        $_config = $this->_validateExpectedReturnStatus($_config);
+        $_config = $this->_validateEMandateReason($_config);
+        $_config = $this->_validateLocalInstrumentCode($_config);
+        $_config = $this->_validateMerchantReturnURLBase($_config);
+        // this is given by the bank (default 0)
+        $_config->merchantSubID = "0";
 
         $this->_config = $_config;
-
-
-        if ($this->_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
-            $this->_config->accessToken = $_config->production_accessToken;
-        // @todo consider throwing an exception if these tokens are missing.
-        } elseif ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
-            $this->_config->accessToken = $_config->test_accessToken;
-            // @todo consider throwing an exception if these tokens are missing.
-
-            // hardcoded merchantID in case of test.
-            // It is always the bluem merchant ID then.
-            $this->merchantID = BLUEM_STATIC_MERCHANT_ID;
-        }
-
+        $this->merchantID = $this->_config->merchantID;
         $this->environment = $this->_config->environment;
-
-        // @todo Only use one environment variable. Right now it is saved in both $this->environment and $this->_config->environment.
-        // This is confusing
-
-        // this is given by the bank (default 0)
-        $this->_config->merchantSubID = "0";
-        // @todo verify when this merchantSubID is ever set by the user.
-
-        // expectedReturnStatus
-        // if an invalid possible return status is given, set it to a default value (for testing purposes only)
-        $possibleReturnStatuses = [
-            "none",     "success",  "cancelled",
-            "expired",  "failure",  "open",
-            "pending"
-        ];
-        if ($this->_config->expectedReturnStatus!==""
-            && !in_array(
-                $this->_config->expectedReturnStatus,
-                $possibleReturnStatuses
-            )
-        ) {
-            $this->_config->expectedReturnStatus = "success";
-        }
-
-
-        // @todo get this from settings in the future
     }
 
     /*
@@ -903,5 +827,146 @@ class Bluem
         }
 
         return $context;
+    }
+
+
+
+    private function _validateEnvironment($_config)
+    {
+        if (!in_array(
+            $_config->environment,
+            [
+                BLUEM_ENVIRONMENT_TESTING,
+                BLUEM_ENVIRONMENT_ACCEPTANCE,
+                BLUEM_ENVIRONMENT_PRODUCTION
+            ]
+        )
+        ) {
+            throw new Exception(
+                "Invalid environment setting, should be either
+                'test', 'acc' or 'prod'"
+            );
+        }
+        return $_config;
+    }
+    private function _validateSenderID($_config)
+    {
+        if (!isset($_config->senderID)) {
+            throw new Exception(
+                "senderID not set; 
+                please add this to your configuration when instantiating the Bluem integration"
+            );
+        }
+        if ($_config->senderID =="") {
+            throw new Exception(
+                "senderID cannot be empty; 
+                please add this to your configuration when instantiating the Bluem integration"
+            );
+        }
+        if (substr($_config->senderID, 0, 1) !== "S") {
+            throw new Exception(
+                "senderID always starts with an S followed by digits. 
+                Please correct this in your configuration when instantiating the Bluem integration"
+            );
+        }
+
+        return $_config;
+    }
+    private function _validateTest_accessToken($_config)
+    {
+        if ($_config->environment === BLUEM_ENVIRONMENT_TESTING
+        && (!isset($_config->test_accessToken)
+            || $_config->test_accessToken ==="")
+        ) {
+            throw new Exception(
+                "test_accessToken not set correctly; please add this 
+                to your configuration when instantiating the Bluem integration"
+            );
+        }
+        return $_config;
+    }
+    private function _validateProduction_accessToken($_config)
+    {
+        // only required if mode is set to PROD
+        // production_accessToken
+        if ($_config->environment === BLUEM_ENVIRONMENT_PRODUCTION
+            && (!isset($_config->production_accessToken)
+            || $_config->production_accessToken ==="")
+        ) {
+            throw new Exception(
+                "production_accessToken not set correctly; 
+                please add this to your configuration when 
+                instantiating the Bluem integration"
+            );
+        }
+        return $_config;
+    }
+
+    private function _validateMerchantID($_config)
+    {
+        if ($_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
+            $_config->accessToken = $_config->production_accessToken;
+        // @todo consider throwing an exception if these tokens are missing.
+        } elseif ($_config->environment === BLUEM_ENVIRONMENT_TESTING) {
+            $_config->accessToken = $_config->test_accessToken;
+            // @todo consider throwing an exception if these tokens are missing.
+
+            // hardcoded merchantID in case of test.
+            // It is always the bluem merchant ID then.
+            $_config->merchantID = BLUEM_STATIC_MERCHANT_ID;
+        }
+        return $_config;
+    }
+    private function _validateThanksPage($_config)
+    {
+        return $_config;
+    }
+    private function _validateExpectedReturnStatus($_config)
+    {
+        // expectedReturnStatus
+        // if an invalid possible return status is given, set it to a default value (for testing purposes only)
+        $possibleReturnStatuses = [
+            "none",     "success",  "cancelled",
+            "expired",  "failure",  "open",
+            "pending"
+        ];
+        if ($_config->expectedReturnStatus!==""
+            && !in_array(
+                $_config->expectedReturnStatus,
+                $possibleReturnStatuses
+            )
+        ) {
+            $_config->expectedReturnStatus = "success";
+        }
+
+        return $_config;
+    }
+    private function _validateBrandID($_config)
+    {
+        if (!isset($_config->brandID)) {
+            throw new Exception("brandID not set; please add this to your configuration when instantiating the Bluem integration");
+        }
+        return $_config;
+    }
+    private function _validateEMandateReason($_config)
+    {
+        return $_config;
+    }
+    private function _validateLocalInstrumentCode($_config)
+    {
+        if (!isset($_config->localInstrumentCode)
+            || !in_array(
+                $_config->localInstrumentCode,
+                ['B2B', 'CORE']
+            )
+        ) {
+            // defaulting localInstrumentCode
+            $_config->localInstrumentCode = "CORE";
+        }
+        return $_config;
+    }
+    private function _validateMerchantReturnURLBase($_config)
+    {
+        return $_config;
     }
 }

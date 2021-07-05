@@ -41,24 +41,24 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
                 /**
                  * example contents:
                  *  ["DateTime"]=>
-                             string(24) "2020-10-16T15:30:45.803Z"
-                            ["CustomerIDResponse"]=>
-                            string(21) "FANTASYBANK1234567890"
-                            ["AddressResponse"]=>
-                            object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
-                                ["Street"]=>
-                                string(12) "Pascalstreet"
-                                ["HouseNumber"]=>
-                                string(2) "19"
-                                ["PostalCode"]=>
-                                string(6) "0000AA"
-                                ["City"]=>
-                                string(6) "Aachen"
-                                ["CountryCode"]=>
-                                string(2) "DE"
-                            }
-                            ["BirthDateResponse"]=>
-                            string(10) "1975-07-25"
+                 *   string(24) "2020-10-16T15:30:45.803Z"
+                 *  ["CustomerIDResponse"]=>
+                 *  string(21) "FANTASYBANK1234567890"
+                 *  ["AddressResponse"]=>
+                 *  object(Bluem\BluemPHP\IdentityStatusBluemResponse)#4 (5) {
+                 *      ["Street"]=>
+                 *      string(12) "Pascalstreet"
+                 *      ["HouseNumber"]=>
+                 *      string(2) "19"
+                 *      ["PostalCode"]=>
+                 *      string(6) "0000AA"
+                 *      ["City"]=>
+                 *      string(6) "Aachen"
+                 *      ["CountryCode"]=>
+                 *      string(2) "DE"
+                 *  }
+                 *  ["BirthDateResponse"]=>
+                 *  string(10) "1975-07-25"
                  */
                 // store that information and process it. 
 

@@ -39,7 +39,7 @@ Furthermore, all generally available functions are still available.
 
 ## Frequently asked questions
 
-### I get the message "Unauthorized: Check your account credentials" - what should I do
+### I get the message "Unauthorized: Check your account credentials" - what should I do?
 Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. If you have checked that the credentials are correct but you still receive this message, please contact your Bluem account manager.
 
 ### How can I make the experience of identifying more user-friendly?
@@ -246,7 +246,8 @@ if ($statusresponse->ReceivedResponse()) {
 }
 ```
 
-
+### Tip for testing with payments
+You can use the monetary amount (1-5 euro) of a payment request in test mode to simulate a certain callback status - see the Bluem docs for each value that corresponds to a status.
 
 ## eMandates
 
@@ -518,7 +519,6 @@ if ($statusResponse->ReceivedResponse()) {
 It is also possible to use this library for performing a login request for your application, using a customized flow.
 Detailed instructions will follow here shortly.
 
-[] @todo: update this section
 
 ## IBAN-Name check
 

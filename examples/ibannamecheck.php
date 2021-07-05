@@ -14,7 +14,6 @@ $request = $bluem_object->CreateIBANNameCheckRequest(
 );
 
 $response = $bluem_object->PerformRequest($request);
-var_dump($response);
 
 switch ($response->GetIBANResult()) {
 case 'INVALID':
