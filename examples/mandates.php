@@ -42,15 +42,14 @@ if (!isset($attrs['entranceCode'])) {
 
 // The EntranceCode is set by the response; it is required for following status requests.
 $entranceCode = $attrs['entranceCode'] . "";
-// @todo save this entrancecode somewhere in your local data store
-
+// Hint: save this entrancecode somewhere in your local data store
 
 if (isset($response->EMandateTransactionResponse->TransactionURL)) {
 	$transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
-	// @todo redirect to the above transaction URL and save the initiated transaction
+	// Hint: redirect to the above transaction URL and save the initiated transaction
 
 } else {
-	// @todo no proper status given, show an error.
+	// Hint: no proper status given, show an error.
 }
 
 
@@ -75,20 +74,20 @@ $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
 // var_dump($statusCode);
 if ($statusCode === "Success") {
 
-	// @todo do what you need to do to mark the transaction completed on your end
+	// Implement: do what you need to do to mark the transaction completed on your end
 
 } elseif ($statusCode === "Cancelled") {
 
-	// @todo do what you need to when the transaction has been cancelled
+	// Implement: do what you need to when the transaction has been cancelled
 
 } elseif ($statusCode === "Open" || $statusCode == "Pending") {
 
 	// the transaction is still open. it might take some time to process
-	// @todo show a message that reflects this
+	// Implement: show a message that reflects this
 
 } elseif ($statusCode === "Expired") {
 
-	// @todo show a message that reflects an expired transaction;
+	// Implement: show a message that reflects an expired transaction;
 
 } else {
 

@@ -176,7 +176,7 @@ The following attributes in the bluem_config are vital for proper eMandate funct
 
 - PaymentReference: a reference visible within the administration, which can be used to identify the customer and the transaction details.
 - Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
-
+- A valid brandID set for payments.
 
 ### Create a payment transaction
 
@@ -248,6 +248,54 @@ if ($statusresponse->ReceivedResponse()) {
 
 ### Tip for testing with payments
 You can use the monetary amount (1-5 euro) of a payment request in test mode to simulate a certain callback status - see the Bluem docs for each value that corresponds to a status.
+
+### Adding additional data to a request
+
+You can add additional information to a request object *before* performing it, which can be useful. The data will be stored within the viamijnbank portal for further administrative purposes.
+
+```php
+$key = "EmailAddress";
+$value = "john@doe.com";
+
+// after instantiating the request
+$request->addAdditionalData($key, $value);
+// but before performing it
+```
+Providing a key that is not in the above list of options or a value that does not match the expected format for each option will trigger an exception.
+
+The key options are described below:
+
+#### EmailAddress
+Include an email address of the customer.
+
+#### MobilePhoneNumber
+Include an email address of the customer.
+
+#### CustomerProvidedDebtorIBAN
+Include an additional Debtor IBAN address of the customer.
+
+#### CustomerNumber
+Include a customer number.
+#### CustomerName
+Include a customer name.
+#### AttentionOf
+Include a customer title or name of person to be addressed
+
+#### Salutation
+Include a customer title or name of person to be saluted
+
+#### CustomerAddressLine1
+Include a first part of an address of the customer.
+#### CustomerAddressLine2
+Include a second part of an address of the customer.
+
+#### DebtorBankID
+More instructions follow.
+
+#### DynamicData
+More instructions follow.
+
+
 
 ## eMandates
 

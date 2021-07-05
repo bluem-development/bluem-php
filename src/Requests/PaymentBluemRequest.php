@@ -108,7 +108,8 @@ class PaymentBluemRequest extends BluemRequest
                 <Amount>' . $this->amount . '</Amount>
                 <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
-                $this->XmlWrapDebtorWallet(),
+                $this->XmlWrapDebtorWallet() .
+                $this->XmlWrapDebtorAdditionalData(),
                 [
                     'documentType' => "PayRequest",
                     'sendOption'   => "none",

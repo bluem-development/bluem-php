@@ -31,12 +31,12 @@ $response = $bluem_object->PerformRequest($request);
 
 // The EntranceCode is set by the response; it is required for following status requests.
 $entranceCode = $attrs['entranceCode'] . "";
-// @todo save the entrance code in your local data store
+// To implement yourself: save the entrance code in your local data store
 
 if (isset($response->EMandateTransactionResponse->TransactionURL)) {
 	$transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
-	// @todo redirect to the above transaction URL and save the initiated transaction 
+	// To implement yourself: redirect to the above transaction URL and save the initiated transaction 
 
 } else { 
-	// @todo no proper status given, show an error.
+	// To implement yourself: no proper status given, show an error.
 }

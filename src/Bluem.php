@@ -168,7 +168,6 @@ class Bluem
 
         return $this->PerformRequest($_request);
     }
-    // @todo: improve this function to be consistent with the other request types
 
     /**
      * Retrieving a mandate request's status based on a mandate ID and an entrance Code, and returning the response
@@ -206,10 +205,7 @@ class Bluem
         if ($this->_config->senderID === "S1300") {
             return "M" . Carbon::now()->timezone('Europe/Amsterdam')->format('YmdHis');
         }
-
-        // @todo create a future interface where one can select options how mandate IDs are formed
-
-        // nextdeli etc.
+        // nextdeli et al
         return substr($customer_id . Carbon::now()->timezone('Europe/Amsterdam')->format('Ymd') . $order_id, 0, 35);
     }
 
