@@ -49,6 +49,9 @@ if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
     define("BLUEM_STATIC_MERCHANT_ID", "0020009469");
 }
+if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
+    define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
+}
 
 /**
  * Bluem Integration main class
