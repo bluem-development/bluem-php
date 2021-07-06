@@ -468,7 +468,8 @@ class Bluem
         $xttrs_filename = $transaction_request->transaction_code . "-{$this->_config->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
 
         // conform Rfc1123 standard in GMT time
-        $xttrs_date = $now->toRfc7231String();
+        // $xttrs_date = $now->toRfc7231String();
+        $xttrs_date = $now->format("D, d M Y H:i:s T");
 
         $request_url = $transaction_request->HttpRequestUrl();
 
