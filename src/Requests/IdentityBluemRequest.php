@@ -159,4 +159,20 @@ class IdentityBluemRequest extends BluemRequest
             )
         );
     }
+
+    /**
+     * EntranceCodes for iDIN starting with the prefix 'showConsumerGui,
+     * will always get to a test status page
+     * of the bank where you can choose which status you want to receive back.
+     *
+     * This does clip your current entranceCode
+     * to ensure the max length is respected.
+     *
+     * @return void
+     */
+    public function enableStatusGUI()
+    {
+        $this->entranceCode = "showConsumerGui".
+            substr($this->entranceCode, 0, 25);
+    }
 }

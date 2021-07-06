@@ -561,6 +561,16 @@ if ($statusResponse->ReceivedResponse()) {
 }
 ```
 
+### Testing identity return statuses
+When using specific entranceCodes for iDIN starting with a given prefix you  will always get to a test status page of the bank where you can choose which status you want to receive back. You can easily utilize this feature by altering your request object.
+
+**Please note that this only works in the TEST environment.**
+
+```php
+$request->enableStatusGUI();
+```
+
+Advanced note: This function prepends a string to your entranceCode. This might clip your original entranceCode if it exceeds the max length.
 
 ### CustomerIDLoginRequest
 
