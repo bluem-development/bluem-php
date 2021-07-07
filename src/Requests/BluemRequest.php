@@ -65,7 +65,7 @@ class BluemRequest
 
         $this->accessToken = $config->accessToken;
 
-        $this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->toDateTimeLocalString() . ".000Z";
+        $this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
 
         /**
          *  unique identifier of payee for this transaction

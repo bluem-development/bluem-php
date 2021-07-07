@@ -49,6 +49,9 @@ if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
     define("BLUEM_STATIC_MERCHANT_ID", "0020009469");
 }
+if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
+    define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
+}
 
 /**
  * Bluem Integration main class
@@ -459,13 +462,15 @@ class Bluem
         // set this to true if you want more internal information when debugging or extending
         $verbose = false;
 
-        // make sure the timezone is set correctly..
-        $now = Carbon::now()->timezone('Europe/Amsterdam');
+        $now = Carbon::now();
 
         $xttrs_filename = $transaction_request->transaction_code . "-{$this->_config->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
 
         // conform Rfc1123 standard in GMT time
-        $xttrs_date = $now->toRfc7231String();
+        $rfc7231format = "D, d M Y H:i:s \G\M\T";
+        // Since v2.0.5 : use preset format instead of
+        // function to allow for Carbon 1.21 legacy compatibility
+        $xttrs_date = $now->format($rfc7231format);
 
         $request_url = $transaction_request->HttpRequestUrl();
 

@@ -49,9 +49,9 @@ class PaymentBluemRequest extends BluemRequest
         }
 
         if (is_null($dueDateTime)) {
-            $this->dueDateTime = Carbon::now()->addDays(1)->toDateTimeLocalString() . ".000Z";
+            $this->dueDateTime = Carbon::now()->addDays(1)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         } else {
-            $this->dueDateTime = Carbon::parse($dueDateTime)->toDateTimeLocalString() . ".000Z";
+            $this->dueDateTime = Carbon::parse($dueDateTime)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         }
 
         $this->debtorReference = $debtorReference;
