@@ -247,7 +247,15 @@ if ($statusresponse->ReceivedResponse()) {
 ```
 
 ### Tip for testing with payments
-You can use the monetary amount (1-5 euro) of a payment request in test mode to simulate a certain callback status - see the Bluem docs for each value that corresponds to a status.
+You can, in Bluem test mode, place iDEAL orders of a specific amount, to get a certain status back. This way you can see how it works if a payment succeeds, or if it fails. The available statuses are:
+
+- `1.00` (or any other value) Success
+- `4.00` Open
+- `2.00` Cancelled
+- `3.00` Expired
+- `5.00` Failure
+- `7.00` Failure in system
+
 
 ### Adding additional data to a request
 
