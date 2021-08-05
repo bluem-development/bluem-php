@@ -38,7 +38,7 @@ class PaymentBluemRequest extends BluemRequest
             $this->brandID = $config->brandID;
         }
 
-        $this->description = $description;
+        $this->description = $this->_sanitizeDescription($description);
 
         //  Default Currency EUR
         if (is_null($currency)) {

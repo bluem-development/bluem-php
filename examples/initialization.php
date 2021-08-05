@@ -31,19 +31,24 @@ $bluem_config->brandID = "";                         // What's your BrandID? Set
 $bluem_config->test_accessToken = "";                // The access token to communicate with Bluem, for the test environment.
 $bluem_config->production_accessToken = "" ;         // The access token to communicate with Bluem, for the production environment.
 
-$bluem_config->merchantID = "" ;                     // the PRODUCTION merchant ID, to be  found on the contract you
-// have with the bank for receiving direct debit mandates.
-// required for eMandates prod environment
-// NOTE that MerchantID for test environment is set automatically to a valid test value
-
 $bluem_config->expectedReturnStatus = "success" ;    // What status would you like to get back for a TEST transaction or status request? Possible values: none, success, cancelled, expired, failure, open, pending
-$bluem_config->eMandateReason = "eMandateReason" ;   // Brief description of the debt collection at the time of issue
-$bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collection: CORE or B2B
 $bluem_config->merchantReturnURLBase = "https://website.com";  // URL to return to after finishing the process
 
+// NOTE: THE FOLLOWING SETTINGS APPLY FOR IDIN ONLY
+// If you do not use iDIN, instantiating this is NOT necessary.
 // If you are using iDIN next to other services, you can set a specific iDIN BrandID here:
 $bluem_config->IDINBrandID = "";
 // if not set, the default brandID will be used.
+
+// NOTE: THE FOLLOWING SETTINGS APPLY FOR EMANDATES ONLY. 
+// If you do not use eMandates, instantiating this is NOT necessary.
+$bluem_config->merchantID = "" ;                     // the PRODUCTION merchant ID, to be  found on the contract you
+// have with the bank for receiving direct debit mandates.
+// required for eMandates prod environment
+// NOTE that MerchantID for test evironment is set automatically to a valid test value
+$bluem_config->eMandateReason = "eMandateReason" ;   // Brief description of the debt collection at the time of issue
+$bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collection: CORE or B2B
+
 
 /** 
  * Initialize 

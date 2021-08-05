@@ -45,8 +45,9 @@ class IdentityBluemRequest extends BluemRequest
         }
 
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
+        $this->description = $this->_sanitizeDescription($description);
+        
 
-        $this->description = $description;
         $this->debtorReference = $debtorReference;
         $this->debtorReturnURL = $debtorReturnURL;
 

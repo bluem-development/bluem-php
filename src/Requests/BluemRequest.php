@@ -402,6 +402,25 @@ class BluemRequest
         return '';
     }
 
+
+    /**
+     * Perform sanitization of the description element
+     *
+     * @param String $description
+     * @return void
+     */
+    protected function _sanitizeDescription(String $description) {
+        // filter based on full list of invalid chars for description based on XSD
+        // Wel toegestaan: -0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%"'/:;?$
+        $description = preg_replace(
+            '/[^-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€\ \(\)+,\.@&=%\"\'\/:;\?\$]/',
+            '',
+            $description
+        );
+        $description = substr($description, 0, 128); // max 128 characters
+        return $description;
+    }
+
     /*
     <DebtorAdditionalData>
     <EmailAddress>{0,1}</EmailAddress>

@@ -127,6 +127,8 @@ $config->merchantReturnURLBase = ...;
 
 $bluem = new Bluem($config);
 ```
+If parts of the Bluem object are not instantiated correctly, the instantiation might throw an exception.
+
 
 ## General concept
 

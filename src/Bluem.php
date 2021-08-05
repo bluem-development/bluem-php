@@ -47,7 +47,7 @@ if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
     define("BLUEM_ENVIRONMENT_ACCEPTANCE", "acc");
 }
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
-    define("BLUEM_STATIC_MERCHANT_ID", "0020009469");
+    define("BLUEM_STATIC_MERCHANT_ID", "0020000387");
 }
 if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
     define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
@@ -88,7 +88,7 @@ class Bluem
         $_config = $this->_validateBrandID($_config);
         
         // secondary values, possibly automatically inferred/defaulting
-        $_config = $this->_validateMerchantID($_config);
+        $_config = $this->_validateMerchantIDAndSelectAccessToken($_config);
         $_config = $this->_validateThanksPage($_config);
         $_config = $this->_validateExpectedReturnStatus($_config);
         $_config = $this->_validateEMandateReason($_config);
@@ -516,6 +516,42 @@ class Bluem
                         } catch (\Throwable $th) {
                             return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
                         }
+                        echo $transaction_request->transaction_code;
+                        var_dump($response);
+                        if ($response->attributes()['type'].''  === "ErrorResponse") {
+                            switch ($transaction_request->transaction_code) {
+                                case 'SRX':
+                                case 'SUD':
+                                    $errmsg = $response->EMandateErrorResponse->Error->ErrorMessage."";
+                                case 'TRX':
+                                case 'TRS':
+                                    $errmsg = $response->EMandateTransactionErrorResponse->Error->ErrorMessage."";
+                                case 'PSU':
+                                case 'PSX':
+                                    $errmsg = $response->EPaymentErrorResponse->Error->ErrorMessage."";
+                                case 'PTS':
+                                case 'PTX':
+                                    $errmsg = $response->EPaymentTransactionErrorResponse->Error->ErrorMessage."";
+                                case 'ITX':
+                                case 'ITX':
+                                    $errmsg = $response->EIdentityTransactionErrorResponse->Error->ErrorMessage."";
+                                case 'ISU':
+                                case 'ISX':
+                                    $errmsg = $response->EIdentityErrorResponse->Error->ErrorMessage."";
+                                case 'INS':
+                                case 'INX':
+                                    $errmsg = $response->EIBANNameCheckErrorResponse->Error->ErrorMessage."";
+                                default:
+                                    throw new Exception("Invalid transaction type requested");
+                                }
+                            // $response = $this->fabricateErrorResponseObject($transaction_request->transaction_code, $http_response->getBody());
+                            // var_dump($response);
+                            return new ErrorBluemResponse("Error: " . ($errmsg));
+                            exit;
+                        }
+
+
+                        var_dump($response);
                         if (!$response->Status()) {
                             return new ErrorBluemResponse("Error: " . ($response->Error->ErrorMessage));
                         }
@@ -903,8 +939,12 @@ class Bluem
         return $_config;
     }
 
-    private function _validateMerchantID($_config)
+    private function _validateMerchantIDAndSelectAccessToken($_config)
     {
+        if (!isset($_config->merchantId) || is_null($_config->merchantId)) {
+            $_config->merchantId = "";
+        }
+
         if ($_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
             $_config->accessToken = $_config->production_accessToken;
         // @todo consider throwing an exception if these tokens are missing.
