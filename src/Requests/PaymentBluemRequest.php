@@ -54,6 +54,7 @@ class PaymentBluemRequest extends BluemRequest
             $this->dueDateTime = Carbon::parse($dueDateTime)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         }
 
+        //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
         $this->debtorReference = $debtorReference;
 
         $this->amount = $this->parseAmount($amount);

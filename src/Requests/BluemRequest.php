@@ -100,8 +100,7 @@ class BluemRequest
         string $element_name,
         string $type = "TransactionRequest",
         string $rest
-    ): string
-    {
+    ): string {
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><' . $element_name . '
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         type="' . $type . '"
@@ -409,7 +408,8 @@ class BluemRequest
      * @param String $description
      * @return void
      */
-    protected function _sanitizeDescription(String $description) {
+    protected function _sanitizeDescription(String $description)
+    {
         // filter based on full list of invalid chars for description based on XSD
         // Wel toegestaan: -0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%"'/:;?$
         $description = preg_replace(

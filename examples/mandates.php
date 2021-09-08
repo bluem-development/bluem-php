@@ -71,7 +71,7 @@ if (!$response->Status()) {
 
 $statusUpdateObject = $response->EMandateStatusUpdate;
 $statusCode = $statusUpdateObject->EMandateStatus->Status . "";
-// var_dump($statusCode);
+
 if ($statusCode === "Success") {
 
 	// Implement: do what you need to do to mark the transaction completed on your end

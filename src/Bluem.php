@@ -257,16 +257,17 @@ class Bluem
         $entranceCode = null,
         $debtorReturnURL = ""
     ): PaymentBluemRequest {
+
         if (is_null($entranceCode)) {
             $entranceCode = $this->CreateEntranceCode();
         }
 
-        // @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
-        // @todo: validate Description
-        // @todo: validate Amount
-        // @todo: validate Currency
-        // @todo: Create constants for Currencies
-        // @todo: sanitize debtorReturnURL?
+        // create try catch for these validation steps
+            // @todo: validate Description
+            // @todo: validate Amount
+            // @todo: validate Currency
+            // @todo: Create constants for Currencies
+            // @todo: sanitize debtorReturnURL
 
         return new PaymentBluemRequest(
             $this->_config,
@@ -494,7 +495,6 @@ class Bluem
             echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-filename: ' . $xttrs_filename;
             echo "<HR>";
             echo PHP_EOL . "BODY: " . $transaction_request->XmlString();
-            // var_dump(libxml_get_errors());
         }
 
         $req->setBody($transaction_request->XmlString());
@@ -502,7 +502,7 @@ class Bluem
             $http_response = $req->send();
             if ($verbose) {
                 echo PHP_EOL . "<BR>RESPONSE// ";
-                var_dump($http_response->getBody());
+                echo($http_response->getBody());
             }
 
             switch ($http_response->getStatus()) {
@@ -516,42 +516,45 @@ class Bluem
                         } catch (\Throwable $th) {
                             return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
                         }
-                        echo $transaction_request->transaction_code;
-                        var_dump($response);
+                        
                         if ($response->attributes()['type'].''  === "ErrorResponse") {
                             switch ($transaction_request->transaction_code) {
                                 case 'SRX':
                                 case 'SUD':
                                     $errmsg = $response->EMandateErrorResponse->Error->ErrorMessage."";
+                                    // no break
                                 case 'TRX':
                                 case 'TRS':
                                     $errmsg = $response->EMandateTransactionErrorResponse->Error->ErrorMessage."";
+                                    // no break
                                 case 'PSU':
                                 case 'PSX':
                                     $errmsg = $response->EPaymentErrorResponse->Error->ErrorMessage."";
+                                    // no break
                                 case 'PTS':
                                 case 'PTX':
                                     $errmsg = $response->EPaymentTransactionErrorResponse->Error->ErrorMessage."";
+                                    // no break
                                 case 'ITX':
                                 case 'ITX':
                                     $errmsg = $response->EIdentityTransactionErrorResponse->Error->ErrorMessage."";
+                                    // no break
                                 case 'ISU':
                                 case 'ISX':
                                     $errmsg = $response->EIdentityErrorResponse->Error->ErrorMessage."";
+                                    // no break
                                 case 'INS':
                                 case 'INX':
                                     $errmsg = $response->EIBANNameCheckErrorResponse->Error->ErrorMessage."";
+                                    // no break
                                 default:
                                     throw new Exception("Invalid transaction type requested");
                                 }
-                            // $response = $this->fabricateErrorResponseObject($transaction_request->transaction_code, $http_response->getBody());
-                            // var_dump($response);
+                            
                             return new ErrorBluemResponse("Error: " . ($errmsg));
                             exit;
                         }
 
-
-                        var_dump($response);
                         if (!$response->Status()) {
                             return new ErrorBluemResponse("Error: " . ($response->Error->ErrorMessage));
                         }
@@ -629,7 +632,7 @@ class Bluem
             $xmlObject = new \SimpleXMLElement($postData);
         } catch (Exception $e) {
             if ($verbose) {
-                var_dump($e);
+                echo($e->getMessage());
                 exit();
             }
             http_response_code(400); // could not parse XML
@@ -648,9 +651,6 @@ class Bluem
             exit;
         }
 
-        if ($verbose) {
-            var_dump($xmlObject);
-        }
 
         // @todo: finish this code
         throw new Exception("Not implemented fully yet, please contact the developer or work around this error");
