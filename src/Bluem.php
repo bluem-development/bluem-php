@@ -463,8 +463,9 @@ class Bluem
         // set this to true if you want more internal information when debugging or extending
         $verbose = false;
 
-        $now = Carbon::now();
-
+        $now = Carbon::now('UTC');
+        // set timezone to UTC to let the transaction xttrs timestamp work; 8-9-2021
+        
         $xttrs_filename = $transaction_request->transaction_code . "-{$this->_config->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
 
         // conform Rfc1123 standard in GMT time
@@ -694,8 +695,7 @@ class Bluem
         // } else {
         // $public_key_file = "webhook.bluem.nl_pub_key_production.crt";
         // }
-        $key_folder =
-            $public_key_file = "bluem_nl.crt";
+        $key_folder = $public_key_file = "bluem_nl.crt";
         $public_key_file_path = __DIR__ . "/../keys/" . $public_key_file;
         // TODO: put the key in a different folder, relative to this PHP library
         // echo $public_key_file_path;
