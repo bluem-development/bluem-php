@@ -523,31 +523,31 @@ class Bluem
                                 case 'SRX':
                                 case 'SUD':
                                     $errmsg = $response->EMandateErrorResponse->Error->ErrorMessage."";
-                                    // no break
+                                    break;
                                 case 'TRX':
                                 case 'TRS':
                                     $errmsg = $response->EMandateTransactionErrorResponse->Error->ErrorMessage."";
-                                    // no break
+                                    break;
                                 case 'PSU':
                                 case 'PSX':
                                     $errmsg = $response->EPaymentErrorResponse->Error->ErrorMessage."";
-                                    // no break
+                                    break;
                                 case 'PTS':
                                 case 'PTX':
                                     $errmsg = $response->EPaymentTransactionErrorResponse->Error->ErrorMessage."";
-                                    // no break
+                                    break;
                                 case 'ITX':
                                 case 'ITX':
                                     $errmsg = $response->EIdentityTransactionErrorResponse->Error->ErrorMessage."";
-                                    // no break
+                                    break;
                                 case 'ISU':
                                 case 'ISX':
                                     $errmsg = $response->EIdentityErrorResponse->Error->ErrorMessage."";
-                                    // no break
+                                    break;
                                 case 'INS':
                                 case 'INX':
                                     $errmsg = $response->EIBANNameCheckErrorResponse->Error->ErrorMessage."";
-                                    // no break
+                                    break;
                                 default:
                                     throw new Exception("Invalid transaction type requested");
                                 }
