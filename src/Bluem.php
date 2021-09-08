@@ -779,27 +779,37 @@ class Bluem
     /* IBAN SPECIFIC */
 
     /**
-     * @param        $iban
-     * @param        $name
-     * @param string $debtorReference
+     * Create IBAN Name Check request
+     * 
+     * @param string $iban            Given IBAN to check
+     * @param string $name            Given name to check
+     * @param string $debtorReference An optional given debtor reference 
+     *                                to append to the check request
      *
      * @return IbanBluemRequest
      */
-    public function CreateIBANNameCheckRequest($iban, $name, $debtorReference = "")
+    public function CreateIBANNameCheckRequest(String $iban, String $name, String $debtorReference = "")
     {
         $entranceCode = $this->CreateEntranceCode();
-        return new IbanBluemRequest($this->_config, $entranceCode, $iban, $name, $debtorReference);
+        return new IbanBluemRequest(
+            $this->_config, $entranceCode,
+            $iban, $name, $debtorReference
+        );
     }
 
+
     /**
-     * @param        $iban
-     * @param        $name
-     * @param string $debtorReference
+     * Create and perform IBAN Name Check request 
+     * 
+     * @param string $iban            Given IBAN to check
+     * @param string $name            Given name to check
+     * @param string $debtorReference An optional given debtor reference 
+     *                                to append to the check request
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
      * @throws \HTTP_Request2_LogicException
      */
-    public function IBANNameCheck($iban, $name, $debtorReference="")
+    public function IBANNameCheck(String $iban, String $name, String $debtorReference="")
     {
         $r = $this->CreateIBANNameCheckRequest($iban, $name, $debtorReference);
         $response = $this->PerformRequest($r);
