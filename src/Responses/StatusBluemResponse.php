@@ -6,11 +6,8 @@ class StatusBluemResponse extends BluemResponse
 {
     public function GetStatusCode()
     {
-        $parent_key = $this->getParentXmlElement();
-        $child_key = $this->getChildXmlElement();
-
-        if (isset($this->{$parent_key}->{$child_key}->Status)) {
-            return $this->{$parent_key}->{$child_key}->Status . "";
+        if (isset($this->{$this->getParentXmlElement()}->Status)) {
+            return $this->{$this->getParentXmlElement()}->Status . "";
         }
 
         return null;
