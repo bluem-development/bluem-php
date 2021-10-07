@@ -508,81 +508,65 @@ class Bluem
 
             switch ($http_response->getStatus()) {
                 case 200: {
-                        if ($http_response->getBody() == "") {
-                            return new ErrorBluemResponse("Error: Empty response returned");
-                        }
+                    if ($http_response->getBody() == "") {
+                        return new ErrorBluemResponse("Error: Empty response returned");
+                    }
 
-                        try {
-                            $response = $this->fabricateResponseObject($transaction_request->transaction_code, $http_response->getBody());
-                        } catch (\Throwable $th) {
-                            return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
-                        }
-                        
-                        if ($response->attributes()['type'].''  === "ErrorResponse") {
-                            switch ($transaction_request->transaction_code) {
-                                case 'SRX':
-                                case 'SUD':
-                                    $errmsg = $response->EMandateErrorResponse->Error->ErrorMessage."";
-                                    break;
-                                case 'TRX':
-                                case 'TRS':
-                                    $errmsg = $response->EMandateTransactionErrorResponse->Error->ErrorMessage."";
-                                    break;
-                                case 'PSU':
-                                case 'PSX':
-                                    $errmsg = $response->EPaymentErrorResponse->Error->ErrorMessage."";
-                                    break;
-                                case 'PTS':
-                                case 'PTX':
-                                    $errmsg = $response->EPaymentTransactionErrorResponse->Error->ErrorMessage."";
-                                    break;
-                                case 'ITX':
-                                case 'ITX':
-                                    $errmsg = $response->EIdentityTransactionErrorResponse->Error->ErrorMessage."";
-                                    break;
-                                case 'ISU':
-                                case 'ISX':
-                                    $errmsg = $response->EIdentityErrorResponse->Error->ErrorMessage."";
-                                    break;
-                                case 'INS':
-                                case 'INX':
-                                    $errmsg = $response->EIBANNameCheckErrorResponse->Error->ErrorMessage."";
-                                    break;
-                                default:
-                                    throw new Exception("Invalid transaction type requested");
-                                }
-                            
-                            return new ErrorBluemResponse("Error: " . ($errmsg));
-                            exit;
-                        }
+                    try {
+                        $response = $this->fabricateResponseObject($transaction_request->transaction_code, $http_response->getBody());
+                    } catch (\Throwable $th) {
+                        return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
+                    }
 
-                        if (!$response->Status()) {
-                            return new ErrorBluemResponse("Error: " . ($response->Error->ErrorMessage));
-                        }
-                        return $response;
+                    if ($response->attributes()['type'].''  === "ErrorResponse") {
+                        switch ((string)$transaction_request->transaction_code) {
+                            case 'SRX':
+                            case 'SUD':
+                            case 'TRX':
+                            case 'TRS':
+                                $errmsg = (string)$response->EMandateErrorResponse->Error->ErrorMessage;
+                                break;
+                            case 'PSU':
+                            case 'PSX':
+                            case 'PTS':
+                            case 'PTX':
+                                $errmsg = (string)$response->PaymentErrorResponse->Error->ErrorMessage;
+                                break;
+                            case 'ITX':
+                            case 'ITX':
+                            case 'ISU':
+                            case 'ISX':
+                                $errmsg = (string)$response->IDentityErrorResponse->Error->ErrorMessage;
+                                break;
+                            case 'INS':
+                            case 'INX':
+                                $errmsg = (string)$response->IBANCheckErrorResponse->Error->ErrorMessage;
+                                break;
+                            default:
+                                throw new Exception("Invalid transaction type requested");
+                            }
 
-                        break;
+                        return new ErrorBluemResponse("Error: " . ($errmsg));
                     }
-                case 400: {
-                        return new ErrorBluemResponse('Your request was not formed correctly.');
-                        break;
+
+                    if (!$response->Status()) {
+                        return new ErrorBluemResponse("Error: " . ($response->Error->ErrorMessage));
                     }
-                case 401: {
-                        return new ErrorBluemResponse('Unauthorized: check your access credentials.');
-                        break;
-                    }
-                case 500: {
-                        return new ErrorBluemResponse('An unrecoverable error at the server side occurred while processing the request');
-                        break;
-                    }
-                default: {
-                        return new ErrorBluemResponse('Unexpected / erroneous response (code ' . $http_response->getStatus() . ')');
-                        break;
-                    }
+                    return $response;
+
+                    break;
+                }
+                case 400:
+                    return new ErrorBluemResponse('Your request was not formed correctly.');
+                case 401:
+                    return new ErrorBluemResponse('Unauthorized: check your access credentials.');
+                case 500:
+                    return new ErrorBluemResponse('An unrecoverable error at the server side occurred while processing the request');
+                default:
+                    return new ErrorBluemResponse('Unexpected / erroneous response (code ' . $http_response->getStatus() . ')');
             }
         } catch (Throwable $e) {
-            $error = new ErrorBluemResponse('HTTP Request Error');
-            return $error;
+            return new ErrorBluemResponse('HTTP Request Error');
         }
     }
 
