@@ -861,7 +861,16 @@ class Bluem
         return $context;
     }
 
-
+    /**
+     * Verify if the current IP is based in the Netherlands 
+     * utilizing a geolocation integration
+     *
+     * @return bool
+     */
+    public function VerifyIPIsNetherlands() {
+        $this->IPAPI = new IPAPI();
+        return $this->IPAPI->CheckIsNetherlands();
+    }
 
     private function _validateEnvironment($_config)
     {

@@ -6,13 +6,16 @@
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
+namespace Bluem\BluemPHP\Helpers;
 
 if (!defined("BLUEM_STATIC_IPAPI_KEY")) {
     define("BLUEM_STATIC_IPAPI_KEY", "ec7b6c41a0f51d87cfc8c53fcf64fe83");
 }
 
 /**
- * IPAPI Integration class
+ * IPAPI Integration class: 
+ * goal of this integration is to allow IP Geolocation determination to filter request IPs
+ * check ipstack.com for more information on the integration
  */
 class IPAPI
 {
@@ -49,11 +52,12 @@ class IPAPI
         // Decode JSON response:
         $api_result = json_decode($json, true);
 
-        if ($this->_debug == true) {
+        // verbose for debugging
+        if ($this->_debug === true) {
             var_dump($api_result);
         }
 
-        // @todo: improve error handling
+        // @todo: make request error handling prettier in the future
 
         return $api_result;
     }

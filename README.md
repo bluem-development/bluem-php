@@ -11,11 +11,19 @@ Utilized by other applications as well:
 - [Magento2 module](https://github.com/DaanRijpkema/bluem-magento/), available for Bluem customers.
 
 
-**TIP:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
-## Notes per version
-PHP 7.0+ is required for all versions of this library.
+**Tip:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
 
-Please use the major git releases for the stable versions of this plugin.
+## Notes per version
+PHP 7.0+ is required for all versions of this library. Please use the major git releases for the stable versions of this plugin.
+
+### Notes version 2.1 (upcoming)
+Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IPAPI). Use this feature through the Helper/IPAPI class. Currently implemented public function is: 
+```php
+$bluem->VerifyIPIsNetherlands();
+// returns bool true if NL or error, returns false if no error and other country
+```
+*This feature is useful when determining whether to use IDIN identity checking in any application, as this is currently implemented only for Dutch banks.*
+
 ### Notes version 2.0.2:
 
 Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
