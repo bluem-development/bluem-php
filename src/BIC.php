@@ -1,6 +1,6 @@
 <?php
 /*
- * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
+ * (c) 2021 - Daan Rijpkema <d.rijpkema@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.

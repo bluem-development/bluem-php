@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2020 - Daan Rijpkema <info@daanrijpkema.com>
+ * (c) 2021 - Daan Rijpkema <d.rijpkema@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -29,6 +29,7 @@ use Bluem\BluemPHP\Responses\MandateTransactionBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentStatusBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentTransactionBluemResponse;
 use Bluem\BluemPHP\Validators\Validator;
+use Bluem\BluemPHP\Helpers\IPAPI;
 use Carbon\Carbon;
 use Exception;
 use HTTP_Request2 as BluemHttpRequest;
