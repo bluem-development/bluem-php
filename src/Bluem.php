@@ -70,7 +70,7 @@ class Bluem
      *
      * @throws Exception
      */
-    public function __construct($_config = null)
+    public function __construct(\stdClass $_config = null)
     {
         if (is_null($_config)) {
             throw new Exception(
@@ -966,26 +966,36 @@ class Bluem
     {
         return $_config;
     }
+
     private function _validateExpectedReturnStatus($_config)
     {
-        // expectedReturnStatus
-        // if an invalid possible return status is given, set it to a default value (for testing purposes only)
-        $possibleReturnStatuses = [
-            "none",     "success",  "cancelled",
-            "expired",  "failure",  "open",
-            "pending"
-        ];
-        if ($_config->expectedReturnStatus!==""
-            && !in_array(
-                $_config->expectedReturnStatus,
-                $possibleReturnStatuses
-            )
-        ) {
-            $_config->expectedReturnStatus = "success";
+        if (isset($_config->expectedReturnStatus)) {
+            if ($_config->environment === BLUEM_ENVIRONMENT_TESTING) {
+                // if an invalid possible return status is given, set it to a default value (for testing purposes only)
+                $possibleReturnStatuses = [
+                    "none",
+                    "success",
+                    "cancelled",
+                    "expired",
+                    "failure",
+                    "open",
+                    "pending"
+                ];
+                if ($_config->expectedReturnStatus !== ""
+                    && !in_array(
+                        $_config->expectedReturnStatus,
+                        $possibleReturnStatuses
+                    )
+                ) {
+                    $_config->expectedReturnStatus = "success";
+                }
+            } else {
+                unset($_config->expectedReturnStatus);
+            }
         }
-
         return $_config;
     }
+
     private function _validateBrandID($_config)
     {
         if (!isset($_config->brandID)) {
