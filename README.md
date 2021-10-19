@@ -16,7 +16,7 @@ Utilized by other applications as well:
 ## Notes per version
 PHP 7.0+ is required for all versions of this library. Please use the major git releases for the stable versions of this plugin.
 
-### Notes version 2.1 (upcoming)
+### Notes version 2.0.12 (latest)
 Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IPAPI). Use this feature through the Helper/IPAPI class. Currently implemented public function is: 
 ```php
 $bluem->VerifyIPIsNetherlands();
@@ -36,7 +36,7 @@ Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 jun
 ### Notes version 2.0.1:
 Major release with more stability, validation and features.
 
-Please note: The main Integration class is called Bluem, so to include it, use something like:
+Please note: The main Integration class is called Bluem, so to include it, use:
 ```php
 $bluem = new Bluem($config);
 ```
