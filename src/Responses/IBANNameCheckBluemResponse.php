@@ -26,6 +26,15 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
         return false;
     }
 
+    public function GetSuggestedName()
+    {
+        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->SuggestedName)) {
+            return $this->{$this->getParentXmlElement()}->IBANCheckResult->SuggestedName . "";
+        }
+
+        return false;
+    }
+
     public function GetAccountStatus()
     {
         if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->AccountStatus)) {
