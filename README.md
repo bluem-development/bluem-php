@@ -1,5 +1,6 @@
 ![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
-- [Bluem-php for Payment, Mandates, iDIN & IBAN-Name check](#bluem-php-for-payment--mandates--idin---iban-name-check)
+
+## Table of Contents
   * [Notes per version](#notes-per-version)
     + [Notes version 2.0.12 (latest)](#notes-version-2012--latest-)
     + [Notes version 2.0.2:](#notes-version-202-)
@@ -59,7 +60,6 @@ Utilized by other applications as well:
 
 - [WordPress and WooCommerce plug-in](https://github.com/daanrijpkema/bluem-woocommerce), available for Bluem customers.
 - [Magento2 module](https://github.com/DaanRijpkema/bluem-magento/), available for Bluem customers.
-
 
 **Tip:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
 
