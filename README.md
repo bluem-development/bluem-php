@@ -1,4 +1,54 @@
 ![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
+- [Bluem-php for Payment, Mandates, iDIN & IBAN-Name check](#bluem-php-for-payment--mandates--idin---iban-name-check)
+  * [Notes per version](#notes-per-version)
+    + [Notes version 2.0.12 (latest)](#notes-version-2012--latest-)
+    + [Notes version 2.0.2:](#notes-version-202-)
+    + [Notes version 2.0.1:](#notes-version-201-)
+  * [Testing](#testing)
+  * [Frequently asked questions](#frequently-asked-questions)
+  * [Installation](#installation)
+  * [Configuration](#configuration)
+  * [General concept](#general-concept)
+    + [DebtorWallet: preselecting a bank for Mandate, Payment or Identity request](#debtorwallet--preselecting-a-bank-for-mandate--payment-or-identity-request)
+  * [Payments](#payments)
+    + [Create a payment transaction](#create-a-payment-transaction)
+    + [Requesting a payment status:](#requesting-a-payment-status-)
+    + [Tip for testing with payments](#tip-for-testing-with-payments)
+    + [Adding additional data to a request](#adding-additional-data-to-a-request)
+      - [EmailAddress](#emailaddress)
+      - [MobilePhoneNumber](#mobilephonenumber)
+      - [CustomerProvidedDebtorIBAN](#customerprovideddebtoriban)
+      - [CustomerNumber](#customernumber)
+      - [CustomerName](#customername)
+      - [AttentionOf](#attentionof)
+      - [Salutation](#salutation)
+      - [CustomerAddressLine1](#customeraddressline1)
+      - [CustomerAddressLine2](#customeraddressline2)
+      - [DebtorBankID](#debtorbankid)
+      - [DynamicData](#dynamicdata)
+  * [eMandates](#emandates)
+    + [Mandate specific configuration fields:](#mandate-specific-configuration-fields-)
+    + [Creating an eMandate Transaction: helper functions](#creating-an-emandate-transaction--helper-functions)
+      - [Creating an eMandate transaction](#creating-an-emandate-transaction)
+      - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
+    + [Requesting an eMandate Transaction status](#requesting-an-emandate-transaction-status)
+  * [Identity (iDIN)](#identity--idin-)
+    + [Configuring iDIN](#configuring-idin)
+    + [Identity request types explained](#identity-request-types-explained)
+    + [Creating an identity request](#creating-an-identity-request)
+    + [The Identity Response callback](#the-identity-response-callback)
+    + [Testing identity return statuses](#testing-identity-return-statuses)
+    + [CustomerIDLoginRequest](#customeridloginrequest)
+  * [IBAN-Name check](#iban-name-check)
+    + [Use-cases for IBAN-Name checking and Edge cases](#use-cases-for-iban-name-checking-and-edge-cases)
+  * [Important miscellaneous notes](#important-miscellaneous-notes)
+    + [Enable secure Webhook reception through a certificate check](#enable-secure-webhook-reception-through-a-certificate-check)
+  * [Appendices](#appendices)
+    + [List of all supported BICs per context](#list-of-all-supported-bics-per-context)
+      - [ePayments](#epayments)
+      - [eMandates CORE](#emandates-core)
+      - [eMandates B2B](#emandates-b2b)
+      - [Identity](#identity)
 
 # Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
 
@@ -61,12 +111,10 @@ Description of the base tests:
 
 ## Frequently asked questions
 
-### I get the message "Unauthorized: Check your account credentials" - what should I do?
+*I get the message "Unauthorized: Check your account credentials" - what should I do?*<br>
 Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. If you have checked that the credentials are correct but you still receive this message, please contact your Bluem account manager.
 
-### How can I make the experience of identifying more user-friendly?
-What you can do, is the following:
-
+*How can I make the experience of identifying more user-friendly?*<br>
 - You can reduce the amount of steps required by performing the selection of the bank within your own application and interface by utilizing the preselection feature from the PHP library on the request object as so:
 
 ```php
@@ -79,7 +127,7 @@ This method can be used when creating iDIN and when creating iDEAL requests; you
 - You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience, and that it ensures integrity and a valid webshop experience.
 
 
-### Can I connect the Identity service with a payment service like Emandates or iDEAL so the user is only redirected once?
+*Can I connect the Identity service with a payment service like Emandates or iDEAL so the user is only redirected once?*<br>
 - No, you cannot, as these are separate processes.
 
 
