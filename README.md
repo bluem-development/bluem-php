@@ -45,6 +45,20 @@ Or use a class alias to ensure code functioning. This is a refactor since versio
 Furthermore, all generally available functions are still available.
 
 
+
+## Testing
+For improving future features, unit testing is introduced since november 2021.
+
+Tests are located in the `tests` folder
+To run tests:
+```
+./vendor/bin/phpunit 
+```
+
+Description of the base tests:
+
+
+
 ## Frequently asked questions
 
 ### I get the message "Unauthorized: Check your account credentials" - what should I do?
