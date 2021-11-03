@@ -3,7 +3,7 @@ composer.phar
 vendor
 .phpdoc
 docs
-
+.env
 
 examples/initialization.php
 
