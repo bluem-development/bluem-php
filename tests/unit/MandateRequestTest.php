@@ -2,9 +2,9 @@
 
 require_once __DIR__ . '\BluemGenericTest.php';
 
-class CanCreateMandateRequestTest extends BluemGenericTest
+class MandateRequestTest extends BluemGenericTest
 {
-    public function testCanCreateRequest()
+    public function testCanCreateMandateRequest()
     {
         $customer_id = "testcustomer001";
         $order_id = "testorder01231";
@@ -14,7 +14,10 @@ class CanCreateMandateRequestTest extends BluemGenericTest
             $order_id,
             "default"
         );
-        $this->assertTrue($request instanceof \Bluem\BluemPHP\Requests\EmandateBluemRequest);
+        $this->assertInstanceOf(
+            \Bluem\BluemPHP\Requests\EmandateBluemRequest::class, 
+            $request
+        );
 
         $this->_finalizeBluemRequestAssertion($request);
     }
