@@ -104,8 +104,13 @@ To run tests:
 ```
 ./vendor/bin/phpunit 
 ```
+Testing is done given a `.env` file. Please ensure that a filled `.env` file is available. A `.env.sample` file is provided to help you configure it.
 
-Description of the base tests:
+### Description of the base tests:
+- Testing if requests can be created 
+- Testing if entrance codes can be generated
+
+This is currently focused around unit testing to see if new changes break the system.
 
 
 
