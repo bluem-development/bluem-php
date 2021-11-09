@@ -258,17 +258,16 @@ class Bluem
         $entranceCode = null,
         $debtorReturnURL = ""
     ): PaymentBluemRequest {
-
         if (is_null($entranceCode)) {
             $entranceCode = $this->CreateEntranceCode();
         }
 
         // create try catch for these validation steps
-            // @todo: validate Description
-            // @todo: validate Amount
-            // @todo: validate Currency
-            // @todo: Create constants for Currencies
-            // @todo: sanitize debtorReturnURL
+        // @todo: validate Description
+        // @todo: validate Amount
+        // @todo: validate Currency
+        // @todo: Create constants for Currencies
+        // @todo: sanitize debtorReturnURL
 
         return new PaymentBluemRequest(
             $this->_config,
@@ -452,9 +451,9 @@ class Bluem
     {
         $validator = new Validator();
         if (!$validator->validate(
-                $transaction_request->RequestContext(),
-                utf8_encode($transaction_request->XmlString())
-            )
+            $transaction_request->RequestContext(),
+            utf8_encode($transaction_request->XmlString())
+        )
         ) {
             return new ErrorBluemResponse(
                 "Error: Request is not formed correctly. More details: ".
@@ -769,10 +768,10 @@ class Bluem
 
     /**
      * Create IBAN Name Check request
-     * 
+     *
      * @param string $iban            Given IBAN to check
      * @param string $name            Given name to check
-     * @param string $debtorReference An optional given debtor reference 
+     * @param string $debtorReference An optional given debtor reference
      *                                to append to the check request
      *
      * @return IbanBluemRequest
@@ -781,18 +780,21 @@ class Bluem
     {
         $entranceCode = $this->CreateEntranceCode();
         return new IbanBluemRequest(
-            $this->_config, $entranceCode,
-            $iban, $name, $debtorReference
+            $this->_config,
+            $entranceCode,
+            $iban,
+            $name,
+            $debtorReference
         );
     }
 
 
     /**
-     * Create and perform IBAN Name Check request 
-     * 
+     * Create and perform IBAN Name Check request
+     *
      * @param string $iban            Given IBAN to check
      * @param string $name            Given name to check
-     * @param string $debtorReference An optional given debtor reference 
+     * @param string $debtorReference An optional given debtor reference
      *                                to append to the check request
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
@@ -866,14 +868,19 @@ class Bluem
     }
 
     /**
-     * Verify if the current IP is based in the Netherlands 
+     * Verify if the current IP is based in the Netherlands
      * utilizing a geolocation integration
      *
      * @return bool
      */
-    public function VerifyIPIsNetherlands() {
-        $this->IPAPI = new IPAPI();
-        return $this->IPAPI->CheckIsNetherlands();
+    public function VerifyIPIsNetherlands()
+    {
+        try {
+            $this->IPAPI = new IPAPI();
+            return $this->IPAPI->CheckIsNetherlands();
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
 
     private function _validateEnvironment($_config)
