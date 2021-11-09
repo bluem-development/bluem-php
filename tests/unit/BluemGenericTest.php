@@ -40,7 +40,8 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
         $bluem_config->expectedReturnStatus = "success" ;
         $bluem_config->eMandateReason = "eMandateReason" ;
         $bluem_config->localInstrumentCode = "B2B" ;
-
+        // @todo: create env variables for these
+        
         $this->bluem = new Bluem($bluem_config);
     }
 
@@ -76,5 +77,5 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
             $this->assertTrue(true, "Can utilize {$cname} request and perform it");
         }
     }
-    
+ 
 }
