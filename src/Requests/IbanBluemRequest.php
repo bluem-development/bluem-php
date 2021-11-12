@@ -107,7 +107,7 @@ class IbanBluemRequest extends BluemRequest
     private function _sanitizeName(String $name) : string
     {
         return trim(
-            htmlentities($name)
+            str_replace(' ', '', htmlentities($name))
         );
     }
 
