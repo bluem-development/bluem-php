@@ -1,4 +1,12 @@
 <?php
+/**
+ * Bluem-PHP examples: Identity - Callback
+ * This file contains examples and annotations for using the `bluem-php` package.
+ * All to-dos are for your reference where action on your part is still required.
+ *
+ * Code is courtesy of and property of Bluem Payment Services
+ * Author: Daan Rijpkema (d.rijpkema@bluem.nl)
+ */
 
 require_once __DIR__ . '/initialization.php';
 

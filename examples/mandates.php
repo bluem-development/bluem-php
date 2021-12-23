@@ -1,13 +1,17 @@
 <?php
+/**
+ * Bluem-PHP examples: eMandates
+ * This file contains examples and annotations for using the `bluem-php` package.
+ * All to-dos are for your reference where action on your part is still required.
+ *
+ * Code is courtesy of and property of Bluem Payment Services
+ * Author: Daan Rijpkema (d.rijpkema@bluem.nl)
+ */
+require_once __DIR__.'/initialization.php';
 
-require_once __DIR__.'/iniatialization.php';
-
-/* Testing mandates */
 /**
  * Creating a Mandate
  * */
-
-
 $order_id = "1234";
 $customer_id = "5678";
 
@@ -22,8 +26,19 @@ $response = $this->bluem->Mandate(
 	$mandate_id
 );
 
-if (is_a($response, "Bluem\BluemPHP\Responses\ErrorBluemResponse", false))
-{
+if ($response->ReceivedResponse()) {
+
+
+// The EntranceCode is set by the response; it is required for following status requests.
+    $entranceCode = $response->GetEntranceCode();
+    // Suggestion: save this entrancecode somewhere in your local data store
+    // ...
+
+    $transactionURL = $response->GetTransactionURL();
+    // Suggestion: redirect to the above transaction URL and save the initiated transaction
+
+} else {
+	// Suggestion: no proper status given, show an error.
 	throw new Exception(
 		"An error occured in the payment method.
 		Please contact the webshop owner with this message:  " .
@@ -31,28 +46,7 @@ if (is_a($response, "Bluem\BluemPHP\Responses\ErrorBluemResponse", false))
 	);
 }
 
-$attrs = $response->EMandateTransactionResponse->attributes();
-
-if (!isset($attrs['entranceCode'])) {
-	throw new Exception(
-		"An error occured in reading the transaction response.
-		Please contact the webshop owner"
-	);
-}
-
-// The EntranceCode is set by the response; it is required for following status requests.
-$entranceCode = $attrs['entranceCode'] . "";
-// Hint: save this entrancecode somewhere in your local data store
-
-if (isset($response->EMandateTransactionResponse->TransactionURL)) {
-	$transactionURL = ($response->EMandateTransactionResponse->TransactionURL . "");
-	// Hint: redirect to the above transaction URL and save the initiated transaction
-
-} else {
-	// Hint: no proper status given, show an error.
-}
-
-
+// --------------------------------------------
 /**
  * Requesting a Mandate status
  * */
@@ -95,5 +89,6 @@ if ($statusCode === "Success") {
 
 	echo "Error: Unknown or incorrect status retrieved: {$statusCode}
 		<br>Contact the administrator and communicate this status";
+    exit;
 }
 

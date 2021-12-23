@@ -24,7 +24,7 @@
         - [DebtorBankID](#debtorbankid)
         - [DynamicData](#dynamicdata)
 * [eMandates](#emandates)
-    + [Mandate specific configuration fields](#mandate-specific-configuration-fields
+    + [Mandate specific configuration fields](#mandate-specific-configuration-fields)
     + [Creating an eMandate Transaction - helper functions](#creating-an-emandate-transaction--helper-functions)
         - [Creating an eMandate transaction](#creating-an-emandate-transaction)
         - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
@@ -46,7 +46,7 @@
         - [eMandates CORE](#emandates-core)
         - [eMandates B2B](#emandates-b2b)
         - [Identity](#identity)
-
+        
 
 # Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
 
@@ -58,12 +58,30 @@ Utilized by other applications as well:
 - [WordPress and WooCommerce plug-in](https://github.com/daanrijpkema/bluem-woocommerce), available for Bluem customers.
 - [Magento2 module](https://github.com/DaanRijpkema/bluem-magento/), available for Bluem customers.
 
-**Tip:** refer to the `examples` folder within this repository for a full example implementation that you can base your own integration on.
+## Getting started:
+This library can be installed through [Composer](https://getcomposer.org). Run Composer to install this library and dependencies from your project folder.
+
+```bash
+composer require daanrijpkema/bluem-php
+```
+---
+
+Refer to the [examples folder](https://github.com/DaanRijpkema/bluem-php/tree/master/examples) for a full example implementation that you can base your own integration on. 
+
+Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
+
+## Requirements
+
+- PHP 7.0+ is required for all versions of this library. Please use the major git releases for the stable versions of this plugin. 
+- Refer to the `composer.json` requirements for any other dependencies
 
 ## Notes per version
-PHP 7.0+ is required for all versions of this library. Please use the major git releases for the stable versions of this plugin.
+### Version 2.1 (latest)
 
-### Notes version 2.0.12 (latest)
+Major improvement in code style.
+
+
+### Version 2.0.12 
 Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IPAPI). Use this feature through the Helper/IPAPI class. 
 Currently, implemented public function is: 
 ```php
@@ -72,7 +90,7 @@ $bluem->VerifyIPIsNetherlands();
 ```
 *This feature is useful when determining whether to use IDIN identity checking in any application, as this is currently implemented only for Dutch banks.*
 
-### Notes version 2.0.2:
+### Version 2.0.2:
 
 Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
 
@@ -81,7 +99,7 @@ Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 jun
 - If you use the Bluem portal, you don't need to take action. This change is already applied within the Bluem portal.
 
 
-### Notes version 2.0.1:
+### Version 2.0.1:
 Major release with more stability, validation and features.
 
 Please note: The main Integration class is called Bluem, so to include it, use:
@@ -91,6 +109,9 @@ $bluem = new Bluem($config);
 Or use a class alias to ensure code functioning. This is a refactor since version 1.x.
 
 Furthermore, all generally available functions are still available.
+
+### Versions before 2.0
+No changelog was recorded. Please refer to the [commit log](https://github.com/DaanRijpkema/bluem-php/commits/master) for more information
 
 
 
@@ -135,12 +156,8 @@ This method can be used when creating iDIN and when creating iDEAL requests; you
 - No, you cannot, as these are separate processes.
 
 
-## Installation
-This library can be installed through [Composer](https://getcomposer.org). Run Composer to install this library and dependencies from your project folder.
 
-```bash
-composer require daanrijpkema/bluem-php
-```
+
 
 ## Configuration
 

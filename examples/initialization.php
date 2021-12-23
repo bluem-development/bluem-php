@@ -2,18 +2,18 @@
 /**
  * Bluem-PHP examples: initialisation
  * This file contains examples and annotations for using the `bluem-php` package.
- * All to-do's are for your reference where action on your part is still required.
+ * All to-dos are for your reference where action on your part is still required.
  *
  * Code is courtesy of and property of Bluem Payment Services
- * Author: Daan Rijpkema (info@daanrijpkema.com)
+ * Author: Daan Rijpkema (d.rijpkema@bluem.nl)
  */
 
-
-// In your own app: install composer, require the 
-// daanrijpkema/bluem-php package 
-// and require the vendor/autoload.php file to 
-// magically load the library and other depdencies
+/** In your own app: install composer, require the  `daanrijpkema/bluem-php` package  
+ * and require the vendor/autoload.php file to  magically load the library and any other dependencies like this:
+```php
 require_once __DIR__ . '/../vendor/autoload.php';
+ ```
+ *  */
 
 use Bluem\BluemPHP\Bluem;
 
@@ -45,7 +45,7 @@ $bluem_config->IDINBrandID = "";
 $bluem_config->merchantID = "" ;                     // the PRODUCTION merchant ID, to be  found on the contract you
 // have with the bank for receiving direct debit mandates.
 // required for eMandates prod environment
-// NOTE that MerchantID for test evironment is set automatically to a valid test value
+// NOTE that MerchantID for test environment is set automatically to a valid test value
 $bluem_config->eMandateReason = "eMandateReason" ;   // Brief description of the debt collection at the time of issue
 $bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collection: CORE or B2B
 

@@ -1,14 +1,18 @@
 <?php
-
+/**
+ * Bluem-PHP examples: Identity - Request creation
+ * This file contains examples and annotations for using the `bluem-php` package.
+ * All to-dos are for your reference where action on your part is still required.
+ *
+ * Code is courtesy of and property of Bluem Payment Services
+ * Author: Daan Rijpkema (d.rijpkema@bluem.nl)
+ */
 require_once __DIR__ . '/initialization.php';
 
-
-
-/*
-	understanding types:
+/**
+ * understanding types:
+ * to retrieve a list of all possible identity request types, which can be useful for reference
  */
-
-// to retrieve a list of all possible identity request types, which can be useful for reference
 $possible_types = $bluem_object->GetIdentityRequestTypes();
 /*
 returns:
@@ -23,7 +27,6 @@ returns:
 	"AgeCheckRequest",
     "CustomerIDLoginRequest",
 ]
-
 	Use either AgeCheckRequest OR the others in a request.
 */
 
@@ -38,7 +41,9 @@ $debtorReference = "1234";
 /* provide a link here to the callback function; either in this script or another script */
 $returnURL = "https://yourdomain.com/integration/identity.php?action=callback"; 
 
-session_start();
+// create a session. 
+if(session_status() !== PHP_SESSION_ACTIVE) 
+    session_start();
 
 // To create AND perform a request:
 $request = $bluem_object->CreateIdentityRequest(
@@ -55,17 +60,16 @@ if ($response->ReceivedResponse()) {
 	$entranceCode = $response->GetEntranceCode();
 	$transactionID = $response->GetTransactionID();
 	$transactionURL = $response->GetTransactionURL();
-	// save this somewhere in your data store
-
+	
+    // Save this information in your data store
 	$_SESSION['entranceCode'] = $entranceCode;
 	$_SESSION['transactionID'] = $transactionID;
 	$_SESSION['transactionURL'] = $transactionURL;
+    
+    // Direct the user to this place
+	 header("Location: ".$transactionURL);
 
-	// direct the user to this place
-	// header("Location: ".$transactionURL);
-
-	// .. or for now, just show the URL:
-	echo "TransactionURL: " . $transactionURL;
 } else {
 	// no proper response received, tell the user
+    
 }
