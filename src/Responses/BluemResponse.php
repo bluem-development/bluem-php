@@ -62,7 +62,7 @@ class BluemResponse extends SimpleXMLElement
     public function Error()
     {
         if (isset($this->EMandateErrorResponse)) {
-            return $this->EMandateErrorResponse->Error;
+            return $this->EMandateErrorResponse->Error . "";
         }
         return null;
     }
