@@ -50,7 +50,7 @@ class BluemResponse extends SimpleXMLElement
         return true;
     }
 
-    public function ReceivedResponse()
+    public function ReceivedResponse(): bool
     {
         return $this->Status();
     }
@@ -90,7 +90,7 @@ class BluemResponse extends SimpleXMLElement
         return "";
     }
 
-    protected function getChildXmlElement()
+    protected function getChildXmlElement(): string
     {
         return static::$response_primary_key;
     }

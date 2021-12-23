@@ -20,17 +20,38 @@ use stdclass;
 // @todo add Bluem request classes - interface
 class BluemRequest
 {
+    /**
+     * @var 
+     */
+    public $transaction_code;
+    // @todo make an enum or a datatype?
+
+    /**
+     * @var 
+     */
     public $typeIdentifier;
+    /**
+     * @var 
+     */
     public $request_url_type;
 
+    /**
+     * @var string 
+     */
     public $entranceCode;
+    /**
+     * @var 
+     */
     public $mandateID;
 
-    protected $senderID;
-
-    protected $createDateTime;
-
+    /**
+     * @var 
+     */
     public $debtorWallet = null;
+    
+    
+    protected $senderID;
+    protected $createDateTime;
 
     private $_debtorAdditionalData = [];
     private $_possibleDebtorAdditionalDataKeys = [

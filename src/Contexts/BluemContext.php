@@ -22,12 +22,12 @@ class BluemContext
         $this->BICs = $BICs;
     }
 
-    public function getBICs()
+    public function getBICs(): array
     {
         return $this->BICs;
     }
 
-    public function getBICCodes()
+    public function getBICCodes(): array
     {
         $codes = [];
         foreach ($this->BICs as $BIC) {
@@ -37,7 +37,7 @@ class BluemContext
         return $codes;
     }
 
-    public function getValidationSchema()
+    public function getValidationSchema(): string
     {
         return __DIR__ . '/../../validation/';
     }

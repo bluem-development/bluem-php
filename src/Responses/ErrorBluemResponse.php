@@ -19,12 +19,12 @@ class ErrorBluemResponse
         return false;
     }
 
-    public function ReceivedResponse()
+    public function ReceivedResponse(): bool
     {
         return false;
     }
 
-    public function Error()
+    public function Error(): string
     {
         return $this->error;
     }

@@ -6,7 +6,7 @@ class IBANCheckContext extends BluemContext
 {
     // no context preset yet
 
-    public function getValidationSchema()
+    public function getValidationSchema() : string
     {
         return parent::getValidationSchema() . 'IBANCheck.xsd';
     }

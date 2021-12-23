@@ -32,7 +32,7 @@ class PaymentsContext extends BluemContext
         );
     }
 
-    public function getValidationSchema()
+    public function getValidationSchema() : string
     {
         return parent::getValidationSchema() . 'EPayment.xsd';
     }

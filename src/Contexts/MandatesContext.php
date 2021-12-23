@@ -48,7 +48,7 @@ class MandatesContext extends BluemContext
         parent::__construct($BICs);
     }
 
-    public function getValidationSchema()
+    public function getValidationSchema() : string
     {
         return parent::getValidationSchema() . 'EMandate.xsd';
     }

@@ -40,7 +40,7 @@ class EmandateStatusBluemRequest extends BluemRequest
         $this->context = new MandatesContext($config->localInstrumentCode);
     }
 
-    public function TransactionType()
+    public function TransactionType(): string
     {
         return "SRX";
     }

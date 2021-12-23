@@ -97,7 +97,7 @@ class IPAPI
      *
      * @return string
      */
-    public function GetCurrentIP()
+    public function GetCurrentIP() : string
     {
         $ip = "";
 

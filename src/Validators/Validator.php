@@ -1,5 +1,5 @@
 <?php
-// Reference: https://www.codementor.io/@sirolad/validating-xml-against-xsd-in-php-6f56rwcds
+/* Reference: https://www.codementor.io/@sirolad/validating-xml-against-xsd-in-php-6f56rwcds */
 
 namespace Bluem\BluemPHP\Validators;
 
@@ -53,7 +53,7 @@ class Validator
      *
      * @return string
      */
-    private function libxmlDisplayError($error)
+    private function libxmlDisplayError($error) : string
     {
         $errorString = "Error $error->code in $error->file (Line: $error->line):";
         $errorString .= trim($error->message);
@@ -64,7 +64,7 @@ class Validator
     /**
      * @return array
      */
-    private function libxmlDisplayErrors()
+    private function libxmlDisplayErrors(): array
     {
         $errors = libxml_get_errors();
         $result = [];
@@ -86,7 +86,7 @@ class Validator
      * @throws DOMException
      * @throws Exception
      */
-    public function validate(BluemContext $context, $contents)
+    public function validate(BluemContext $context, $contents): bool
     {
         $this->feedSchema = $context->getValidationSchema();
 

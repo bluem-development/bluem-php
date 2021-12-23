@@ -108,7 +108,7 @@ class Bluem
         // this is given by the bank (default 0)
         $_config->merchantSubID = "0";
         
-        // @todo move this to a function in a bluemconfig element
+        // @todo move this to a function in a bluem config element
         // chain these functions more beautifully
 
         $this->_config = $_config;
@@ -126,8 +126,8 @@ class Bluem
      * and Mandate ID and return the request object
      * WITHOUT sending it
      *
-     * @param $customer_id
-     * @param $order_id
+     * @param string $customer_id
+     * @param string $order_id
      * @param boolean $mandate_id
      *
      * @return EmandateBluemRequest
@@ -140,10 +140,10 @@ class Bluem
     ): EmandateBluemRequest
     {
         // @todo add proper validation on customer or order ID via datatypes
-        if (is_null($customer_id)) {
+        if ($customer_id == "") {
             throw new Exception("Customer ID Not set", 1);
         }
-        if (is_null($order_id)) {
+        if ($order_id == "") {
             throw new Exception("Order ID Not set", 1);
         }
 
@@ -167,12 +167,13 @@ class Bluem
      * and Mandate ID and return the request object,
      * sending it and returning the response
      *
-     * @param $customer_id
-     * @param $order_id
+     * @param string $customer_id
+     * @param string $order_id
      * @param bool $mandate_id
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-     * @throws Exception
+     * @throws DOMException
+     * @throws HTTP_Request2_LogicException
      */
     public function Mandate(
         string $customer_id,
@@ -384,6 +385,7 @@ class Bluem
      * @param string $entranceCode
      *
      * @return IdentityBluemRequest
+     * @throws Exception
      */
     public function CreateIdentityRequest(
         $requestCategory,
@@ -414,8 +416,6 @@ class Bluem
      * @param $entranceCode
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-     * @throws HTTP_Request2_LogicException
-     * @throws DOMException
      */
     public function IdentityStatus($transactionID, $entranceCode)
     {
@@ -462,6 +462,7 @@ class Bluem
      * @param BluemRequest $transaction_request
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws DOMException|HTTP_Request2_LogicException
      */
     public function PerformRequest(BluemRequest $transaction_request)
     {
@@ -763,7 +764,7 @@ class Bluem
      *
      * @return string[]
      */
-    public function GetIdentityRequestTypes()
+    public function GetIdentityRequestTypes(): array
     {
         return [
             "CustomerIDRequest",
@@ -791,7 +792,7 @@ class Bluem
      *
      * @return IbanBluemRequest
      */
-    public function CreateIBANNameCheckRequest(String $iban, String $name, String $debtorReference = "")
+    public function CreateIBANNameCheckRequest(String $iban, String $name, String $debtorReference = ""): IbanBluemRequest
     {
         $entranceCode = $this->CreateEntranceCode();
         return new IbanBluemRequest(
@@ -813,7 +814,6 @@ class Bluem
      *                                to append to the check request
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-     * @throws HTTP_Request2_LogicException
      */
     public function IBANNameCheck(String $iban, String $name, String $debtorReference="")
     {

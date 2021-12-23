@@ -28,7 +28,7 @@ class IdentityContext extends BluemContext
         );
     }
 
-    public function getValidationSchema()
+    public function getValidationSchema() : string
     {
         return parent::getValidationSchema() . 'EIdentity.xsd';
     }
