@@ -19,25 +19,30 @@ if (!defined("BLUEM_STATIC_IPAPI_KEY")) {
  */
 class IPAPI
 {
+    /** @var bool  */
     private $_debug = false;
-
+    
+    /** @var string  */
+    private $base_url = "http://api.ipstack.com/";
+    
+    /** @var string  */
     private $_access_key = BLUEM_STATIC_IPAPI_KEY;
 
     /**
-     * Retrieve geo-location information of the given IP or if not given tries to infer the current IP.
+     * Retrieve geolocation information of the given IP or if not given tries to infer the current IP.
      *
      * @param string $ip
-     * @return void
+     * @return mixed 
      */
-    public function QueryIP($ip = "")
+    public function QueryIP(string $ip = "") :mixed 
     {
+        // @todo Add IP datatype with validation
         if ($ip=="") {
+        // @todo: move this to the ip class
             $ip = $this->GetCurrentIP();
         }
 
-        $base_url = "http://api.ipstack.com/";
-
-        $call_url = "{$base_url}{$ip}?access_key={$this->_access_key}";
+        $call_url = "$this->base_url$ip?access_key=$this->_access_key";
 
         // Initialize CURL:
         $ch = curl_init(
@@ -67,9 +72,9 @@ class IPAPI
      * reference: https://www.javatpoint.com/how-to-get-the-ip-address-in-php
      *
      * @param string $ip
-     * @return void
+     * @return bool
      */
-    public function CheckIsNetherlands($ip ="")
+    public function CheckIsNetherlands(string $ip ="") : bool
     {
         $result = $this->QueryIP($ip);
 

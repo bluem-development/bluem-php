@@ -1,55 +1,52 @@
 ![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
 
 ## Table of Contents
-  * [Notes per version](#notes-per-version)
-    + [Notes version 2.0.12 (latest)](#notes-version-2012--latest-)
-    + [Notes version 2.0.2:](#notes-version-202-)
-    + [Notes version 2.0.1:](#notes-version-201-)
-  * [Testing](#testing)
-  * [Frequently asked questions](#frequently-asked-questions)
-  * [Installation](#installation)
-  * [Configuration](#configuration)
-  * [General concept](#general-concept)
-    + [DebtorWallet: preselecting a bank for Mandate, Payment or Identity request](#debtorwallet--preselecting-a-bank-for-mandate--payment-or-identity-request)
-  * [Payments](#payments)
+* [Notes per version](#notes-per-version)
+* [Testing](#testing)
+* [Frequently asked questions](#frequently-asked-questions)
+* [Installation](#installation)
+* [Configuration](#configuration)
+* [General concept](#general-concept)
+* [Payments](#payments)
     + [Create a payment transaction](#create-a-payment-transaction)
-    + [Requesting a payment status:](#requesting-a-payment-status-)
+    + [Requesting a payment status](#requesting-a-payment-status)
     + [Tip for testing with payments](#tip-for-testing-with-payments)
     + [Adding additional data to a request](#adding-additional-data-to-a-request)
-      - [EmailAddress](#emailaddress)
-      - [MobilePhoneNumber](#mobilephonenumber)
-      - [CustomerProvidedDebtorIBAN](#customerprovideddebtoriban)
-      - [CustomerNumber](#customernumber)
-      - [CustomerName](#customername)
-      - [AttentionOf](#attentionof)
-      - [Salutation](#salutation)
-      - [CustomerAddressLine1](#customeraddressline1)
-      - [CustomerAddressLine2](#customeraddressline2)
-      - [DebtorBankID](#debtorbankid)
-      - [DynamicData](#dynamicdata)
-  * [eMandates](#emandates)
-    + [Mandate specific configuration fields:](#mandate-specific-configuration-fields-)
-    + [Creating an eMandate Transaction: helper functions](#creating-an-emandate-transaction--helper-functions)
-      - [Creating an eMandate transaction](#creating-an-emandate-transaction)
-      - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
+        - [EmailAddress](#emailaddress)
+        - [MobilePhoneNumber](#mobilephonenumber)
+        - [CustomerProvidedDebtorIBAN](#customerprovideddebtoriban)
+        - [CustomerNumber](#customernumber)
+        - [CustomerName](#customername)
+        - [AttentionOf](#attentionof)
+        - [Salutation](#salutation)
+        - [CustomerAddressLine1](#customeraddressline1)
+        - [CustomerAddressLine2](#customeraddressline2)
+        - [DebtorBankID](#debtorbankid)
+        - [DynamicData](#dynamicdata)
+* [eMandates](#emandates)
+    + [Mandate specific configuration fields](#mandate-specific-configuration-fields
+    + [Creating an eMandate Transaction - helper functions](#creating-an-emandate-transaction--helper-functions)
+        - [Creating an eMandate transaction](#creating-an-emandate-transaction)
+        - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
     + [Requesting an eMandate Transaction status](#requesting-an-emandate-transaction-status)
-  * [Identity (iDIN)](#identity--idin-)
+* [Identity - iDIN](#identity----idin)
     + [Configuring iDIN](#configuring-idin)
     + [Identity request types explained](#identity-request-types-explained)
     + [Creating an identity request](#creating-an-identity-request)
     + [The Identity Response callback](#the-identity-response-callback)
     + [Testing identity return statuses](#testing-identity-return-statuses)
     + [CustomerIDLoginRequest](#customeridloginrequest)
-  * [IBAN-Name check](#iban-name-check)
+* [IBAN-Name check](#iban-name-check)
     + [Use-cases for IBAN-Name checking and Edge cases](#use-cases-for-iban-name-checking-and-edge-cases)
-  * [Important miscellaneous notes](#important-miscellaneous-notes)
+* [Important miscellaneous notes](#important-miscellaneous-notes)
     + [Enable secure Webhook reception through a certificate check](#enable-secure-webhook-reception-through-a-certificate-check)
-  * [Appendices](#appendices)
+* [Appendices](#appendices)
     + [List of all supported BICs per context](#list-of-all-supported-bics-per-context)
-      - [ePayments](#epayments)
-      - [eMandates CORE](#emandates-core)
-      - [eMandates B2B](#emandates-b2b)
-      - [Identity](#identity)
+        - [ePayments](#epayments)
+        - [eMandates CORE](#emandates-core)
+        - [eMandates B2B](#emandates-b2b)
+        - [Identity](#identity)
+
 
 # Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
 
@@ -67,7 +64,8 @@ Utilized by other applications as well:
 PHP 7.0+ is required for all versions of this library. Please use the major git releases for the stable versions of this plugin.
 
 ### Notes version 2.0.12 (latest)
-Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IPAPI). Use this feature through the Helper/IPAPI class. Currently implemented public function is: 
+Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IPAPI). Use this feature through the Helper/IPAPI class. 
+Currently, implemented public function is: 
 ```php
 $bluem->VerifyIPIsNetherlands();
 // returns bool true if NL or error, returns false if no error and other country
@@ -117,7 +115,8 @@ This is currently focused around unit testing to see if new changes break the sy
 ## Frequently asked questions
 
 *I get the message "Unauthorized: Check your account credentials" - what should I do?*<br>
-Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. If you have checked that the credentials are correct but you still receive this message, please contact your Bluem account manager.
+Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. 
+If you have checked that the credentials are correct, but you still receive this message, please contact your Bluem account manager.
 
 *How can I make the experience of identifying more user-friendly?*<br>
 - You can reduce the amount of steps required by performing the selection of the bank within your own application and interface by utilizing the preselection feature from the PHP library on the request object as so:
@@ -177,7 +176,7 @@ $config->production_accessToken = ...
 // the merchant ID (for eMandates), to be found on the contract you have with the bank for receiving direct debit mandates.
 $config->merchantID = ...
 
-// The slug of the thank you page to which should be referred after completing process. If your ORDERID is processed in the URL it will be filled in for you
+// The slug of the 'Thank You' page to which should be referred after completing process. If your Order ID is processed in the URL it will be filled in for you
 $config->thanksPage = ...
 // Not applicable for IBAN-Name check
 
@@ -223,7 +222,7 @@ The Webhook is only needed for ePayments and eMandates: online stores/portals th
 
 Please note that the flow for the IBAN-Name check is shorter: Only a TransactionRequest and the results come directly back in the TransactionResponse. This is as the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
 
-### DebtorWallet: preselecting a bank for Mandate, Payment or Identity request
+### DebtorWallet - Preselecting a bank for Mandate, Payment or Identity request 
 
 It is possible to preselect a Bank within your own application based on an IssuerID (BIC/Swift code) when creating a Mandate, Payment or Identity request. This can be used if you want to user to select the given bank in your own interface and skip the bank selection within the Bluem portal interface.
 
@@ -242,7 +241,7 @@ $MandatesBICs = $bluem->retrieveBICsForContext("Mandates"); // also specific to 
 $PaymentsBICs = $bluem->retrieveBICsForContext("Payments");
 $IdentityBICs = $bluem->retrieveBICsForContext("Identity");
 ```
-Input of a different context will trigger an exception. If valid, the result is an array of `Bluem\BluemPHP\BIC` objects with attributes `IssuerID` and `IssuerName`: the BIC and Bank name respectively. You can use this to populate your user inteface.
+Input of a different context will trigger an exception. If valid, the result is an array of `Bluem\BluemPHP\BIC` objects with attributes `IssuerID` and `IssuerName`: the BIC and Bank name respectively. You can use this to populate your user interface.
 
 Please note that the BIC list will vary when a different `localInstrumentCode` is configured. The localInstrumentCode `CORE` and `B2B` are supported by different banks. Based on your configuration, the right BIC list is loaded from context automatically and used to verify the debtorWallet.
 
@@ -257,7 +256,7 @@ The following attributes in the bluem_config are vital for proper eMandate funct
 
 ### Create a payment transaction
 
-Payments is very similar to eMandates, but utilizing other parameters:
+The Payments service is very similar to the eMandates service, but utilises other parameters:
 
 ```php
     $description = "Test payment"; // a concise description with possible references to order name and such
@@ -288,7 +287,7 @@ Payments is very similar to eMandates, but utilizing other parameters:
 
 ```
 
-### Requesting a payment status:
+### Requesting a payment status
 Similarly to requesting a Mandate status (see below):
 
 ```php
@@ -336,7 +335,7 @@ You can, in Bluem test mode, place iDEAL orders of a specific amount, to get a c
 
 ### Adding additional data to a request
 
-You can add additional information to a request object *before* performing it, which can be useful. The data will be stored within the viamijnbank portal for further administrative purposes.
+You can add additional information to a request object *before* performing it, which can be useful. The data will be stored within the ViaMijnBank Portal for further administrative purposes.
 
 ```php
 $key = "EmailAddress";
@@ -385,26 +384,27 @@ More instructions follow.
 ## eMandates
 
 
-### Mandate specific configuration fields:
+### Mandate specific configuration fields
 The following attributes in the bluem_config are vital for proper eMandate functionality. Below is a short description what each configuration field means:
 
-- Local Instrument Code (CORE, B2B)
+Local Instrument Code (CORE, B2B)
 
-- requestType (Issuing, (Amendment/Cancellation worden eigenlijk niet gebruikt)),
+RequestType 
+- Issuing is the default. Amendment/Cancellation are not actually used in practice at this time.
 
-= sequenceType (OOFF, RCUR),
+SequenceType: 
+  - One-off, or`OOFF`
+  - Recurring, or `RCUR`
 
 MandateID,
 
-merchantID,
+MerchantID,
 
 MaxAmount (for B2B),
 
 ValidationReference
 
-
-
-### Creating an eMandate Transaction: helper functions
+### Creating an eMandate Transaction - helper functions
 You need certain information to reference a transaction request: an ID (in this case the MandateID) and an entranceCode (basically a timestamp when you started the request). Creating this information can be done using helper functions. When creating a new transaction,  the entranceCode and MandateID will be generated within the `$bluem`.
 
 
@@ -439,12 +439,12 @@ $response = $bluem->Mandate($customer_id, $order_id,"default");
 
 ```
 
-If you do anything wrong or you are unauthorized, the Response object will be of type `Bluem\BluemPHP\ErrorBluemResponse` and has an `Error()` function to retrieve a string of information regarding your error that you could display to your user or handle yourself.
+If you do anything wrong, or you are unauthorized, the Response object will be of type `Bluem\BluemPHP\ErrorBluemResponse` and has an `Error()` function to retrieve a string of information regarding your error that you could display to your user or handle yourself.
 
 An example about incorrect access token and Ids could be: "Unauthorized: check your access credentials".
 
 #### Redirection after eMandate transaction creation
-When you have performed a transaction request successfully, you receive a response object from Bluem. This object tells you where to redirect the user to to actually perform the administrative steps at the Bluem portal.
+When you have performed a transaction request successfully, you receive a response object from Bluem. This object tells you where to redirect the user to, to actually perform the administrative steps at the Bluem portal.
 ```php
 if ($response->ReceivedResponse()) {
 
@@ -454,7 +454,7 @@ if ($response->ReceivedResponse()) {
 	$transactionURL = $response->GetTransactionURL();
 
     // TODO: redirect to the above transaction URL
-    header("Location: ". $transactionURL); // or something of thes ort.
+    header("Location: ". $transactionURL); // or something of the sort.
 } else {
     // TODO: no proper status given, show an error.
     exit("Error: " . $response->Error()); // for example
@@ -520,9 +520,10 @@ For information on these specific request types, a more comprehensive guide will
 
 The three most commonly used cases with Identity requests are:
 
-1. Full identification (request 1 or multiple of: `Name`, `Address`, `BirthDate`, `Gender`, `EmailAddress`, `PhoneNumber`, `CustomerID`). This is used for KYC, Wwft, AML compliance and for Account Creation.
+1. Full identification (request 1 or multiple of: `Name`, `Address`, `BirthDate`, `Gender`, `EmailAddress`, `PhoneNumber`, `CustomerID`). 
+This is used for KYC, Wwft, AML compliance and for Account Creation.
 2. Age verify 18+ (request `AgeVerify`) **and cannot be combined with the other request categories**.
-3. Safe login with iDIN (request `CustomerIDLogin`) **and cannot be combined with the other request categories**; Here you utilize iDIN login as an alternative safe login method next to a traditional user name – password login. Please note that use of Safe login with iDIN requires the first time a Full identification.
+3. Safe login with iDIN (request `CustomerIDLogin`) **and cannot be combined with the other request categories**; Here you utilize iDIN login as an alternative safe login method next to a traditional username – password login. Please note that use of Safe login with iDIN requires the first time a Full identification.
 
 
 
@@ -548,7 +549,8 @@ $request = $bluem->CreateIdentityRequest(
 $response = $bluem->PerformRequest($request);
 ```
 
-Handling the request from then is straightforward. Keep in mind to save the returned information somewhere in the session or user data store so you can easily refer back to this identity request later. Note: It could be wise also to save what type of request you have executed to know what to do with it later.
+Handling the request from then is straightforward. 
+Please note: save the returned information somewhere in the session or user data store, so you can easily refer back to this identity request later. Note: It could be wise also to save what type of request you have executed to know what to do with it later.
 
 ```php
 if ($response->ReceivedResponse()) {
@@ -577,7 +579,7 @@ Processing the Identity transaction callback function can be done after the Blue
 
 ```php
 // retrieve from a store, preferably more persistent than session.
-// the code below is is purely for demonstrative purposes
+// the code below is purely for demonstrative purposes
 $transactionID = $_SESSION['transactionID'];
 $entranceCode = $_SESSION['entranceCode'];
 

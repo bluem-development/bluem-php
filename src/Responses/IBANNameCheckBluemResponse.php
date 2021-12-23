@@ -87,7 +87,7 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
 <IBANCheckInterface mode="direct" senderID="S1018" version="1.0" createDateTime="2019-09-09T08:43:58.022Z" messageCount="1" type="TransactionResponse">
     <IBANCheckTransactionResponse entranceCode="S101820190909084357980">
         <IBAN>NL59INGB0748545824</IBAN>
-        <AssumedName>Zeland</AssumedName>
+        <AssumedName>Zeeland</AssumedName>
         <DebtorReference>12345678</DebtorReference>
         <IBANCheckResult>
             <IBANResult>KNOWN</IBANResult>

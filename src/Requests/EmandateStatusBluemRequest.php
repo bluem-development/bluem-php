@@ -12,6 +12,10 @@ class EmandateStatusBluemRequest extends BluemRequest
     public $typeIdentifier = "requestStatus";
     public $request_url_type = "mr";
     public $transaction_code = "SRX";
+    /**
+     * @var string
+     */
+    private $xmlInterfaceName;
 
 
     public function __construct(
@@ -26,7 +30,9 @@ class EmandateStatusBluemRequest extends BluemRequest
             $expected_return
         );
 
-        $this->xmlInterfaceName = "EMandateInterface";
+        $this->xmlInterfaceName = "EMandateInterface"; 
+        // @todo make this of BluemXMLInterfaceClass type
+        
         $this->typeIdentifier = "requestStatus";
 
         $this->mandateID = $mandateID;

@@ -4,6 +4,7 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Carbon\Carbon;
+use stdclass;
 
 class PaymentBluemRequest extends BluemRequest
 {
@@ -11,6 +12,32 @@ class PaymentBluemRequest extends BluemRequest
     public $request_url_type = "pr";
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "PTX";
+    /**
+     * @var string
+     */
+    private $description;
+    /**
+     * @var mixed|string
+     */
+    private $currency;
+    private $brandID;
+    /**
+     * @var string
+     */
+    private $dueDateTime;
+    private $debtorReference;
+    /**
+     * @var float
+     */
+    private $amount;
+    /**
+     * @var array|string|string[]
+     */
+    private $debtorReturnURL;
+    /**
+     * @var string
+     */
+    private $paymentReference;
 
     public function TransactionType(): string
     {
@@ -18,7 +45,7 @@ class PaymentBluemRequest extends BluemRequest
     }
 
     public function __construct(
-        \stdclass $config,
+        stdclass $config,
         $description,
         $debtorReference,
         $amount,
@@ -49,7 +76,7 @@ class PaymentBluemRequest extends BluemRequest
         }
 
         if (is_null($dueDateTime)) {
-            $this->dueDateTime = Carbon::now()->addDays(1)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
+            $this->dueDateTime = Carbon::now()->addDay()->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         } else {
             $this->dueDateTime = Carbon::parse($dueDateTime)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         }
@@ -66,14 +93,14 @@ class PaymentBluemRequest extends BluemRequest
         } else {
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
-        $this->debtorReturnURL .= "?entranceCode={$this->entranceCode}&transactionID={$this->transactionID}";
+        $this->debtorReturnURL .= "?entranceCode=$this->entranceCode&transactionID=$this->transactionID";
 
         $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
 
         // note! different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class
 
-        $this->paymentReference = "{$this->debtorReference}{$this->transactionID}";
+        $this->paymentReference = "$this->debtorReference$this->transactionID";
 
         $this->context = new PaymentsContext();
     }
@@ -83,16 +110,16 @@ class PaymentBluemRequest extends BluemRequest
      *
      * @param String $amount
      *
-     * @return Float
-     */
-    private function parseAmount(string $amount): string
+     * @return float the parsed amount
+      */
+    private function parseAmount(string $amount): float
     {
         $amount = str_replace(',', '.', $amount);
         if (strpos($amount, '.') == false) {
             $amount .= '.00';
         }
 
-        return $amount;
+        return (float) $amount;
     }
 
     public function XmlString(): string

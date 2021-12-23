@@ -13,7 +13,7 @@ class StatusBluemResponse extends BluemResponse
         return null;
     }
 
-    protected function getParentXmlElement()
+    protected function getParentXmlElement() : string
     {
         return static::$response_primary_key . "Update";
     }

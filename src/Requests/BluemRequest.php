@@ -9,13 +9,15 @@
 
 namespace Bluem\BluemPHP\Requests;
 
-use Bluem\BluemPHP\Validators\Validator;
 use Carbon\Carbon as Carbon;
 use Exception;
+use SimpleXMLElement;
+use stdclass;
 
 /**
  * BluemRequest
  */
+// @todo add Bluem request classes - interface
 class BluemRequest
 {
     public $typeIdentifier;
@@ -50,21 +52,36 @@ class BluemRequest
     public $context;
 
     /**
+     * @var string
+     */
+    protected $environment;
+
+    /**
+     * @var string
+     */
+    private $brandID;
+
+    /**
+     * @var string
+     */
+    private $accessToken;
+
+    /**
      * BluemRequest constructor.
      *
-     * @param \stdclass $config
+     * @param stdclass $config
      * @param string    $entranceCode
      * @param string    $expectedReturn
      */
-    public function __construct(\stdclass $config, string $entranceCode = "", string $expectedReturn = "")
+    public function __construct(stdclass $config, string $entranceCode = "", string $expectedReturn = "")
     {
         $this->environment = $config->environment;
 
         $this->senderID = $config->senderID;
         $this->brandID = $config->brandID;
-
         $this->accessToken = $config->accessToken;
-
+        // @todo possibly just use the config directly instead of copying all configuration elements
+        
         $this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
 
         /**
@@ -72,7 +89,7 @@ class BluemRequest
          *  which is unique in time for any request; which is string; which should not be visible for customer;
          *  structure: prefix for testing + customer number + current timestamp up to the second
          */
-        // @todo Validate input entrance code if not emptystring, based on XSD
+        // @todo Validate input entrance code if not empty string, based on XSD
 
         if ($entranceCode === "") {  // if not given, create it
             $this->entranceCode = $this->entranceCode($expectedReturn);
@@ -80,7 +97,8 @@ class BluemRequest
             $this->entranceCode = $entranceCode;
         }
     }
-
+    
+    // @todo remove this?
     public function getContext()
     {
         return $this->context;
@@ -99,8 +117,10 @@ class BluemRequest
     protected function XmlRequestInterfaceWrap(
         string $element_name,
         string $type = "TransactionRequest",
-        string $rest
+        string $rest = ""
     ): string {
+        // @Todo validate element name using a specific BluemXMLElement class
+        // @todo validate type to be of specific options in BluemXMLElementType class
         return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><' . $element_name . '
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         type="' . $type . '"
@@ -116,17 +136,17 @@ class BluemRequest
      * Construct the XML request string objects
      *
      * @param String $element_name Typically contains the specific object of the current request context
-     * @param String $rest         Remainder of XML element, as a string, used to chain this function
-     * @param Array  $extra_attrs  Any arbitrary other key-value pairs to be added as XML element attributes
+     * @param String $rest Remainder of XML element, as a string, used to chain this function
+     * @param array $extra_attrs Any arbitrary other key-value pairs to be added as XML element attributes
      *
      * @return String Constructed XML as string
      */
     protected function XmlRequestObjectWrap(string $element_name, string $rest, array $extra_attrs = []): string
     {
-        $res = "<{$element_name}
-           entranceCode=\"{$this->entranceCode}\" ";
+        $res = "<$element_name
+           entranceCode=\"$this->entranceCode\" ";
         foreach ($extra_attrs as $key => $value) {
-            $res .= "{$key}=\"{$value}\" " . PHP_EOL;
+            $res .= "$key=\"$value\" " . PHP_EOL;
         }
         $res .= '>' . $rest . '</' . $element_name . '>';
 
@@ -148,10 +168,11 @@ class BluemRequest
      * Retrieve the final XML object based on the constructed XML String
      *
      * @return SimpleXMLElement final XML object
+     * @throws Exception
      */
-    public function Xml(): \SimpleXMLElement
+    public function Xml(): SimpleXMLElement
     {
-        return new \SimpleXMLElement($this->XmlString());
+        return new SimpleXMLElement($this->XmlString());
     }
 
     /**
@@ -194,7 +215,7 @@ class BluemRequest
                 break;
             }
         }
-        $request_url .= "viamijnbank.net/{$this->request_url_type}/";
+        $request_url .= "viamijnbank.net/$this->request_url_type/";
 
         switch ($this->typeIdentifier) {
             case 'createTransaction':
@@ -208,10 +229,9 @@ class BluemRequest
                 break;
             }
             default:
-                throw new \Exception("Invalid transactiontype called for", 1);
-                break;
+                throw new Exception("Invalid transaction type called for", 1);
         }
-        $request_url .= "?token={$this->accessToken}";
+        $request_url .= "?token=$this->accessToken";
 
         return $request_url;
     }
@@ -221,23 +241,17 @@ class BluemRequest
      *
      * @param string $expectedReturn a possible expected return value
      *                               (none,success,cancelled,expired,failure,open,pending) or empty string
-     * @param string $entranceCode   a set entrance code, otherwise it gets generated based on dateTime string in
      *                               "YmdHisv" standardized format, in Europe/Amsterdam timezone
      *
      * @return string
      */
-    private function entranceCode(string $expectedReturn = 'none', string $entranceCode = "")
+    private function entranceCode(string $expectedReturn = 'none'): string
     {
-
-        // create a default entrancecode if necessary
-        if ($entranceCode == "") {
-            $entranceCode = Carbon::now()
-                ->timezone('Europe/Amsterdam')
-                ->format("YmdHisv");
-        }
+        $entranceCode = Carbon::now()
+            ->timezone('Europe/Amsterdam')
+            ->format("YmdHisv");
 
         $prefix = "";
-
         if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
             switch ($expectedReturn) {
                 case 'success':
@@ -274,15 +288,12 @@ class BluemRequest
                 case 'none':
                 default:
                 {
-                    $prefix = "";
                     break;
                 }
             }
         }
 
-        $entranceCode = $prefix . $entranceCode;
-
-        return $entranceCode;
+        return $prefix . $entranceCode;
     }
 
     /**
@@ -290,7 +301,7 @@ class BluemRequest
      *
      * @return array
      */
-    public function retrieveBICObjects()
+    public function retrieveBICObjects(): array
     {
         return $this->context->BICs();
     }
@@ -300,7 +311,7 @@ class BluemRequest
      *
      * @return array
      */
-    public function retrieveBICCodes()
+    public function retrieveBICCodes(): array
     {
         return $this->context->getBICCodes();
     }
@@ -311,6 +322,7 @@ class BluemRequest
      * @param [type] $BIC
      *
      * @return void
+     * @throws Exception
      */
     public function selectDebtorWallet($BIC)
     {
@@ -327,7 +339,7 @@ class BluemRequest
      *
      * @return string
      */
-    public function XmlWrapDebtorWallet()
+    public function XmlWrapDebtorWallet(): string
     {
         if (is_null($this->debtorWallet)) {
             return "";
@@ -351,7 +363,7 @@ class BluemRequest
     }
 
 
-    public function XmlWrapDebtorAdditionalData()
+    public function XmlWrapDebtorAdditionalData(): string
     {
         if (count($this->_debtorAdditionalData) == 0) {
             return '';
@@ -367,16 +379,19 @@ class BluemRequest
 
             // @todo: add specific regex pattern checks for value of each type.
 
-            $res .= "<{$key}>";
+            $res .= "<$key>";
             $res .= $value;
-            $res .= "</{$key}>" . PHP_EOL;
+            $res .= "</$key>" . PHP_EOL;
         }
         $res .= "</DebtorAdditionalData>" . PHP_EOL;
 
         return $res;
     }
 
-    public function addAdditionalData($key, $value)
+    /**
+     * @throws Exception
+     */
+    public function addAdditionalData($key, $value): BluemRequest
     {
         if (!in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
             throw new Exception(
@@ -396,7 +411,7 @@ class BluemRequest
         return $this->context;
     }
 
-    public function RequestType()
+    public function RequestType(): string
     {
         return '';
     }
@@ -406,19 +421,24 @@ class BluemRequest
      * Perform sanitization of the description element
      *
      * @param String $description
-     * @return void
+     * @return string
      */
-    protected function _sanitizeDescription(String $description)
+    protected function _sanitizeDescription(String $description) : string
     {
         // filter based on full list of invalid chars for description based on XSD
         // Wel toegestaan: -0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%"'/:;?$
         $description = preg_replace(
-            '/[^-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€\ \(\)+,\.@&=%\"\'\/:;\?\$]/',
+            '/[^-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%\"\'\/:;?$]/',
             '',
             $description
         );
-        $description = substr($description, 0, 128); // max 128 characters
+        // max 128 characters
+        $result = substr($description, 0, 128);
+        if ($result !== false) {
+            return $result;
+        } 
         return $description;
+        
     }
 
     /*

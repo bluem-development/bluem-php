@@ -31,9 +31,12 @@ use Bluem\BluemPHP\Responses\PaymentTransactionBluemResponse;
 use Bluem\BluemPHP\Validators\Validator;
 use Bluem\BluemPHP\Helpers\IPAPI;
 use Carbon\Carbon;
+use DOMException;
 use Exception;
 use HTTP_Request2 as BluemHttpRequest;
+use HTTP_Request2_LogicException;
 use Selective\XmlDSig\XmlSignatureValidator;
+use SimpleXMLElement;
 use Throwable;
 
 // libxml_use_internal_errors(false);
@@ -59,7 +62,15 @@ if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
  */
 class Bluem
 {
+    /**
+     * @var mixed 
+     */
     private $_config;
+
+    /**
+     * @var string
+     */
+    private $merchantID;
 
     public $environment;
 
@@ -76,7 +87,6 @@ class Bluem
             throw new Exception(
                 "No configuration given to instantiate the Integration"
             );
-            exit;
         }
 
         
@@ -97,6 +107,9 @@ class Bluem
         $_config = $this->_validateMerchantReturnURLBase($_config);
         // this is given by the bank (default 0)
         $_config->merchantSubID = "0";
+        
+        // @todo move this to a function in a bluemconfig element
+        // chain these functions more beautifully
 
         $this->_config = $_config;
         $this->merchantID = $this->_config->merchantID;
@@ -121,10 +134,12 @@ class Bluem
      * @throws Exception
      */
     public function CreateMandateRequest(
-        $customer_id,
-        $order_id,
+        string $customer_id,
+        string $order_id, 
         $mandate_id = false
-    ) {
+    ): EmandateBluemRequest
+    {
+        // @todo add proper validation on customer or order ID via datatypes
         if (is_null($customer_id)) {
             throw new Exception("Customer ID Not set", 1);
         }
@@ -154,14 +169,14 @@ class Bluem
      *
      * @param $customer_id
      * @param $order_id
-     * @param $mandate_id
+     * @param bool $mandate_id
      *
-     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
+     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
      * @throws Exception
      */
     public function Mandate(
-        $customer_id,
-        $order_id,
+        string $customer_id,
+        string $order_id, 
         $mandate_id = false
     ) {
         $_request = $this->CreateMandateRequest(
@@ -179,7 +194,7 @@ class Bluem
      * @param $mandateID
      * @param $entranceCode
      *
-     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
+     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
      */
     public function MandateStatus($mandateID, $entranceCode)
     {
@@ -209,13 +224,13 @@ class Bluem
         if ($this->_config->senderID === "S1300") {
             return "M" . Carbon::now()->timezone('Europe/Amsterdam')->format('YmdHis');
         }
-        // nextdeli et al
+        // For customer NextDeli et al
         return substr($customer_id . Carbon::now()->timezone('Europe/Amsterdam')->format('Ymd') . $order_id, 0, 35);
     }
 
 
     /**
-     * For mandates only: retreive the maximum amount from
+     * For mandates only: retrieve the maximum amount from
      * the AcceptanceReport to use in parsing and validating
      * mandates in webshop context
      *
@@ -232,7 +247,10 @@ class Bluem
             ];
         }
 
-        return (object) ['amount' => (float) 0.0, 'currency' => 'EUR'];
+        return (object) [
+            'amount' => 0.0, 
+            'currency' => 'EUR'
+        ];
     }
 
     /**-------------- PAYMENT SPECIFIC FUNCTIONS --------------*/
@@ -256,7 +274,7 @@ class Bluem
         $dueDateTime = null,
         String $currency = "EUR",
         $entranceCode = null,
-        $debtorReturnURL = ""
+        string $debtorReturnURL = ""
     ): PaymentBluemRequest {
         if (is_null($entranceCode)) {
             $entranceCode = $this->CreateEntranceCode();
@@ -295,7 +313,7 @@ class Bluem
      * @param string $currency
      * @param null   $entranceCode
      *
-     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
+     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
      */
     public function Payment(
         string $description,
@@ -325,7 +343,7 @@ class Bluem
      *
      * @param $transactionID
      * @param $entranceCode
-     * @return ErrorBluemResponse|PaymentStatusBluemResponse|Exception
+     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
      */
     public function PaymentStatus($transactionID, $entranceCode)
     {
@@ -372,7 +390,7 @@ class Bluem
         string $description,
         $debtorReference,
         $debtorReturnURL,
-        $entranceCode = ""
+        string $entranceCode = ""
     ): IdentityBluemRequest {
         // todo: Check if this is needed?
         //$this->CreateIdentityTransactionID($debtorReference),
@@ -385,8 +403,7 @@ class Bluem
                 $this->_config->expectedReturnStatus : ""),
             $requestCategory,
             $description,
-            $debtorReference,
-            $debtorReturnURL
+            $debtorReference
         );
     }
 
@@ -396,8 +413,9 @@ class Bluem
      * @param $transactionID
      * @param $entranceCode
      *
-     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
-     * @throws \HTTP_Request2_LogicException
+     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws HTTP_Request2_LogicException
+     * @throws DOMException
      */
     public function IdentityStatus($transactionID, $entranceCode)
     {
@@ -413,12 +431,12 @@ class Bluem
         return $this->PerformRequest($r);
     }
 
-
+    
     // @todo: Create Identity shorthand function
 
 
     /**
-     * Create a Identity Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.
+     * Create an Identity Transaction ID in the required structure, based on the order ID, customer ID and the current timestamp.
      * @param String $debtorReference
      * @return String Identity Transaction ID
      */
@@ -444,8 +462,6 @@ class Bluem
      * @param BluemRequest $transaction_request
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-     * @throws \DOMException
-     * @throws \HTTP_Request2_LogicException
      */
     public function PerformRequest(BluemRequest $transaction_request)
     {
@@ -462,7 +478,7 @@ class Bluem
                     $validator->errorDetails
                 )
             );
-        };
+        }
 
         // set this to true if you want more internal information when debugging or extending
         $verbose = false;
@@ -528,29 +544,29 @@ class Bluem
                             case 'SUD':
                             case 'TRX':
                             case 'TRS':
-                                $errmsg = (string)$response->EMandateErrorResponse->Error->ErrorMessage;
+                                $errorMessage = (string)$response->EMandateErrorResponse->Error->ErrorMessage;
                                 break;
                             case 'PSU':
                             case 'PSX':
                             case 'PTS':
                             case 'PTX':
-                                $errmsg = (string)$response->PaymentErrorResponse->Error->ErrorMessage;
+                                $errorMessage = (string)$response->PaymentErrorResponse->Error->ErrorMessage;
                                 break;
-                            case 'ITX':
+                            case 'ITS':
                             case 'ITX':
                             case 'ISU':
                             case 'ISX':
-                                $errmsg = (string)$response->IDentityErrorResponse->Error->ErrorMessage;
+                                $errorMessage = (string)$response->IDentityErrorResponse->Error->ErrorMessage;
                                 break;
                             case 'INS':
                             case 'INX':
-                                $errmsg = (string)$response->IBANCheckErrorResponse->Error->ErrorMessage;
+                                $errorMessage = (string)$response->IBANCheckErrorResponse->Error->ErrorMessage;
                                 break;
                             default:
                                 throw new Exception("Invalid transaction type requested");
                             }
 
-                        return new ErrorBluemResponse("Error: " . ($errmsg));
+                        return new ErrorBluemResponse("Error: " . ($errorMessage));
                     }
 
                     if (!$response->Status()) {
@@ -558,7 +574,6 @@ class Bluem
                     }
                     return $response;
 
-                    break;
                 }
                 case 400:
                     return new ErrorBluemResponse('Your request was not formed correctly.');
@@ -571,6 +586,8 @@ class Bluem
             }
         } catch (Throwable $e) {
             return new ErrorBluemResponse('HTTP Request Error');
+            // @todo improve request return exception; add our own exception type
+
         }
     }
 
@@ -618,7 +635,7 @@ class Bluem
 
         // Parsing XML data from POST body
         try {
-            $xmlObject = new \SimpleXMLElement($postData);
+            $xmlObject = new SimpleXMLElement($postData);
         } catch (Exception $e) {
             if ($verbose) {
                 echo($e->getMessage());
@@ -648,12 +665,11 @@ class Bluem
         // @todo webhook response mandates
 
         // @todo webhook response payments
-        if (!isset($xmlObject->EPaymentInterface->PaymentStatusUpdate)) {
-            http_response_code(400);
-            exit;
-        }
-        $status_update = $xmlObject->EPaymentInterface->PaymentStatusUpdate;
-        return $status_update;
+//        if (!isset($xmlObject->EPaymentInterface->PaymentStatusUpdate)) {
+//            http_response_code(400);
+//            exit;
+//        }
+//        return $xmlObject->EPaymentInterface->PaymentStatusUpdate;
 
         // @todo webhook response identity
 
@@ -685,9 +701,8 @@ class Bluem
         // }
         $key_folder = $public_key_file = "bluem_nl.crt";
         $public_key_file_path = __DIR__ . "/../keys/" . $public_key_file;
-        // TODO: put the key in a different folder, relative to this PHP library
-        // echo $public_key_file_path;
-        // die();
+        // @todo: put the key in a different folder, relative to this PHP library
+        
 
         try {
             $signatureValidator->loadPublicKeyFile($public_key_file_path);
@@ -729,7 +744,7 @@ class Bluem
         case 'PTS':
         case 'PTX':
             return new PaymentTransactionBluemResponse($response_xml);
-        case 'ITX':
+        case 'ITS':
         case 'ITX':
             return new IdentityTransactionBluemResponse($response_xml);
         case 'ISU':
@@ -797,14 +812,13 @@ class Bluem
      * @param string $debtorReference An optional given debtor reference
      *                                to append to the check request
      *
-     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse|Exception
-     * @throws \HTTP_Request2_LogicException
+     * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws HTTP_Request2_LogicException
      */
     public function IBANNameCheck(String $iban, String $name, String $debtorReference="")
     {
         $r = $this->CreateIBANNameCheckRequest($iban, $name, $debtorReference);
-        $response = $this->PerformRequest($r);
-        return $response;
+        return $this->PerformRequest($r);
     }
 
     /**
@@ -826,7 +840,7 @@ class Bluem
      *
      * @param $contextName
      *
-     * @return array|mixed
+     * @return array
      * @throws Exception
      */
     public function retrieveBICsForContext($contextName)
@@ -876,8 +890,8 @@ class Bluem
     public function VerifyIPIsNetherlands()
     {
         try {
-            $this->IPAPI = new IPAPI();
-            return $this->IPAPI->CheckIsNetherlands();
+            $IPAPI = new IPAPI();
+            return $IPAPI->CheckIsNetherlands();
         } catch (\Throwable $th) {
             return false;
         }
@@ -956,7 +970,7 @@ class Bluem
 
     private function _validateMerchantIDAndSelectAccessToken($_config)
     {
-        if (!isset($_config->merchantId) || is_null($_config->merchantId)) {
+        if (!isset($_config->merchantId)) {
             $_config->merchantId = "";
         }
 

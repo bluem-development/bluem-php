@@ -10,11 +10,12 @@
 namespace Bluem\BluemPHP\Responses;
 
 use Exception;
+use SimpleXMLElement;
 
 /**
  * BluemResponse
  */
-class BluemResponse extends \SimpleXMLElement
+class BluemResponse extends SimpleXMLElement
 {
     /**
      * Response Primary Key used to access the XML structure based on the specific type of response
@@ -83,10 +84,10 @@ class BluemResponse extends \SimpleXMLElement
         return $attrs['entranceCode'] . "";
     }
 
-    protected function getParentXmlElement()
+    protected function getParentXmlElement() : string
     {
-        // overriden in children
-        return; //static::$response_primary_key . "Response";
+        // overridden in children
+        return "";
     }
 
     protected function getChildXmlElement()

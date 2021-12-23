@@ -4,6 +4,10 @@
 namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Contexts\BluemContext;
+use DOMDocument;
+use DOMException;
+use Exception;
+use libXMLError;
 
 // @todo: consider removing subclasses
 
@@ -29,7 +33,7 @@ class Validator
     public $errorDetails;
 
     /**
-     * @var \DOMDocument
+     * @var DOMDocument
      */
     private $handler;
 
@@ -40,18 +44,18 @@ class Validator
      */
     public function __construct(string $feedSchema = null)
     {
-        $this->handler = new \DOMDocument('1.0', 'utf-8');
+        $this->handler = new DOMDocument('1.0', 'utf-8');
         $this->feedSchema = $feedSchema;
     }
 
     /**
-     * @param \libXMLError object $error
+     * @param libXMLError object $error
      *
      * @return string
      */
     private function libxmlDisplayError($error)
     {
-        $errorString = "Error $error->code in $error->file (Line:{$error->line}):";
+        $errorString = "Error $error->code in $error->file (Line: $error->line):";
         $errorString .= trim($error->message);
 
         return $errorString;
@@ -79,21 +83,22 @@ class Validator
      * @param              $contents
      *
      * @return bool
-     * @throws \DOMException
+     * @throws DOMException
+     * @throws Exception
      */
     public function validate(BluemContext $context, $contents)
     {
         $this->feedSchema = $context->getValidationSchema();
 
         if (!class_exists('DOMDocument')) {
-            throw new \DOMException("'DOMDocument' class not found!");
-
-            return false;
+            throw new DOMException(
+                "'DOMDocument' class not found!"
+            );
         }
         if (!file_exists($this->feedSchema)) {
-            throw new \Exception('Schema is Missing, Please add schema to feedSchema property');
-
-            return false;
+            throw new Exception(
+                "Schema is Missing, Please add schema to feedSchema property"
+            );
         }
 
         libxml_use_internal_errors(true);
@@ -107,7 +112,6 @@ class Validator
         if (!$this->handler->schemaValidate($this->feedSchema)) {
             $this->errorDetails = $this->libxmlDisplayErrors();
             $this->feedErrors = 1;
-
             return false;
         } else {
             //The file is valid
@@ -120,7 +124,7 @@ class Validator
      *
      * @return array
      */
-    public function displayErrors()
+    public function displayErrors(): array
     {
         return $this->errorDetails;
     }

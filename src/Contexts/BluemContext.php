@@ -17,7 +17,7 @@ class BluemContext
      *
      * @param array $BICs
      */
-    public function __construct($BICs = [])
+    public function __construct(array $BICs = [])
     {
         $this->BICs = $BICs;
     }

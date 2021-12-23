@@ -19,7 +19,7 @@ class TransactionBluemResponse extends BluemResponse
         return (isset($this->{$this->getParentXmlElement()}->DebtorReference)) ? $this->{$this->getParentXmlElement()}->DebtorReference . "" : null;
     }
 
-    protected function getParentXmlElement()
+    protected function getParentXmlElement() : string
     {
         return static::$response_primary_key . "Response";
     }

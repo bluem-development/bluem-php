@@ -21,12 +21,22 @@ class EmandateBluemRequest extends BluemRequest
     private $eMandateReason;
     private $debtorReference;
     private $purchaseID;
-    private $sendOption;
-
-
+    
     protected $merchantID;
     protected $merchantSubID;
+    
+    /**
+     * @var string
+     */
+    private $automatically_redirect;
+    /**
+     * @var string
+     */
+    private $xmlInterfaceName;
 
+    /**
+     * @throws \Exception
+     */
     public function __construct($config, $customer_id, $order_id, $mandateID, string $expected_return = "none")
     {
         parent::__construct($config, "", $expected_return);
@@ -43,21 +53,20 @@ class EmandateBluemRequest extends BluemRequest
         // 	$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}";
         // }
 
-        $now = Carbon::now()->timezone('Europe/Amsterdam');
 
-        $this->localInstrumentCode = $config->localInstrumentCode; // CORE | B2B ,  conform gegeven standaard
-
+        $this->localInstrumentCode = $config->localInstrumentCode; 
+        // @todo create localInstrumentCode datatype with these options // CORE | B2B ,  conform gegeven standaard
         $this->mandateID = $mandateID;
 
-        // https uniek returnurl voor klant
-        $this->merchantReturnURL = $this->merchantReturnURLBase . "?mandateID={$this->mandateID}";
+        // https - unique return URL for customer
+        $this->merchantReturnURL = "$this->merchantReturnURLBase?mandateID=$this->mandateID";
         if (isset($config->sequenceType)) {
             $this->sequenceType = $config->sequenceType;
         } else {
             $this->sequenceType = "RCUR";
         }
 
-        // reden van de machtiging; configurabel per partij
+        // reason for the mandate; configurable per client
         if (isset($config->eMandateReason)) {
             $this->eMandateReason = $config->eMandateReason;
         } else {
@@ -69,20 +78,20 @@ class EmandateBluemRequest extends BluemRequest
         $this->debtorReference = $customer_id;
 
         // inkoop/contract/order/klantnummer
-        /* PurchaseID is verplichtveld van de banken.
-        Dit vertalen het naar de klant als ‘inkoopnummer’ of ‘ordernummer’ (afh. Bank).
-        Wij presenteren het niet op de checkout, omdat wij zien dat veel partijen
-        echt niet weten wat ze er in moeten zetten. Wij adviseren dan altijd klantnummer.
-        En dat doet dan ook veel partijen */
+        /* PurchaseID is a mandatory field of the banks.
+        It translates to the customer as 'purchase number' or 'order number' (depending on the bank).
+        We do not present it on the checkout, because we see that many parties
+        really do not know what to put there. We always advise customer number.
+        And that is what many parties do. */
         if (isset($config->purchaseIDPrefix) && $config->purchaseIDPrefix !== "") {
             $purchaseIDPrefix = $config->purchaseIDPrefix . "-";
         } else {
             $purchaseIDPrefix = "";
         }
-        $this->purchaseID = substr("{$purchaseIDPrefix}{$this->debtorReference}-{$order_id}", 0, 34);  // INKOOPNUMMER
+        $this->purchaseID = substr("$purchaseIDPrefix$this->debtorReference-$order_id", 0, 34);  // INKOOPNUMMER
 
 
-        // todo: move to mandate-specifics; as it is only necessary there
+        // @todo: move to mandate-specifics; as it is only necessary there
         if (isset($config->merchantID)) {
             $this->merchantID = $config->merchantID;
         } else {

@@ -7,7 +7,7 @@ class PaymentRequestTest extends BluemGenericTest
     public function testCanCreatePaymentRequest()
     {
         $description = "Test payment";
-        $amount = 100.00;
+        $amount = 1.00;
         $currency = "EUR";
         $debtorReference = "1234567";
         $dueDateTime = null;

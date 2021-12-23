@@ -46,7 +46,7 @@ class IbanBluemRequest extends BluemRequest
         string $_inputName,
         string $_debtorReference = ""
     ) {
-        parent::__construct($config, $entranceCode, "");
+        parent::__construct($config, $entranceCode);
 
         $this->_inputIban = $this->_sanitizeIban($_inputIban);
         $this->_inputName = $this->_sanitizeName($_inputName);
