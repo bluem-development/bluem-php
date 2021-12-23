@@ -83,8 +83,8 @@ if (!$response->Status()) {
     exit;
 }
 
-$statusUpdateObject = $response->EMandateStatusUpdate;
-$statusCode = $statusUpdateObject->EMandateStatus->Status . "";
+$statusUpdateObject = $response->PaymentStatusUpdate;
+$statusCode = $statusUpdateObject->PaymentStatus->Status . "";
 
 if ($statusCode === "Success") {
     
