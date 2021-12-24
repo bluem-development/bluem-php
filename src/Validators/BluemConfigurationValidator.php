@@ -5,6 +5,15 @@ namespace Bluem\BluemPHP\Validators;
 use Exception;
 use Throwable;
 
+define("BLUEM_EXPECTED_RETURN_NONE","none");
+define("BLUEM_EXPECTED_RETURN_SUCCESS","success");
+define("BLUEM_EXPECTED_RETURN_CANCELLED","cancelled");
+define("BLUEM_EXPECTED_RETURN_EXPIRED","expired");
+define("BLUEM_EXPECTED_RETURN_FAILURE","failure");
+define("BLUEM_EXPECTED_RETURN_OPEN","open");
+define("BLUEM_EXPECTED_RETURN_PENDING","pending");
+
+
 class BluemConfigurationValidator
 {
     /** @var array */
@@ -132,30 +141,41 @@ class BluemConfigurationValidator
         }
         return $config;
     }
+    
+    
     private function _validateThanksPage($config)
     {
+        // @todo consider throwing an exception if this url is missing.
         return $config;
     }
+
+
+
+    /**
+     * if an invalid possible return status is given, set it to a default value (for testing purposes only)
+     * @param $config
+     * @return mixed
+     */
     private function _validateExpectedReturnStatus($config)
     {
-        // expectedReturnStatus
-        // if an invalid possible return status is given, set it to a default value (for testing purposes only)
-        $possibleReturnStatuses = [
-            "none",     "success",  "cancelled",
-            "expired",  "failure",  "open",
-            "pending"
-        ];
-        if ($config->expectedReturnStatus!==""
-            && !in_array(
-                $config->expectedReturnStatus,
-                $possibleReturnStatuses
-            )
-        ) {
-            $config->expectedReturnStatus = "success";
+        if ($config->environment === BLUEM_ENVIRONMENT_TESTING) {
+            if (!isset($config->expectedReturnStatus) ||
+                ($config->expectedReturnStatus !== ""
+                && !in_array(
+                    $config->expectedReturnStatus,
+                    $this->getPossibleReturnStatuses()
+                ))
+            ) {
+                // default back to success
+                $config->expectedReturnStatus = BLUEM_EXPECTED_RETURN_SUCCESS;
+            }
+        } else {
+            // no need for expectedReturnStatus when in production
+            unset($config->expectedReturnStatus);
         }
-
         return $config;
     }
+    
     private function _validateBrandID($config)
     {
         if (!isset($config->brandID)) {
@@ -165,6 +185,7 @@ class BluemConfigurationValidator
     }
     private function _validateEMandateReason($config)
     {
+        // @todo Validate the reason for the mandate
         return $config;
     }
     private function _validateLocalInstrumentCode($config)
@@ -182,6 +203,24 @@ class BluemConfigurationValidator
     }
     private function _validateMerchantReturnURLBase($config)
     {
+        // @todo Validate Merchant Return URL Base
         return $config;
+    }
+
+
+    /**
+     * @return array List of possible return statuses as strings
+     */
+    private function getPossibleReturnStatuses() : array
+    {
+        return [
+            BLUEM_EXPECTED_RETURN_NONE,
+            BLUEM_EXPECTED_RETURN_SUCCESS,
+            BLUEM_EXPECTED_RETURN_CANCELLED,
+            BLUEM_EXPECTED_RETURN_EXPIRED,
+            BLUEM_EXPECTED_RETURN_FAILURE,
+            BLUEM_EXPECTED_RETURN_OPEN,
+            BLUEM_EXPECTED_RETURN_PENDING
+        ];
     }
 }
