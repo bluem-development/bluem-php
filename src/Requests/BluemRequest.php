@@ -9,16 +9,16 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Carbon\Carbon as Carbon;
 use Exception;
 use SimpleXMLElement;
-use stdclass;
 
 /**
- * BluemRequest
+ * BluemRequest general class
  */
-// @todo add Bluem request classes - interface
-class BluemRequest
+class BluemRequest implements BluemRequestInterface
 {
     /**
      * @var 
@@ -48,12 +48,24 @@ class BluemRequest
      * @var 
      */
     public $debtorWallet = null;
-    
-    
+
+
+    /**
+     * @var
+     */
     protected $senderID;
+    /**
+     * @var string
+     */
     protected $createDateTime;
 
+    /**
+     * @var array
+     */
     private $_debtorAdditionalData = [];
+    /**
+     * @var string[]
+     */
     private $_possibleDebtorAdditionalDataKeys = [
         "EmailAddress",
         "MobilePhoneNumber",
@@ -68,8 +80,14 @@ class BluemRequest
         "DynamicData",
     ];
 
+    /**
+     * @var
+     */
     protected $transactionID;
 
+    /**
+     * @var
+     */
     public $context;
 
     /**
@@ -77,10 +95,6 @@ class BluemRequest
      */
     protected $environment;
 
-    /**
-     * @var string
-     */
-    private $brandID;
 
     /**
      * @var string
@@ -90,18 +104,29 @@ class BluemRequest
     /**
      * BluemRequest constructor.
      *
-     * @param stdclass $config
-     * @param string    $entranceCode
-     * @param string    $expectedReturn
+     * @param BluemConfiguration $config
+     * @param string $entranceCode
+     * @param string $expectedReturn
+     * @throws Exception
      */
-    public function __construct(stdclass $config, string $entranceCode = "", string $expectedReturn = "")
+    public function __construct(
+        BluemConfiguration $config,
+        string $entranceCode = "",
+        string $expectedReturn = ""
+    )
     {
+        $possibleTypeIdentifiers = ['createTransaction', 'requestStatus'];
+        if (!in_array($this->typeIdentifier, $possibleTypeIdentifiers)) {
+            throw new Exception("Invalid transaction type called for", 1);
+        }
+        // @todo: move to request validation class?
+        
         $this->environment = $config->environment;
 
         $this->senderID = $config->senderID;
-        $this->brandID = $config->brandID;
         $this->accessToken = $config->accessToken;
-        // @todo possibly just use the config directly instead of copying all configuration elements
+        // @todo just use the config directly instead of copying all configuration elements
+        
         
         $this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
 
@@ -120,6 +145,10 @@ class BluemRequest
     }
     
     // @todo remove this?
+
+    /**
+     * @return mixed
+     */
     public function getContext()
     {
         return $this->context;
@@ -208,9 +237,7 @@ class BluemRequest
     }
 
     /**
-     * Retrieves the http request url.
-     *
-     * @throws     Exception  (invalid transaction type called for, if not create transaction or status request)
+     * Crafts the relevant HTTP request url.
      *
      * @retum string The http request url.
      */
@@ -249,8 +276,6 @@ class BluemRequest
                 $request_url .= "requestTransactionStatusWithToken";
                 break;
             }
-            default:
-                throw new Exception("Invalid transaction type called for", 1);
         }
         $request_url .= "?token=$this->accessToken";
 
@@ -384,6 +409,9 @@ class BluemRequest
     }
 
 
+    /**
+     * @return string
+     */
     public function XmlWrapDebtorAdditionalData(): string
     {
         if (count($this->_debtorAdditionalData) == 0) {
@@ -427,11 +455,17 @@ class BluemRequest
     }
 
 
+    /**
+     * @return mixed
+     */
     public function RequestContext()
     {
         return $this->context;
     }
 
+    /**
+     * @return string
+     */
     public function RequestType(): string
     {
         return '';

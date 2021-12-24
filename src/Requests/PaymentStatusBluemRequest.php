@@ -3,8 +3,10 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
-class PaymentStatusBluemRequest extends BluemRequest
+class PaymentStatusBluemRequest extends BluemRequest implements BluemRequestInterface
+
 {
     protected $xmlInterfaceName = "EPaymentInterface";
 
@@ -19,19 +21,21 @@ class PaymentStatusBluemRequest extends BluemRequest
         $entranceCode = ""
     ) {
         parent::__construct($config, $entranceCode, $expected_return);
+        
         if (isset($config->paymentBrandID)
             && $config->paymentBrandID !== ""
         ) {
-            $this->brandID = $config->paymentBrandID;
+            $config->setBrandID($config->paymentBrandID);
         } else {
-            $this->brandID = $config->brandID;
+            $config->setBrandID($config->brandID);
         }
 
         $this->transactionID = $transactionID;
 
         $this->context = new PaymentsContext();
     }
-
+    
+    // @todo: deprecated, remove
     public function TransactionType(): string
     {
         return $this->transaction_code;

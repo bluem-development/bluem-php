@@ -3,11 +3,12 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IBANCheckContext;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
 /**
  * IBAN Name Check Request object
  */
-class IbanBluemRequest extends BluemRequest
+class IBANBluemRequest extends BluemRequest implements BluemRequestInterface
 {
     private $xmlInterfaceName = "IBANCheckInterface";
 
@@ -29,6 +30,7 @@ class IbanBluemRequest extends BluemRequest
     {
         return "INX";
     }
+    // @todo: deprecated, remove
 
     /**
      * Construct the request and prepare all properties

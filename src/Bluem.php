@@ -12,10 +12,11 @@ namespace Bluem\BluemPHP;
 use Bluem\BluemPHP\Contexts\IdentityContext;
 use Bluem\BluemPHP\Contexts\MandatesContext;
 use Bluem\BluemPHP\Contexts\PaymentsContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateStatusBluemRequest;
-use Bluem\BluemPHP\Requests\IbanBluemRequest;
+use Bluem\BluemPHP\Requests\IBANBluemRequest;
 use Bluem\BluemPHP\Requests\IdentityBluemRequest;
 use Bluem\BluemPHP\Requests\IdentityStatusBluemRequest;
 use Bluem\BluemPHP\Requests\PaymentBluemRequest;
@@ -28,7 +29,7 @@ use Bluem\BluemPHP\Responses\MandateStatusBluemResponse;
 use Bluem\BluemPHP\Responses\MandateTransactionBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentStatusBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentTransactionBluemResponse;
-use Bluem\BluemPHP\Validators\Validator;
+use Bluem\BluemPHP\Validators\BluemXMLValidator;
 use Bluem\BluemPHP\Helpers\IPAPI;
 use Carbon\Carbon;
 use DOMException;
@@ -57,69 +58,39 @@ if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
     define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
 }
 
+define("BLUEM_DATE_FORMAT_RFC1123", "D, d M Y H:i:s \G\M\T");
+
 /**
  * Bluem Integration main class
  */
 class Bluem
 {
+    /** @var bool Used for development and debugging purposes.  */
+    static $verbose = false;
+    
     /**
-     * @var mixed 
+     * @var BluemConfiguration 
      */
-    private $_config;
-
-    /**
-     * @var string
-     */
-    private $merchantID;
-
-    public $environment;
+    private $configuration;
 
     /**
      * Bluem constructor.
      *
-     * @param null $_config
+     * @param mixed $_config
      *
      * @throws Exception
      */
-    public function __construct($_config = null)
+    public function __construct(mixed $_config)
     {
-        if (is_null($_config)) {
-            throw new Exception(
-                "No configuration given to instantiate the Integration"
-            );
+
+        try {
+            $config = new BluemConfiguration($_config);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
-
         
-        // validating configuration
-        // essential validation
-        $_config = $this->_validateEnvironment($_config);
-        $_config = $this->_validateSenderID($_config);
-        $_config = $this->_validateTest_accessToken($_config);
-        $_config = $this->_validateProduction_accessToken($_config);
-        $_config = $this->_validateBrandID($_config);
-        
-        // secondary values, possibly automatically inferred/defaulting
-        $_config = $this->_validateMerchantIDAndSelectAccessToken($_config);
-        $_config = $this->_validateThanksPage($_config);
-        $_config = $this->_validateExpectedReturnStatus($_config);
-        $_config = $this->_validateEMandateReason($_config);
-        $_config = $this->_validateLocalInstrumentCode($_config);
-        $_config = $this->_validateMerchantReturnURLBase($_config);
-        // this is given by the bank (default 0)
-        $_config->merchantSubID = "0";
-        
-        // @todo move this to a function in a bluem config element
-        // chain these functions more beautifully
-
-        $this->_config = $_config;
-        $this->merchantID = $this->_config->merchantID;
-        $this->environment = $this->_config->environment;
+        $this->configuration = $config;
     }
-
-    /*
-    *  MANDATE SPECIFIC FUNCTIONS
-    *
-    */
 
     /**
      * Create a Mandate Request given a customer ID, order ID
@@ -128,7 +99,7 @@ class Bluem
      *
      * @param string $customer_id
      * @param string $order_id
-     * @param boolean $mandate_id
+     * @param string $mandate_id
      *
      * @return EmandateBluemRequest
      * @throws Exception
@@ -136,7 +107,7 @@ class Bluem
     public function CreateMandateRequest(
         string $customer_id,
         string $order_id, 
-        $mandate_id = false
+        string $mandate_id = ""
     ): EmandateBluemRequest
     {
         // @todo add proper validation on customer or order ID via datatypes
@@ -147,18 +118,18 @@ class Bluem
             throw new Exception("Order ID Not set", 1);
         }
 
-        if ($mandate_id === false) {
+        if ($mandate_id === "") {
             $mandate_id = $this->CreateMandateID($order_id, $customer_id);
         }
 
         return new EmandateBluemRequest(
-            $this->_config,
+            $this->configuration,
             $customer_id,
             $order_id,
             $mandate_id,
-            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expectedReturnStatus) ?
-                $this->_config->expectedReturnStatus : "")
+            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->configuration->expectedReturnStatus) ?
+                $this->configuration->expectedReturnStatus : "")
         );
     }
 
@@ -169,22 +140,25 @@ class Bluem
      *
      * @param string $customer_id
      * @param string $order_id
-     * @param bool $mandate_id
+     * @param string $mandate_id
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-     * @throws DOMException
-     * @throws HTTP_Request2_LogicException
+     * @throws Exception
      */
     public function Mandate(
         string $customer_id,
         string $order_id, 
-        $mandate_id = false
+        string $mandate_id = ""
     ) {
-        $_request = $this->CreateMandateRequest(
-            $customer_id,
-            $order_id,
-            $mandate_id
-        );
+        try {
+            $_request = $this->CreateMandateRequest(
+                $customer_id,
+                $order_id,
+                $mandate_id
+            );
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
+        }
 
         return $this->PerformRequest($_request);
     }
@@ -196,16 +170,19 @@ class Bluem
      * @param $entranceCode
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws DOMException
+     * @throws HTTP_Request2_LogicException
+     * @throws Exception
      */
     public function MandateStatus($mandateID, $entranceCode)
     {
         $r = new EMandateStatusBluemRequest(
-            $this->_config,
+            $this->configuration,
             $mandateID,
             $entranceCode,
-            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expectedReturnStatus) ?
-                $this->_config->expectedReturnStatus : "")
+            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->configuration->expectedReturnStatus) ?
+                $this->configuration->expectedReturnStatus : "")
         );
 
         return $this->PerformRequest($r);
@@ -222,7 +199,7 @@ class Bluem
     public function CreateMandateID(String $order_id, String $customer_id): String
     {
         // veteranen search team, specific
-        if ($this->_config->senderID === "S1300") {
+        if ($this->configuration->senderID === "S1300") {
             return "M" . Carbon::now()->timezone('Europe/Amsterdam')->format('YmdHis');
         }
         // For customer NextDeli et al
@@ -289,7 +266,7 @@ class Bluem
         // @todo: sanitize debtorReturnURL
 
         return new PaymentBluemRequest(
-            $this->_config,
+            $this->configuration,
             $description,
             $debtorReference,
             $amount,
@@ -297,9 +274,9 @@ class Bluem
             $currency,
             $this->CreatePaymentTransactionID($debtorReference),
             $entranceCode,
-            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expectedReturnStatus) ?
-                $this->_config->expectedReturnStatus : ""),
+            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->configuration->expectedReturnStatus) ?
+                $this->configuration->expectedReturnStatus : ""),
             $debtorReturnURL
         );
     }
@@ -310,11 +287,13 @@ class Bluem
      * @param string $description
      * @param        $debtorReference
      * @param        $amount
-     * @param null   $dueDateTime
+     * @param null $dueDateTime
      * @param string $currency
-     * @param null   $entranceCode
+     * @param null $entranceCode
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws DOMException
+     * @throws HTTP_Request2_LogicException
      */
     public function Payment(
         string $description,
@@ -345,15 +324,17 @@ class Bluem
      * @param $transactionID
      * @param $entranceCode
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws DOMException
+     * @throws HTTP_Request2_LogicException
      */
     public function PaymentStatus($transactionID, $entranceCode)
     {
         $r = new PaymentStatusBluemRequest(
-            $this->_config,
+            $this->configuration,
             $transactionID,
-            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expectedReturnStatus) ?
-                $this->_config->expectedReturnStatus : ""),
+            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->configuration->expectedReturnStatus) ?
+                $this->configuration->expectedReturnStatus : ""),
             $entranceCode
         );
 
@@ -381,7 +362,6 @@ class Bluem
      * @param        $requestCategory
      * @param string $description
      * @param        $debtorReference
-     * @param        $debtorReturnURL
      * @param string $entranceCode
      *
      * @return IdentityBluemRequest
@@ -391,18 +371,17 @@ class Bluem
         $requestCategory,
         string $description,
         $debtorReference,
-        $debtorReturnURL,
         string $entranceCode = ""
     ): IdentityBluemRequest {
         // todo: Check if this is needed?
         //$this->CreateIdentityTransactionID($debtorReference),
 
         return new IdentityBluemRequest(
-            $this->_config,
+            $this->configuration,
             $entranceCode,
-            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-            isset($this->_config->expectedReturnStatus) ?
-                $this->_config->expectedReturnStatus : ""),
+            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+            isset($this->configuration->expectedReturnStatus) ?
+                $this->configuration->expectedReturnStatus : ""),
             $requestCategory,
             $description,
             $debtorReference
@@ -416,15 +395,17 @@ class Bluem
      * @param $entranceCode
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws DOMException
+     * @throws HTTP_Request2_LogicException
      */
     public function IdentityStatus($transactionID, $entranceCode)
     {
         $r = new IdentityStatusBluemRequest(
-            $this->_config,
+            $this->configuration,
             $entranceCode,
-            ($this->_config->environment == BLUEM_ENVIRONMENT_TESTING &&
-                isset($this->_config->expectedReturnStatus) ?
-                $this->_config->expectedReturnStatus : ""),
+            ($this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+                isset($this->configuration->expectedReturnStatus) ?
+                $this->configuration->expectedReturnStatus : ""),
             $transactionID
         );
 
@@ -463,10 +444,11 @@ class Bluem
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
      * @throws DOMException|HTTP_Request2_LogicException
+     * @throws Exception
      */
     public function PerformRequest(BluemRequest $transaction_request)
     {
-        $validator = new Validator();
+        $validator = new BluemXMLValidator();
         if (!$validator->validate(
             $transaction_request->RequestContext(),
             utf8_encode($transaction_request->XmlString())
@@ -481,20 +463,16 @@ class Bluem
             );
         }
 
-        // set this to true if you want more internal information when debugging or extending
-        $verbose = false;
-
         $now = Carbon::now('UTC');
         // set timezone to UTC to let the transaction xttrs timestamp work; 8-9-2021
         
-        $xttrs_filename = $transaction_request->transaction_code . "-{$this->_config->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
+        $xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
 
         // conform Rfc1123 standard in GMT time
-        $rfc7231format = "D, d M Y H:i:s \G\M\T";
         // Since v2.0.5 : use preset format instead of
         // function to allow for Carbon 1.21 legacy compatibility
-        $xttrs_date = $now->format($rfc7231format);
-
+        $xttrs_date = $now->format(BLUEM_DATE_FORMAT_RFC1123);
+        
         $request_url = $transaction_request->HttpRequestUrl();
 
         $req = new BluemHttpRequest();
@@ -508,7 +486,7 @@ class Bluem
         $req->setHeader("x-ttrs-files-count", "1");
         $req->setHeader("x-ttrs-filename", $xttrs_filename);
 
-        if ($verbose) {
+        if (self::$verbose) {
             echo PHP_EOL . "<BR>URL// " . $request_url;
 
             echo PHP_EOL . "<BR>HEADER// " . "Content-Type: " . "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
@@ -522,7 +500,7 @@ class Bluem
         $req->setBody(utf8_encode($transaction_request->XmlString()));
         try {
             $http_response = $req->send();
-            if ($verbose) {
+            if (self::$verbose) {
                 echo PHP_EOL . "<BR>RESPONSE// ";
                 echo($http_response->getBody());
             }
@@ -535,7 +513,7 @@ class Bluem
 
                     try {
                         $response = $this->fabricateResponseObject($transaction_request->transaction_code, $http_response->getBody());
-                    } catch (\Throwable $th) {
+                    } catch (Throwable $th) {
                         return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
                     }
 
@@ -566,6 +544,7 @@ class Bluem
                             default:
                                 throw new Exception("Invalid transaction type requested");
                             }
+                            // @todo: move into a separate function
 
                         return new ErrorBluemResponse("Error: " . ($errorMessage));
                     }
@@ -587,7 +566,7 @@ class Bluem
             }
         } catch (Throwable $e) {
             return new ErrorBluemResponse('HTTP Request Error');
-            // @todo improve request return exception; add our own exception type
+            // @todo improve request return exceptions; add our own exception type
 
         }
     }
@@ -605,16 +584,13 @@ class Bluem
      */
     public function Webhook()
     {
-        // set this to true if you want more internal information when debugging or extending
-        $verbose = false;
-
         // The following checks will be performed:
         // @todo URL must start with https://
 
 
         // Check: ONLY Accept post requests
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            if ($verbose) {
+            if (self::$verbose) {
                 exit("Not post");
             }
             http_response_code(400);
@@ -625,7 +601,7 @@ class Bluem
         $postData = file_get_contents('php://input');
 
         if ($postData === "") {
-            if ($verbose) {
+            if (self::$verbose) {
                 echo "NO POST";
             }
             http_response_code(200);
@@ -638,7 +614,7 @@ class Bluem
         try {
             $xmlObject = new SimpleXMLElement($postData);
         } catch (Exception $e) {
-            if ($verbose) {
+            if (self::$verbose) {
                 echo($e->getMessage());
                 exit();
             }
@@ -648,7 +624,7 @@ class Bluem
 
         // Check: if signature is valid in postdata
         if (!$this->_validateWebhookSignature($postData)) {
-            if ($verbose) {
+            if (self::$verbose) {
                 exit('no valid webhook sig');
             }
 
@@ -691,7 +667,7 @@ class Bluem
         $temp_file = tmpfile();
         fwrite($temp_file, $xmlInput);
         $temp_file_path = stream_get_meta_data($temp_file)['uri'];
-
+        // @todo: move this to an abstract validator
         $signatureValidator = new XmlSignatureValidator();
 
         // @todo Check if keyfile has to be chosen according to env
@@ -707,7 +683,7 @@ class Bluem
 
         try {
             $signatureValidator->loadPublicKeyFile($public_key_file_path);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return false;
             // echo "Error: " . $th->getMessage();
         }
@@ -790,13 +766,13 @@ class Bluem
      * @param string $debtorReference An optional given debtor reference
      *                                to append to the check request
      *
-     * @return IbanBluemRequest
+     * @return IBANBluemRequest
      */
-    public function CreateIBANNameCheckRequest(String $iban, String $name, String $debtorReference = ""): IbanBluemRequest
+    public function CreateIBANNameCheckRequest(String $iban, String $name, String $debtorReference = ""): IBANBluemRequest
     {
         $entranceCode = $this->CreateEntranceCode();
-        return new IbanBluemRequest(
-            $this->_config,
+        return new IBANBluemRequest(
+            $this->configuration,
             $entranceCode,
             $iban,
             $name,
@@ -808,12 +784,14 @@ class Bluem
     /**
      * Create and perform IBAN Name Check request
      *
-     * @param string $iban            Given IBAN to check
-     * @param string $name            Given name to check
+     * @param string $iban Given IBAN to check
+     * @param string $name Given name to check
      * @param string $debtorReference An optional given debtor reference
      *                                to append to the check request
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+     * @throws DOMException
+     * @throws HTTP_Request2_LogicException
      */
     public function IBANNameCheck(String $iban, String $name, String $debtorReference="")
     {
@@ -829,7 +807,7 @@ class Bluem
      * @return array
      * @throws Exception
      */
-    public function retrieveBICCodesForContext($contextName)
+    public function retrieveBICCodesForContext($contextName): array
     {
         $context = $this->_retrieveContext($contextName);
         return $context->getBICCodes();
@@ -843,7 +821,7 @@ class Bluem
      * @return array
      * @throws Exception
      */
-    public function retrieveBICsForContext($contextName)
+    public function retrieveBICsForContext($contextName): array
     {
         $context = $this->_retrieveContext($contextName);
         return $context->getBICs();
@@ -858,7 +836,7 @@ class Bluem
      */
     public function _retrieveContext($context)
     {
-        $localInstrumentCode = $this->_config->localInstrumentCode;
+        $localInstrumentCode = $this->configuration->localInstrumentCode;
         switch ($context) {
         case 'Mandates':
             $context = new MandatesContext($localInstrumentCode);
@@ -887,156 +865,14 @@ class Bluem
      *
      * @return bool
      */
-    public function VerifyIPIsNetherlands()
+    public function VerifyIPIsNetherlands(): bool
     {
         try {
             $IPAPI = new IPAPI();
             return $IPAPI->CheckIsNetherlands();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return false;
         }
     }
 
-    private function _validateEnvironment($_config)
-    {
-        if (!in_array(
-            $_config->environment,
-            [
-                BLUEM_ENVIRONMENT_TESTING,
-                BLUEM_ENVIRONMENT_ACCEPTANCE,
-                BLUEM_ENVIRONMENT_PRODUCTION
-            ]
-        )
-        ) {
-            throw new Exception(
-                "Invalid environment setting, should be either
-                'test', 'acc' or 'prod'"
-            );
-        }
-        return $_config;
-    }
-    private function _validateSenderID($_config)
-    {
-        if (!isset($_config->senderID)) {
-            throw new Exception(
-                "senderID not set; 
-                please add this to your configuration when instantiating the Bluem integration"
-            );
-        }
-        if ($_config->senderID =="") {
-            throw new Exception(
-                "senderID cannot be empty; 
-                please add this to your configuration when instantiating the Bluem integration"
-            );
-        }
-        if (substr($_config->senderID, 0, 1) !== "S") {
-            throw new Exception(
-                "senderID always starts with an S followed by digits. 
-                Please correct this in your configuration when instantiating the Bluem integration"
-            );
-        }
-
-        return $_config;
-    }
-    private function _validateTest_accessToken($_config)
-    {
-        if ($_config->environment === BLUEM_ENVIRONMENT_TESTING
-        && (!isset($_config->test_accessToken)
-            || $_config->test_accessToken ==="")
-        ) {
-            throw new Exception(
-                "test_accessToken not set correctly; please add this 
-                to your configuration when instantiating the Bluem integration"
-            );
-        }
-        return $_config;
-    }
-    private function _validateProduction_accessToken($_config)
-    {
-        // only required if mode is set to PROD
-        // production_accessToken
-        if ($_config->environment === BLUEM_ENVIRONMENT_PRODUCTION
-            && (!isset($_config->production_accessToken)
-            || $_config->production_accessToken ==="")
-        ) {
-            throw new Exception(
-                "production_accessToken not set correctly; 
-                please add this to your configuration when 
-                instantiating the Bluem integration"
-            );
-        }
-        return $_config;
-    }
-
-    private function _validateMerchantIDAndSelectAccessToken($_config)
-    {
-        if (!isset($_config->merchantId)) {
-            $_config->merchantId = "";
-        }
-
-        if ($_config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
-            $_config->accessToken = $_config->production_accessToken;
-        // @todo consider throwing an exception if these tokens are missing.
-        } elseif ($_config->environment === BLUEM_ENVIRONMENT_TESTING) {
-            $_config->accessToken = $_config->test_accessToken;
-            // @todo consider throwing an exception if these tokens are missing.
-
-            // hardcoded merchantID in case of test.
-            // It is always the bluem merchant ID then.
-            $_config->merchantID = BLUEM_STATIC_MERCHANT_ID;
-        }
-        return $_config;
-    }
-    private function _validateThanksPage($_config)
-    {
-        return $_config;
-    }
-    private function _validateExpectedReturnStatus($_config)
-    {
-        // expectedReturnStatus
-        // if an invalid possible return status is given, set it to a default value (for testing purposes only)
-        $possibleReturnStatuses = [
-            "none",     "success",  "cancelled",
-            "expired",  "failure",  "open",
-            "pending"
-        ];
-        if ($_config->expectedReturnStatus!==""
-            && !in_array(
-                $_config->expectedReturnStatus,
-                $possibleReturnStatuses
-            )
-        ) {
-            $_config->expectedReturnStatus = "success";
-        }
-
-        return $_config;
-    }
-    private function _validateBrandID($_config)
-    {
-        if (!isset($_config->brandID)) {
-            throw new Exception("brandID not set; please add this to your configuration when instantiating the Bluem integration");
-        }
-        return $_config;
-    }
-    private function _validateEMandateReason($_config)
-    {
-        return $_config;
-    }
-    private function _validateLocalInstrumentCode($_config)
-    {
-        if (!isset($_config->localInstrumentCode)
-            || !in_array(
-                $_config->localInstrumentCode,
-                ['B2B', 'CORE']
-            )
-        ) {
-            // defaulting localInstrumentCode
-            $_config->localInstrumentCode = "CORE";
-        }
-        return $_config;
-    }
-    private function _validateMerchantReturnURLBase($_config)
-    {
-        return $_config;
-    }
 }

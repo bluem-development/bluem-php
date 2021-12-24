@@ -9,7 +9,7 @@ class MandateStatusBluemResponse extends StatusBluemResponse
     public static $error_response_type = "EMandate" . "ErrorResponse";
 
 
-    public function GetDebtorIBAN()
+    public function GetDebtorIBAN(): ?string
     {
         if (isset($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN)) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN . "";
@@ -18,7 +18,7 @@ class MandateStatusBluemResponse extends StatusBluemResponse
         return null;
     }
 
-    public function GetDebtorBankID()
+    public function GetDebtorBankID(): ?string
     {
         if (isset($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID)) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID . "";

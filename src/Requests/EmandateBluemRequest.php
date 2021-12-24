@@ -3,12 +3,14 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\MandatesContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Carbon\Carbon;
 
 /**
  * TransactionRequest
  */
-class EmandateBluemRequest extends BluemRequest
+class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
 {
     public $typeIdentifier = "createTransaction";
     public $request_url_type = "mr";
@@ -35,9 +37,14 @@ class EmandateBluemRequest extends BluemRequest
     private $xmlInterfaceName;
 
     /**
-     * @throws \Exception
+     * @param BluemConfiguration $config
+     * @param $customer_id
+     * @param $order_id
+     * @param $mandateID
+     * @param string $expected_return
+     * @throws Exception
      */
-    public function __construct($config, $customer_id, $order_id, $mandateID, string $expected_return = "none")
+    public function __construct(BluemConfiguration $config, $customer_id, $order_id, $mandateID, string $expected_return = "none")
     {
         parent::__construct($config, "", $expected_return);
 
@@ -168,4 +175,5 @@ class EmandateBluemRequest extends BluemRequest
     {
         return "TRX";
     }
+    // @todo: deprecated, remove
 }

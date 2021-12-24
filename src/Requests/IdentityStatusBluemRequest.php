@@ -3,8 +3,9 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
-class IdentityStatusBluemRequest extends BluemRequest
+class IdentityStatusBluemRequest extends BluemRequest implements BluemRequestInterface
 {
     protected $xmlInterfaceName = "IdentityInterface";
 
@@ -16,6 +17,7 @@ class IdentityStatusBluemRequest extends BluemRequest
     {
         return "ISX";
     }
+    // @todo: deprecated, remove
 
     public function __construct($config, $entranceCode, $expectedReturn, $transactionID)
     {
@@ -23,9 +25,9 @@ class IdentityStatusBluemRequest extends BluemRequest
 
         // override specific brand ID when using IDIN
         if (isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
-            $this->brandID = $config->IDINBrandID;
-        } else {
-            $this->brandID = $config->brandID;
+            $config->setBrandId($config->IDINBrandID);
+         } else {
+            $config->setBrandId($config->brandID);
         }
 
         $this->transactionID = $transactionID;

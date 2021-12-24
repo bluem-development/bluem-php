@@ -1,6 +1,11 @@
 <?php
+namespace Bluem\Tests\Unit;
 
 use Bluem\BluemPHP\Bluem;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
+use Dotenv\Dotenv;
+use stdClass;
 
 /**
  * Abstract base class for all BluemPHP unit tests.
@@ -18,15 +23,16 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
      * Set up the required config and objects necessary for proper testing
      *
      * @return void
+     * @throws \Exception
      */
     protected function setUp() : void
     {
-        $envfile =__DIR__. '/../..';
-        $dotenv = Dotenv\Dotenv::createImmutable($envfile);
+        $env_file =__DIR__. '/../..';
+        $dotenv = Dotenv::createImmutable($env_file);
         $dotenv->load();
         
         // Create a Bluem object and set the Bluem configuration details based on your .env file.
-        $bluem_config = new Stdclass();
+        $bluem_config = new stdClass;
         $bluem_config->environment = $_ENV['BLUEM_ENV'];
         $bluem_config->senderID = $_ENV['BLUEM_SENDER_ID'];
 
@@ -41,36 +47,39 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
         $bluem_config->eMandateReason = "eMandateReason" ;
         $bluem_config->localInstrumentCode = "B2B" ;
         // @todo: create env variables for these
+
+        try {
+            $this->bluem = new Bluem($bluem_config);
+        } catch (\Exception $e) {
+            $this->fail("While initializing Bluem, ".$e->getMessage()." occurred");
+        }
         
-        $this->bluem = new Bluem($bluem_config);
     }
 
 
     /**
      * Perform assertions based on a created BluemPHP Request object
      *
-     * @param BluemRequest $request
+     * @param BluemRequestInterface $request
      * @return void
      */
-    protected function _finalizeBluemRequestAssertion($request) :void
+    protected function _finalizeBluemRequestAssertion(BluemRequestInterface $request) :void
     {
 
         try {
             // $this->assertEquals($request->getStatus(), "success");
             $response = $this->bluem->PerformRequest($request);
         } catch (Exception $e) {
-            $this->assertTrue(
-                false,
-                "Exception when performing the request: ".
-                    $e->getMessage()
+            $this->fail(
+                "Exception when performing the request: " .
+                $e->getMessage()
             );
         }
     
         if (is_a($response, "Bluem\BluemPHP\Responses\ErrorBluemResponse", false)) {
-            $this->assertTrue(
-                false,
-                "Errorenous response returned: ".
-                    $response->error()
+            $this->fail(
+                "Erroneous response returned: " .
+                $response->error()
             );
         } else {
             $cname = get_class($request);

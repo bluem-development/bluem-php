@@ -3,10 +3,13 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Carbon\Carbon;
+use Exception;
 use stdclass;
 
-class PaymentBluemRequest extends BluemRequest
+class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
 {
     private $xmlInterfaceName = "EPaymentInterface";
     public $request_url_type = "pr";
@@ -20,7 +23,6 @@ class PaymentBluemRequest extends BluemRequest
      * @var mixed|string
      */
     private $currency;
-    private $brandID;
     /**
      * @var string
      */
@@ -38,14 +40,17 @@ class PaymentBluemRequest extends BluemRequest
      * @var string
      */
     private $paymentReference;
-
+// @todo: deprecated, remove
     public function TransactionType(): string
     {
         return $this->transaction_code;
     }
 
+    /**
+     * @throws Exception
+     */
     public function __construct(
-        stdclass $config,
+        BluemConfiguration $config,
         $description,
         $debtorReference,
         $amount,
@@ -60,20 +65,17 @@ class PaymentBluemRequest extends BluemRequest
 
 
         if (isset($config->paymentBrandID) && $config->paymentBrandID !== "") {
-            $this->brandID = $config->paymentBrandID;
+            $config->setBrandId($config->paymentBrandID);
         } else {
-            $this->brandID = $config->brandID;
+            $config->setBrandId($config->brandID);
         }
 
         $this->description = $this->_sanitizeDescription($description);
 
         //  Default Currency EUR
-        if (is_null($currency)) {
-            $this->currency = "EUR";
-        } else {
-            $this->currency = $currency;
-            // @todo validate based on a list of accepted currencies
-        }
+        $this->currency = $this->validateCurrency($currency);
+
+        
 
         if (is_null($dueDateTime)) {
             $this->dueDateTime = Carbon::now()->addDay()->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
@@ -82,10 +84,23 @@ class PaymentBluemRequest extends BluemRequest
         }
 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
+        $sanitizedDebtorReferenceParts = [];
+        $sanitizedDebtorReferenceCount = preg_match_all(
+            "/[0-9a-zA-Z]{1,35}/i",
+            $debtorReference,
+            $sanitizedDebtorReferenceParts
+        );
+        if($sanitizedDebtorReferenceCount!==false && $sanitizedDebtorReferenceCount>0) {
+            $debtorReference = implode(
+                "",
+                $sanitizedDebtorReferenceParts[0]
+            );
+        }
         $this->debtorReference = $debtorReference;
+        
 
-        $this->amount = $this->parseAmount($amount);
-
+        $this->amount = floatval($amount);
+        
         $this->transactionID = $transactionID;
 
         if (isset($debtorReturnURL) && $debtorReturnURL != "") {
@@ -105,23 +120,6 @@ class PaymentBluemRequest extends BluemRequest
         $this->context = new PaymentsContext();
     }
 
-    /**
-     * Parsing amount properly as a float, with decimals
-     *
-     * @param String $amount
-     *
-     * @return float the parsed amount
-      */
-    private function parseAmount(string $amount): float
-    {
-        $amount = str_replace(',', '.', $amount);
-        if (strpos($amount, '.') == false) {
-            $amount .= '.00';
-        }
-
-        return (float) $amount;
-    }
-
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(
@@ -133,7 +131,7 @@ class PaymentBluemRequest extends BluemRequest
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <Description>' . $this->description . '</Description>
                 <Currency>' . $this->currency . '</Currency>
-                <Amount>' . $this->amount . '</Amount>
+                <Amount>' . number_format($this->amount, 2, '.', '') . '</Amount>
                 <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
                 $this->XmlWrapDebtorWallet() .
@@ -147,5 +145,25 @@ class PaymentBluemRequest extends BluemRequest
         );
 
         // @todo make documentType, sendOption and language a setting here?
+        
+    }
+
+    /**
+     * validate based on a list of accepted currencies
+     *
+     * @param $currency
+     * @return string
+     * @throws Exception
+     */
+    private function validateCurrency($currency): string
+    {
+        $availableCurrencies = ["EUR"]; // @todo: add list of currencies based on 
+        if(!in_array($currency,$availableCurrencies)) {
+            throw new Exception("Currency not recognized, 
+                    should be one of the following available currencies: ".
+                implode( ",",$availableCurrencies)
+            );
+        }
+        return $currency;
     }
 }

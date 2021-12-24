@@ -11,7 +11,7 @@ use libXMLError;
 
 // @todo: consider removing subclasses
 
-class Validator
+class BluemXMLValidator
 {
     /**
      * XSD Schema definition location, to be set by context

@@ -34,7 +34,7 @@ class IPAPI
      * @param string $ip
      * @return mixed 
      */
-    public function QueryIP(string $ip = "") :mixed 
+    public function QueryIP(string $ip = "") 
     {
         // @todo Add IP datatype with validation
         if ($ip=="") {

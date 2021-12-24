@@ -47,10 +47,9 @@ if(session_status() !== PHP_SESSION_ACTIVE)
 
 // To create AND perform a request:
 $request = $bluem_object->CreateIdentityRequest(
-	["BirthDateRequest", "AddressRequest"],
-	$description,
-	$debtorReference,
-	$returnURL
+    ["BirthDateRequest", "AddressRequest"],
+    $description,
+    $debtorReference
 );
 
 $response = $bluem_object->PerformRequest($request);

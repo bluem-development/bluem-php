@@ -3,11 +3,13 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\MandatesContext;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
+use Exception;
 
 /**
  * EMandateStatusRequest
  */
-class EmandateStatusBluemRequest extends BluemRequest
+class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInterface
 {
     public $typeIdentifier = "requestStatus";
     public $request_url_type = "mr";
@@ -18,6 +20,9 @@ class EmandateStatusBluemRequest extends BluemRequest
     private $xmlInterfaceName;
 
 
+    /**
+     * @throws Exception
+     */
     public function __construct(
         $config,
         $mandateID,
@@ -37,13 +42,18 @@ class EmandateStatusBluemRequest extends BluemRequest
 
         $this->mandateID = $mandateID;
 
-        $this->context = new MandatesContext($config->localInstrumentCode);
+        try {
+            $this->context = new MandatesContext($config->localInstrumentCode);
+        } catch (Exception $e) {
+            // @todo: deal with improper instrument code set
+        }
     }
 
     public function TransactionType(): string
     {
         return "SRX";
     }
+    // @todo: deprecated, remove
 
     public function XmlString(): string
     {

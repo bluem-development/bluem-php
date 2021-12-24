@@ -9,7 +9,7 @@ class IdentityStatusBluemResponse extends StatusBluemResponse
     public static $error_response_type = "Identity" . "ErrorResponse";
 
 
-    public function GetStatusCode()
+    public function GetStatusCode(): ?string
     {
         if (isset($this->{$this->getParentXmlElement()}->Status)) {
             return $this->{$this->getParentXmlElement()}->Status . "";
@@ -19,7 +19,7 @@ class IdentityStatusBluemResponse extends StatusBluemResponse
     }
 
 
-    public function GetIdentityReport()
+    public function GetIdentityReport(): ?IdentityStatusBluemResponse
     {
         if (isset($this->{$this->getParentXmlElement()}->IdentityReport)) {
             return $this->{$this->getParentXmlElement()}->IdentityReport;
@@ -28,7 +28,7 @@ class IdentityStatusBluemResponse extends StatusBluemResponse
         return null;
     }
 
-    public function GetAuthenticationAuthorityID()
+    public function GetAuthenticationAuthorityID(): ?string
     {
         if (isset($this->{$this->getParentXmlElement()}->AuthenticationAuthorityID)) {
             return $this->{$this->getParentXmlElement()}->AuthenticationAuthorityID . "";

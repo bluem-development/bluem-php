@@ -1,4 +1,5 @@
 <?php
+namespace Bluem\Tests\Unit;
 require_once __DIR__ . '\BluemGenericTest.php';
 
 class BluemMainTest extends BluemGenericTest
@@ -9,7 +10,7 @@ class BluemMainTest extends BluemGenericTest
         //  ($_config = null)
 
         //@todo build this test
-        $this->assertTrue(true, "Can construct");
+        $this->assertTrue(true,"Can construct");
     }
     public function testCanCreateMandateRequest()
     {

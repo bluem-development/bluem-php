@@ -3,12 +3,13 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
+use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 
 /**
  * IdentityBluemRequest object to request an Identity Transaction from the Bluem API.
  */
-class IdentityBluemRequest extends BluemRequest
+class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
 {
     protected $xmlInterfaceName = "IdentityInterface";
 
@@ -41,7 +42,7 @@ class IdentityBluemRequest extends BluemRequest
      * @var string
      */
     private $brandID;
-
+// @todo: deprecated, remove
     public function TransactionType(): string
     {
         return "ITX";
