@@ -81,7 +81,9 @@ class BluemConfiguration
         $this->senderID = $raw_validated->senderID;
         $this->brandID = $raw_validated->brandID;
         $this->accessToken = $raw_validated->accessToken;
-        $this->merchantReturnURLBase = $raw_validated->merchantReturnURLBase;
+        $this->merchantReturnURLBase = $raw_validated->merchantReturnURLBase ?? null;
+        // @todo: if this is required, break. check that
+        
         $this->test_accessToken = $raw_validated->test_accessToken;
         $this->IDINBrandID = $raw_validated->IDINBrandID;
         $this->merchantID = $raw_validated->merchantID;

@@ -74,6 +74,11 @@ class Bluem
     private $configuration;
 
     /**
+     * @var string 
+     */
+    public $environment;
+    
+    /**
      * Bluem constructor.
      *
      * @param mixed $_config
@@ -90,7 +95,37 @@ class Bluem
         }
         
         $this->configuration = $config;
+        $this->environment = $config->environment ?? "test";
     }
+
+
+    /**
+     * @throws Exception
+     */
+    public function setConfig(string $key, mixed $value): bool 
+    {
+        
+        if (!isset($this->configuration->$key)) {
+            throw new Exception("Key '$key' does not exist in configuration");
+        } 
+        
+        $this->configuration->$key = $value;
+        return true;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return false|mixed
+     */
+    public function getConfig(String $key) : mixed {
+        return $this->configuration->$key ?? false;
+    }
+    
+    
+    
+    
+    
 
     /**
      * Create a Mandate Request given a customer ID, order ID
@@ -218,18 +253,9 @@ class Bluem
      */
     public function GetMaximumAmountFromTransactionResponse($response)
     {
-        if (isset($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount)) {
-            return (object) [
-                'amount' => (float) ($response->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->MaxAmount . ""),
-                'currency' => 'EUR'
-            ];
-        }
-
-        return (object) [
-            'amount' => 0.0, 
-            'currency' => 'EUR'
-        ];
+        return $response->getMaximumAmount();
     }
+    
 
     /**-------------- PAYMENT SPECIFIC FUNCTIONS --------------*/
     /**
@@ -237,13 +263,14 @@ class Bluem
      *
      * @param String $description
      * @param        $debtorReference
-     * @param Float  $amount
-     * @param null   $dueDateTime
+     * @param Float $amount
+     * @param null $dueDateTime
      * @param string $currency
-     * @param null   $entranceCode
+     * @param null $entranceCode
      * @param string $debtorReturnURL
      *
      * @return PaymentBluemRequest
+     * @throws Exception
      */
     public function CreatePaymentRequest(
         String $description,
@@ -323,9 +350,9 @@ class Bluem
      *
      * @param $transactionID
      * @param $entranceCode
+     *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-     * @throws DOMException
-     * @throws HTTP_Request2_LogicException
+     * @throws Exception
      */
     public function PaymentStatus($transactionID, $entranceCode)
     {
@@ -352,6 +379,11 @@ class Bluem
     {
         return substr($debtorReference, 0, 28) . Carbon::now()->format('Ymd');
     }
+    // @todo: fix issue [RFC4](https://github.com/DaanRijpkema/bluem-php/issues/4)
+    // When you create a PaymentBluemRequest, a $transactionID is generated (CreatePaymentTransactionID).
+    // But that TransactionID doesn't make any sense because Bluem generates its own transactionID.
+    // So the self generated TransactionID is added (together with the entranceCode) to the debtorReturnURL
+    //  but on the return page you can't do anything with the transactionID because it doesn't match the transactionID known by Bluem.
 
 
 
@@ -363,6 +395,7 @@ class Bluem
      * @param string $description
      * @param        $debtorReference
      * @param string $entranceCode
+     * @param string $returnURL
      *
      * @return IdentityBluemRequest
      * @throws Exception
@@ -371,7 +404,8 @@ class Bluem
         $requestCategory,
         string $description,
         $debtorReference,
-        string $entranceCode = ""
+        string $entranceCode = "",
+        $returnURL = ""
     ): IdentityBluemRequest {
         // todo: Check if this is needed?
         //$this->CreateIdentityTransactionID($debtorReference),
@@ -384,7 +418,8 @@ class Bluem
                 $this->configuration->expectedReturnStatus : ""),
             $requestCategory,
             $description,
-            $debtorReference
+            $debtorReference,
+            $returnURL
         );
     }
 
@@ -395,8 +430,7 @@ class Bluem
      * @param $entranceCode
      *
      * @return ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-     * @throws DOMException
-     * @throws HTTP_Request2_LogicException
+     * @throws Exception
      */
     public function IdentityStatus($transactionID, $entranceCode)
     {
@@ -457,7 +491,7 @@ class Bluem
             return new ErrorBluemResponse(
                 "Error: Request is not formed correctly. More details: ".
                 implode(
-                    '; '.PHP_EOL,
+                    ';<BR>'.PHP_EOL,
                     $validator->errorDetails
                 )
             );
@@ -581,6 +615,7 @@ class Bluem
 
     /**
      * Webhook for Bluem Mandate signature verification procedure
+     * @throws Exception
      */
     public function Webhook()
     {
@@ -761,12 +796,13 @@ class Bluem
     /**
      * Create IBAN Name Check request
      *
-     * @param string $iban            Given IBAN to check
-     * @param string $name            Given name to check
+     * @param string $iban Given IBAN to check
+     * @param string $name Given name to check
      * @param string $debtorReference An optional given debtor reference
      *                                to append to the check request
      *
      * @return IBANBluemRequest
+     * @throws Exception
      */
     public function CreateIBANNameCheckRequest(String $iban, String $name, String $debtorReference = ""): IBANBluemRequest
     {

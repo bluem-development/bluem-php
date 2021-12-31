@@ -6,7 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Bluem\BluemPHP;
+namespace Bluem\BluemPHP\Helpers;
 
 /**
  * Definition for a BIC/Swift Code
@@ -40,5 +40,7 @@ class BIC
     ) {
         $this->issuerID = $issuerID;
         $this->issuerName = $issuerName;
+        
+        // @todo: add additional validation for ID and Names
     }
 }

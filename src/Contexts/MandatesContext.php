@@ -2,7 +2,7 @@
 
 namespace Bluem\BluemPHP\Contexts;
 
-use Bluem\BluemPHP\BIC;
+use Bluem\BluemPHP\Helpers\BIC;
 use Exception;
 
 class MandatesContext extends BluemContext

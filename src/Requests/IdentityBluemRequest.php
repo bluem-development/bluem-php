@@ -6,6 +6,8 @@ use Bluem\BluemPHP\Contexts\IdentityContext;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 
+define("BLUEM_DEFAULT_MIN_AGE", 18);
+
 /**
  * IdentityBluemRequest object to request an Identity Transaction from the Bluem API.
  */
@@ -63,7 +65,8 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
         $expectedReturn,
         array $requestCategory = [],
         string $description = "",
-        string $debtorReference = ""
+        string $debtorReference = "",
+        $debtorReturnURL = ""
     ) {
         // @todo: verify return URL can no longer be set in IdentityBluemRequest construction, instead it is created in the config
         parent::__construct($config, $entranceCode, $expectedReturn);
@@ -82,12 +85,14 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
         
 
         $this->debtorReference = $debtorReference;
-//        $this->debtorReturnURL = $debtorReturnURL;
-
-        $this->debtorReturnURL = "$this->debtorReturnURL?debtorReference=$this->debtorReference";
+        if($debtorReturnURL=="") {
+            throw new Exception("Debtor return URL is required");
+        }
+        $this->debtorReturnURL = $debtorReturnURL."?debtorReference=$this->debtorReference";
 
         // @todo: make this a configurable setting
-        $this->minAge = 18;
+        $this->minAge = BLUEM_DEFAULT_MIN_AGE;
+    
         // @todo: validate this , also based on XSD
 
         $this->context = new IdentityContext();
@@ -122,7 +127,7 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
 
             // exclusive categories, cannot be combined!
             case 'AgeCheckRequest':
-                return "<AgeCheckRequest ageOrOlder=\"$this->minAge\" action=\"$action\"/>";
+                return "<AgeCheckRequest ageOrOlder=\"".($this->getMinAge()?? 18)."\" action=\"$action\"/>";
             case 'CustomerIDLoginRequest':
                 return "<CustomerIDLoginRequest action=\"$action\"/>";
             // @todo: Add DocumentSignatureRequest (exclusive)
@@ -132,6 +137,11 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
                 throw new Exception("No proper iDIN request category given", 1);
                 // @todo: add our own exception class 
         }
+    }
+    
+    private function getMinAge(): string
+    {
+        return "". ($this->minage ?? BLUEM_DEFAULT_MIN_AGE);
     }
 
     /**

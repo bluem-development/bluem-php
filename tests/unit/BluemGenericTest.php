@@ -56,6 +56,29 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
         
     }
 
+    
+    // test that we can set the configuration
+    public function testSetConfiguration()
+    {
+        $setting = $this->bluem->setConfig("environment",true);
+        
+        // assert result is true
+        $this->assertTrue($setting);
+        
+    }
+    
+    // test that we can get the configuration
+    public function testGetConfiguration()
+    {
+        $this->bluem->setConfig("environment","test");
+        
+        $result = $this->bluem->getConfig("environment");
+        
+        // assert result is string
+        $this->assertIsString($result);
+        $this->assertEquals("test",$result);
+    }
+    
 
     /**
      * Perform assertions based on a created BluemPHP Request object
