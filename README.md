@@ -79,7 +79,11 @@ Please contact us if you have any questions regarding the examples or the implem
 ### Version 2.1 (latest)
 
 Major improvement in code style.
-
+- Added `$bluem->getConfig($key)` method to retrieve a configuration value.
+- Added `$bluem->setConfig($key, $value)` method to set a configuration value.
+- Added several validation steps
+- Added more unit testing coverage
+- Separated more responsibilities for cleaner code
 
 ### Version 2.0.12 
 Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IPAPI). Use this feature through the Helper/IPAPI class. 
