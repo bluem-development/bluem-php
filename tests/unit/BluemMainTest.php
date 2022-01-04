@@ -113,11 +113,12 @@ class BluemMainTest extends BluemGenericTest
             "Response is empty"
         );
         
-        // assert response is equal to 1202112311
+        $expected_value = 1202201041;
+        // assert response is equal to $expected_value
         $this->assertEquals(
             $response,
-            "1202112311",
-            "Response is not equal to expected value '1202112311'"
+            "$expected_value",
+            "Response is not equal to expected value '$expected_value'"
         );
     }
     public function testCanGetMaximumAmountFromStatusResponse()
@@ -367,6 +368,6 @@ class BluemMainTest extends BluemGenericTest
         //  @todo add parameter list from documentation
         $result = $this->bluem->VerifyIPIsNetherlands();
         //@todo build this test
-        $this->assertFalse($result, "Can VerifyIPIsNetherlands");
+        $this->assertEquals($result, true,"Can VerifyIPIsNetherlands");
     }
 }

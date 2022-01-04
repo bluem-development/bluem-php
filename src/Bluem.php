@@ -85,7 +85,7 @@ class Bluem
      *
      * @throws Exception
      */
-    public function __construct(mixed $_config)
+    public function __construct($_config)
     {
 
         try {
@@ -102,7 +102,7 @@ class Bluem
     /**
      * @throws Exception
      */
-    public function setConfig(string $key, mixed $value): bool 
+    public function setConfig(string $key, $value): bool 
     {
         
         if (!isset($this->configuration->$key)) {
@@ -118,7 +118,7 @@ class Bluem
      *
      * @return false|mixed
      */
-    public function getConfig(String $key) : mixed {
+    public function getConfig(String $key) {
         return $this->configuration->$key ?? false;
     }
     

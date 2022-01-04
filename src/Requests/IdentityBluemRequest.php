@@ -57,6 +57,8 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
      * @param array $requestCategory
      * @param string $description
      * @param string $debtorReference
+     * @param string $debtorReturnURL
+     *
      * @throws Exception
      */
     public function __construct(
@@ -68,8 +70,8 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
         string $debtorReference = "",
         $debtorReturnURL = ""
     ) {
-        // @todo: verify return URL can no longer be set in IdentityBluemRequest construction, instead it is created in the config
         parent::__construct($config, $entranceCode, $expectedReturn);
+        // @todo: verify return URL can no longer be set in IdentityBluemRequest construction, instead it is created in the config
 
         // override specific brand ID
         if (isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
@@ -91,11 +93,11 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
         $this->debtorReturnURL = $debtorReturnURL."?debtorReference=$this->debtorReference";
 
         // @todo: make this a configurable setting
-        $this->minAge = BLUEM_DEFAULT_MIN_AGE;
-    
+        $this->minAge = $config->minAge ?? BLUEM_DEFAULT_MIN_AGE;
         // @todo: validate this , also based on XSD
 
         $this->context = new IdentityContext();
+        // @todo: decide whether or not to use the context pattern
     }
 
     /**
@@ -125,9 +127,11 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
             case 'EmailRequest':
                 return "<EmailRequest action=\"$action\"/>";
 
-            // exclusive categories, cannot be combined!
+            // exclusive categories, cannot combine!
             case 'AgeCheckRequest':
-                return "<AgeCheckRequest ageOrOlder=\"".($this->getMinAge()?? 18)."\" action=\"$action\"/>";
+                return "<AgeCheckRequest ageOrOlder=\"". 
+                       $this->getMinAge() .
+                        "\" action=\"$action\"/>";
             case 'CustomerIDLoginRequest':
                 return "<CustomerIDLoginRequest action=\"$action\"/>";
             // @todo: Add DocumentSignatureRequest (exclusive)

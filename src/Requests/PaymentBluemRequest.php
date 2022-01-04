@@ -26,7 +26,7 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
     /**
      * @var string
      */
-    private $dueDateTime;
+    public $dueDateTime;
     private $debtorReference;
     /**
      * @var float
@@ -35,11 +35,11 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
     /**
      * @var array|string|string[]
      */
-    private $debtorReturnURL;
+    public $debtorReturnURL;
     /**
      * @var string
      */
-    private $paymentReference;
+    public $paymentReference;
 // @todo: deprecated, remove
     public function TransactionType(): string
     {
