@@ -81,7 +81,7 @@ class Bluem
     /**
      * Bluem constructor.
      *
-     * @param mixed $_config
+     * @param $_config
      *
      * @throws Exception
      */
