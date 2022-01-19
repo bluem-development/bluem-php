@@ -29,7 +29,9 @@ class BluemConfigurationValidator
             $config = $this->_validateTest_accessToken($config);
             $config = $this->_validateProduction_accessToken($config);
             $config = $this->_validateBrandID($config);
-    
+            
+            // @todo: add validation for iDIN and eMandates and ePayments brandIDs if they are present
+            
             // secondary values, possibly automatically inferred
             $config = $this->_validateMerchantIDAndSelectAccessToken($config);
             $config = $this->_validateThanksPage($config);
@@ -77,7 +79,7 @@ class BluemConfigurationValidator
                 please add this to your configuration when instantiating the Bluem integration"
             );
         }
-        if ($config->senderID =="") {
+        if ($config->senderID === "") {
             throw new Exception(
                 "senderID cannot be empty; 
                 please add this to your configuration when instantiating the Bluem integration"

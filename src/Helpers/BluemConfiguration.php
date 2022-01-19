@@ -58,6 +58,14 @@ class BluemConfiguration
      * @var string
      */
     public $merchantSubID;
+    /**
+     * @var string
+     */
+    private $PaymentsBrandID;
+    /**
+     * @var string
+     */
+    private $EmandateBrandID;
 
     /**
      * An object containing the configuration for the Bluem integration. Can be an array or object
@@ -85,7 +93,13 @@ class BluemConfiguration
         // @todo: if this is required, break. check that
         
         $this->test_accessToken = $raw_validated->test_accessToken;
-        $this->IDINBrandID = $raw_validated->IDINBrandID;
+        
+        $this->IDINBrandID = $this->_assumeBrandID("Identity",$this->brandID);
+        // @todo: Test it
+        $this->PaymentsBrandID = $this->_assumeBrandID("Payment",$this->brandID);
+        $this->EmandateBrandID = $this->_assumeBrandID("Mandate",$this->brandID);
+        // @todo PeterMeester: create validation step for IDINBrandID
+        
         $this->merchantID = $raw_validated->merchantID;
         $this->production_accessToken = $raw_validated->production_accessToken;
         $this->expectedReturnStatus = $raw_validated->expectedReturnStatus;
@@ -94,6 +108,28 @@ class BluemConfiguration
         $this->merchantSubID = "0";
     }
 
+    /**
+     * Assume a brandID for a service based on another valid brandID
+     *
+     * @param string $prefix
+     * @param string $brandID
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function _assumeBrandID(string $service, string $brandID) {
+        if($brandID ==="" ) {
+            throw new Exception("No brandID given");
+        }
+        
+        $available_services =  ['Identity','Payment','Mandate'];
+        if(!in_array($service, $available_services)) {
+            throw new Exception("Invalid service requested");
+        }
+        $prefix = str_replace($available_services,'',$brandID);
+        return $prefix.ucfirst($service);
+    }
+    
     /**
      * Override the brandID for a specific service
      * 
