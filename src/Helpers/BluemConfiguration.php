@@ -102,8 +102,8 @@ class BluemConfiguration
         
         $this->merchantID = $raw_validated->merchantID;
         $this->production_accessToken = $raw_validated->production_accessToken;
-        $this->expectedReturnStatus = $raw_validated->expectedReturnStatus;
-        $this->eMandateReason = $raw_validated->eMandateReason;
+        $this->expectedReturnStatus = $raw_validated->expectedReturnStatus ?? null;
+        $this->eMandateReason = $raw_validated->eMandateReason ?? null;
         $this->localInstrumentCode = $raw_validated->localInstrumentCode;
         $this->merchantSubID = "0";
     }
