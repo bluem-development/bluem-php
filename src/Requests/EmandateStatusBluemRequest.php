@@ -9,8 +9,7 @@ use Exception;
 /**
  * EMandateStatusRequest
  */
-class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInterface
-{
+class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInterface {
     public $typeIdentifier = "requestStatus";
     public $request_url_type = "mr";
     public $transaction_code = "SRX";
@@ -35,28 +34,27 @@ class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInt
             $expected_return
         );
 
-        $this->xmlInterfaceName = "EMandateInterface"; 
+        $this->xmlInterfaceName = "EMandateInterface";
         // @todo make this of BluemXMLInterfaceClass type
-        
+
         $this->typeIdentifier = "requestStatus";
 
         $this->mandateID = $mandateID;
 
         try {
-            $this->context = new MandatesContext($config->localInstrumentCode);
-        } catch (Exception $e) {
+            $this->context = new MandatesContext( $config->localInstrumentCode );
+        } catch ( Exception $e ) {
             // @todo: deal with improper instrument code set
         }
     }
 
-    public function TransactionType(): string
-    {
+    public function TransactionType(): string {
         return "SRX";
     }
+
     // @todo: deprecated, remove
 
-    public function XmlString(): string
-    {
+    public function XmlString(): string {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'StatusRequest',

@@ -2,11 +2,7 @@
 
 namespace Bluem\BluemPHP\Responses;
 
-use Bluem\BluemPHP\Helpers\BluemMaxAmount;
-use Exception;
-
-class MandateTransactionBluemResponse extends TransactionBluemResponse
-{
+class MandateTransactionBluemResponse extends TransactionBluemResponse {
     public static $transaction_type = "EMandate";
     public static $response_primary_key = "EMandate" . "Transaction";
     public static $error_response_type = "EMandate" . "ErrorResponse";
@@ -15,12 +11,12 @@ class MandateTransactionBluemResponse extends TransactionBluemResponse
      * Get the mandate ID from the Transaction Response
      * @return string
      */
-    public function GetMandateID(): string
-    {
-        if(!isset($this->EMandateTransactionResponse->MandateID)) {
+    public function GetMandateID(): string {
+        if ( ! isset( $this->EMandateTransactionResponse->MandateID ) ) {
             return false;
         }
+
         return $this->EMandateTransactionResponse->MandateID . "";
     }
-    
+
 }

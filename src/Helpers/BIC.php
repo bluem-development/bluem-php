@@ -1,6 +1,6 @@
 <?php
 /*
- * (c) 2021 - Daan Rijpkema <d.rijpkema@bluem.nl>
+ * (c) 2022 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -11,8 +11,7 @@ namespace Bluem\BluemPHP\Helpers;
 /**
  * Definition for a BIC/Swift Code
  */
-class BIC
-{
+class BIC {
 
     /**
      * The official ID of the issuer (bank)
@@ -31,16 +30,16 @@ class BIC
     /**
      * Create a new BIC Definition for a bank (Issuer)
      *
-     * @param String $issuerID   The issuer ID
+     * @param String $issuerID The issuer ID
      * @param String $issuerName The issuer name
      */
     public function __construct(
-        String $issuerID,
-        String $issuerName
+        string $issuerID,
+        string $issuerName
     ) {
-        $this->issuerID = $issuerID;
+        $this->issuerID   = $issuerID;
         $this->issuerName = $issuerName;
-        
+
         // @todo: add additional validation for ID and Names
     }
 }

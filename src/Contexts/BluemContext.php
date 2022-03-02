@@ -8,8 +8,7 @@ namespace Bluem\BluemPHP\Contexts;
 // and BluemPayPalContext that can then be extended by PaymentsPayPalContext and PaymentsBankContext
 // and for Identity etc., if applicable, but we have to find out.
 
-class BluemContext
-{
+class BluemContext {
     public $BICs;
 
     /**
@@ -17,28 +16,24 @@ class BluemContext
      *
      * @param array $BICs
      */
-    public function __construct(array $BICs = [])
-    {
+    public function __construct( array $BICs = [] ) {
         $this->BICs = $BICs;
     }
 
-    public function getBICs(): array
-    {
+    public function getBICs(): array {
         return $this->BICs;
     }
 
-    public function getBICCodes(): array
-    {
+    public function getBICCodes(): array {
         $codes = [];
-        foreach ($this->BICs as $BIC) {
+        foreach ( $this->BICs as $BIC ) {
             $codes[] = $BIC->issuerID;
         }
 
         return $codes;
     }
 
-    public function getValidationSchema(): string
-    {
+    public function getValidationSchema(): string {
         return __DIR__ . '/../../validation/';
     }
 }

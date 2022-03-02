@@ -8,29 +8,14 @@ use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 /**
  * IBAN Name Check Request object
  */
-class IBANBluemRequest extends BluemRequest implements BluemRequestInterface
-{
+class IBANBluemRequest extends BluemRequest implements BluemRequestInterface {
+    public $request_url_type = "icr";
+    public $typeIdentifier = "createTransaction";
+    public $transaction_code = "INX";
     private $xmlInterfaceName = "IBANCheckInterface";
-
     private $_inputIban;
     private $_inputName;
     private $_debtorReference;
-
-    public $request_url_type = "icr";
-    public $typeIdentifier = "createTransaction";
-
-    public $transaction_code = "INX";
-
-    /**
-     * Retrieve the Bluem Transaction Type Code for this request
-     *
-     * @return string
-     */
-    public function TransactionType(): string
-    {
-        return "INX";
-    }
-    // @todo: deprecated, remove
 
     /**
      * Construct the request and prepare all properties
@@ -48,14 +33,50 @@ class IBANBluemRequest extends BluemRequest implements BluemRequestInterface
         string $_inputName,
         string $_debtorReference = ""
     ) {
-        parent::__construct($config, $entranceCode);
+        parent::__construct( $config, $entranceCode );
 
-        $this->_inputIban = $this->_sanitizeIban($_inputIban);
-        $this->_inputName = $this->_sanitizeName($_inputName);
+        $this->_inputIban = $this->_sanitizeIban( $_inputIban );
+        $this->_inputName = $this->_sanitizeName( $_inputName );
 
         $this->_debtorReference = $_debtorReference;
 
         $this->context = new IBANCheckContext();
+    }
+    // @todo: deprecated, remove
+
+    /**
+     * Sanitize input IBAN for proper XML handling
+     *
+     * @param string $iban Given IBAN to sanitize
+     *
+     * @return string
+     */
+    private function _sanitizeIban( string $iban ): string {
+        return trim(
+            str_replace( ' ', '', htmlentities( $iban ) )
+        );
+    }
+
+    /**
+     * Sanitize input Name for proper XML handling
+     *
+     * @param string $name Given name to check
+     *
+     * @return string
+     */
+    private function _sanitizeName( string $name ): string {
+        return trim(
+            htmlentities( $name )
+        );
+    }
+
+    /**
+     * Retrieve the Bluem Transaction Type Code for this request
+     *
+     * @return string
+     */
+    public function TransactionType(): string {
+        return "INX";
     }
 
     /**
@@ -63,8 +84,7 @@ class IBANBluemRequest extends BluemRequest implements BluemRequestInterface
      *
      * @return string
      */
-    public function XmlString(): string
-    {
+    public function XmlString(): string {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -82,34 +102,6 @@ class IBANBluemRequest extends BluemRequest implements BluemRequestInterface
                 '</DebtorReference>' . PHP_EOL,
                 []
             )
-        );
-    }
-
-    /**
-     * Sanitize input IBAN for proper XML handling
-     *
-     * @param string $iban Given IBAN to sanitize
-     *
-     * @return string
-     */
-    private function _sanitizeIban(String $iban) : string
-    {
-        return trim(
-            str_replace(' ', '', htmlentities($iban))
-        );
-    }
-
-    /**
-     * Sanitize input Name for proper XML handling
-     *
-     * @param string $name Given name to check
-     *
-     * @return string
-     */
-    private function _sanitizeName(String $name) : string
-    {
-        return trim(
-            htmlentities($name)
         );
     }
 

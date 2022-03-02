@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2021 - Daan Rijpkema <d.rijpkema@bluem.nl>
+ * (c) 2022 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -15,8 +15,7 @@ use SimpleXMLElement;
 /**
  * BluemResponse
  */
-class BluemResponse extends SimpleXMLElement
-{
+class BluemResponse extends SimpleXMLElement {
     /**
      * Response Primary Key used to access the XML structure based on the specific type of response
      *
@@ -36,34 +35,33 @@ class BluemResponse extends SimpleXMLElement
      */
     public static $error_response_type;
 
+    public function ReceivedResponse(): bool {
+        return $this->Status();
+    }
+
     /**
      * Return if the response is a successful one, in boolean
      *
      * @return Bool
      */
-    public function Status(): Bool
-    {
+    public function Status(): bool {
         // $key =
-        if (isset($this->{static::$error_response_type})) {
+        if ( isset( $this->{static::$error_response_type} ) ) {
             return false;
         }
-        return true;
-    }
 
-    public function ReceivedResponse(): bool
-    {
-        return $this->Status();
+        return true;
     }
 
     /**
      * Return the error message, if there is one. Else return null
      *
      */
-    public function Error(): ?string
-    {
-        if (isset($this->EMandateErrorResponse)) {
+    public function Error(): ?string {
+        if ( isset( $this->EMandateErrorResponse ) ) {
             return $this->EMandateErrorResponse->Error . "";
         }
+
         return null;
     }
 
@@ -73,25 +71,22 @@ class BluemResponse extends SimpleXMLElement
      * @return String
      * @throws Exception
      */
-    public function GetEntranceCode(): string
-    {
+    public function GetEntranceCode(): string {
         $attrs = $this->{$this->getParentXmlElement()}->attributes();
 
-        if (!isset($attrs['entranceCode'])) {
-            throw new Exception("An error occurred in reading the transaction response: no entrance code found.");
+        if ( ! isset( $attrs['entranceCode'] ) ) {
+            throw new Exception( "An error occurred in reading the transaction response: no entrance code found." );
         }
 
         return $attrs['entranceCode'] . "";
     }
 
-    protected function getParentXmlElement() : string
-    {
+    protected function getParentXmlElement(): string {
         // overridden in children
         return "";
     }
 
-    protected function getChildXmlElement(): string
-    {
+    protected function getChildXmlElement(): string {
         return static::$response_primary_key;
     }
 }

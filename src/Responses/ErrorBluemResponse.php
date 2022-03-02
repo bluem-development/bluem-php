@@ -5,27 +5,22 @@ namespace Bluem\BluemPHP\Responses;
 /**
  * EMandateErrorResponse
  */
-class ErrorBluemResponse
-{
+class ErrorBluemResponse {
     private $error;
 
-    public function __construct(string $error)
-    {
+    public function __construct( string $error ) {
         $this->error = $error;
     }
 
-    public function Status(): bool
-    {
+    public function Status(): bool {
         return false;
     }
 
-    public function ReceivedResponse(): bool
-    {
+    public function ReceivedResponse(): bool {
         return false;
     }
 
-    public function Error(): string
-    {
+    public function Error(): string {
         return $this->error;
     }
 }
