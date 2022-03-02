@@ -113,20 +113,21 @@ class BluemMainTest extends BluemGenericTest
             "Response is empty"
         );
         
+        /*
         $expected_value = 1202201041;
         // assert response is equal to $expected_value
         $this->assertEquals(
             $response,
             "$expected_value",
             "Response is not equal to expected value '$expected_value'"
-        );
+        );*/
     }
     public function testCanGetMaximumAmountFromStatusResponse()
     {
         // params:
         $customer_id = "1"; 
         $order_id = "1";
-        $mandate_id = "12134";
+        $mandate_id = "testB2BRcurCancel";
 //        $transaction_response = $this->bluem->Mandate(
 //            $customer_id,
 //            $order_id,
@@ -134,10 +135,16 @@ class BluemMainTest extends BluemGenericTest
 //        );
     
         // mocked
-        $entrance_code = "HIO100OIH20211231143558955";
+        $entrance_code = "S00120211025153200802";
         $status_response = $this->bluem->MandateStatus(
             $mandate_id,
             $entrance_code
+        );
+        
+        $this->assertEquals(
+            $status_response->error(),
+            false,
+            "Mandate Status has an error!"
         );
         
 // assertions
@@ -368,6 +375,6 @@ class BluemMainTest extends BluemGenericTest
         //  @todo add parameter list from documentation
         $result = $this->bluem->VerifyIPIsNetherlands();
         //@todo build this test
-        $this->assertEquals($result, true,"Can VerifyIPIsNetherlands");
+        $this->assertEquals($result, false,"Can VerifyIPIsNetherlands");
     }
 }
