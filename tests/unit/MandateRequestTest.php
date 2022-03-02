@@ -4,7 +4,7 @@ namespace Bluem\Tests\Unit;
 
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 
-require_once __DIR__ . '\BluemGenericTest.php';
+require_once __DIR__ . '/BluemGenericTest.php';
 
 class MandateRequestTest extends BluemGenericTest
 {

@@ -1,6 +1,6 @@
 <?php
 namespace Bluem\Tests\Unit;
-require_once __DIR__ . '\BluemGenericTest.php';
+require_once __DIR__ . '/BluemGenericTest.php';
 
 class PaymentRequestTest extends BluemGenericTest
 {
