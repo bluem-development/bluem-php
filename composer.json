@@ -6,9 +6,9 @@
     "homepage": "https://daanrijpkema.github.io/bluem-php/",
     "license": "GPL-3.0-or-later",
     "authors": [{
-        "name": "Daan Rijpkema",
-        "email": "d.rijpkema@bluem.nl",
-        "homepage": "https://daanrijpkema.com/",
+        "name": "Bluem Plugin Support",
+        "email": "pluginsupport@bluem.nl",
+        "homepage": "https://bluem.nl/",
         "role": "Developer"
     }],
     "support": {

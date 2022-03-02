@@ -5,7 +5,7 @@
  * All to-dos are for your reference where action on your part is still required.
  *
  * Code is courtesy of and property of Bluem Payment Services
- * Author: Daan Rijpkema (d.rijpkema@bluem.nl)
+ * Author: Bluem Plugin Support (pluginsupport@bluem.nl)
  */
 
 /** In your own app: install composer, require the  `daanrijpkema/bluem-php` package  

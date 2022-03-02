@@ -2,78 +2,69 @@
 
 namespace Bluem\BluemPHP\Responses;
 
-class IBANNameCheckBluemResponse extends TransactionBluemResponse
-{
+class IBANNameCheckBluemResponse extends TransactionBluemResponse {
     public static $transaction_type = "IBANCheckTransactionResponse";
     public static $response_primary_key = "IBANCheckTransaction";
     public static $error_response_type = "IBANCheckResult";
 
-    public function GetIBANResult()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->IBANResult)) {
+    public function GetIBANResult() {
+        if ( isset( $this->{$this->getParentXmlElement()}->IBANCheckResult->IBANResult ) ) {
             return $this->{$this->getParentXmlElement()}->IBANCheckResult->IBANResult . "";
         }
 
         return false;
     }
 
-    public function GetNameResult()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->NameResult)) {
+    public function GetNameResult() {
+        if ( isset( $this->{$this->getParentXmlElement()}->IBANCheckResult->NameResult ) ) {
             return $this->{$this->getParentXmlElement()}->IBANCheckResult->NameResult . "";
         }
 
         return false;
     }
 
-    public function GetSuggestedName()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->SuggestedName)) {
+    public function GetSuggestedName() {
+        if ( isset( $this->{$this->getParentXmlElement()}->IBANCheckResult->SuggestedName ) ) {
             return $this->{$this->getParentXmlElement()}->IBANCheckResult->SuggestedName . "";
         }
 
         return false;
     }
 
-    public function GetAccountStatus()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->IBANCheckResult->AccountStatus)) {
+    public function GetAccountStatus() {
+        if ( isset( $this->{$this->getParentXmlElement()}->IBANCheckResult->AccountStatus ) ) {
             return $this->{$this->getParentXmlElement()}->IBANCheckResult->AccountStatus . "";
         }
 
         return false;
     }
 
-    public function GetAccountType()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->AccountType)) {
+    public function GetAccountType() {
+        if ( isset( $this->{$this->getParentXmlElement()}->AccountDetails->AccountType ) ) {
             return $this->{$this->getParentXmlElement()}->AccountDetails->AccountType . "";
         }
 
         return false;
     }
 
-    public function GetIsJointAccount()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->IsJointAccount)) {
+    public function GetIsJointAccount() {
+        if ( isset( $this->{$this->getParentXmlElement()}->AccountDetails->IsJointAccount ) ) {
             return $this->{$this->getParentXmlElement()}->AccountDetails->IsJointAccount . "";
         }
 
         return false;
     }
 
-    public function GetNumberOfAccountHolders()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->NumberOfAccountHolders)) {
+    public function GetNumberOfAccountHolders() {
+        if ( isset( $this->{$this->getParentXmlElement()}->AccountDetails->NumberOfAccountHolders ) ) {
             return $this->{$this->getParentXmlElement()}->AccountDetails->NumberOfAccountHolders . "";
         }
 
         return false;
     }
 
-    public function GetCountryName()
-    {
-        if (isset($this->{$this->getParentXmlElement()}->AccountDetails->CountryName)) {
+    public function GetCountryName() {
+        if ( isset( $this->{$this->getParentXmlElement()}->AccountDetails->CountryName ) ) {
             return $this->{$this->getParentXmlElement()}->AccountDetails->CountryName . "";
         }
 

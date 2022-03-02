@@ -2,16 +2,14 @@
 
 namespace Bluem\BluemPHP\Responses;
 
-class IdentityStatusBluemResponse extends StatusBluemResponse
-{
+class IdentityStatusBluemResponse extends StatusBluemResponse {
     public static $transaction_type = "Identity";
     public static $response_primary_key = "Identity" . "Status";
     public static $error_response_type = "Identity" . "ErrorResponse";
 
 
-    public function GetStatusCode(): ?string
-    {
-        if (isset($this->{$this->getParentXmlElement()}->Status)) {
+    public function GetStatusCode(): ?string {
+        if ( isset( $this->{$this->getParentXmlElement()}->Status ) ) {
             return $this->{$this->getParentXmlElement()}->Status . "";
         }
 
@@ -19,18 +17,16 @@ class IdentityStatusBluemResponse extends StatusBluemResponse
     }
 
 
-    public function GetIdentityReport(): ?IdentityStatusBluemResponse
-    {
-        if (isset($this->{$this->getParentXmlElement()}->IdentityReport)) {
+    public function GetIdentityReport(): ?IdentityStatusBluemResponse {
+        if ( isset( $this->{$this->getParentXmlElement()}->IdentityReport ) ) {
             return $this->{$this->getParentXmlElement()}->IdentityReport;
         }
 
         return null;
     }
 
-    public function GetAuthenticationAuthorityID(): ?string
-    {
-        if (isset($this->{$this->getParentXmlElement()}->AuthenticationAuthorityID)) {
+    public function GetAuthenticationAuthorityID(): ?string {
+        if ( isset( $this->{$this->getParentXmlElement()}->AuthenticationAuthorityID ) ) {
             return $this->{$this->getParentXmlElement()}->AuthenticationAuthorityID . "";
         }
 

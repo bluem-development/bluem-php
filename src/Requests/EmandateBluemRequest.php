@@ -5,17 +5,16 @@ namespace Bluem\BluemPHP\Requests;
 use Bluem\BluemPHP\Contexts\MandatesContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
-use Carbon\Carbon;
 
 /**
  * TransactionRequest
  */
-class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
-{
+class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface {
     public $typeIdentifier = "createTransaction";
     public $request_url_type = "mr";
     public $transaction_code = "TRX";
-
+    protected $merchantID;
+    protected $merchantSubID;
     private $localInstrumentCode;
     private $merchantReturnURLBase;
     private $merchantReturnURL;
@@ -23,10 +22,6 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
     private $eMandateReason;
     private $debtorReference;
     private $purchaseID;
-    
-    protected $merchantID;
-    protected $merchantSubID;
-    
     /**
      * @var string
      */
@@ -42,11 +37,11 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
      * @param $order_id
      * @param $mandateID
      * @param string $expected_return
+     *
      * @throws Exception
      */
-    public function __construct(BluemConfiguration $config, $customer_id, $order_id, $mandateID, string $expected_return = "none")
-    {
-        parent::__construct($config, "", $expected_return);
+    public function __construct( BluemConfiguration $config, $customer_id, $order_id, $mandateID, string $expected_return = "none" ) {
+        parent::__construct( $config, "", $expected_return );
 
         $this->xmlInterfaceName = "EMandateInterface";
         // $this->request_url_type = "mr";
@@ -61,20 +56,20 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
         // }
 
 
-        $this->localInstrumentCode = $config->localInstrumentCode; 
+        $this->localInstrumentCode = $config->localInstrumentCode;
         // @todo create localInstrumentCode datatype with these options // CORE | B2B ,  conform gegeven standaard
         $this->mandateID = $mandateID;
 
         // https - unique return URL for customer
         $this->merchantReturnURL = "$this->merchantReturnURLBase?mandateID=$this->mandateID";
-        if (isset($config->sequenceType)) {
+        if ( isset( $config->sequenceType ) ) {
             $this->sequenceType = $config->sequenceType;
         } else {
             $this->sequenceType = "RCUR";
         }
 
         // reason for the mandate; configurable per client
-        if (isset($config->eMandateReason)) {
+        if ( isset( $config->eMandateReason ) ) {
             $this->eMandateReason = $config->eMandateReason;
         } else {
             $this->eMandateReason = "Incasso machtiging";
@@ -90,27 +85,27 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
         We do not present it on the checkout, because we see that many parties
         really do not know what to put there. We always advise customer number.
         And that is what many parties do. */
-        if (isset($config->purchaseIDPrefix) && $config->purchaseIDPrefix !== "") {
+        if ( isset( $config->purchaseIDPrefix ) && $config->purchaseIDPrefix !== "" ) {
             $purchaseIDPrefix = $config->purchaseIDPrefix . "-";
         } else {
             $purchaseIDPrefix = "";
         }
-        $this->purchaseID = substr("$purchaseIDPrefix$this->debtorReference-$order_id", 0, 34);  // INKOOPNUMMER
+        $this->purchaseID = substr( "$purchaseIDPrefix$this->debtorReference-$order_id", 0, 34 );  // INKOOPNUMMER
 
 
         // @todo: move to mandate-specifics; as it is only necessary there
-        if (isset($config->merchantID)) {
+        if ( isset( $config->merchantID ) ) {
             $this->merchantID = $config->merchantID;
         } else {
             $this->merchantID = "";
         }
 
         // override with hardcoded merchantID when in test environment, according to documentation
-        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+        if ( $this->environment === BLUEM_ENVIRONMENT_TESTING ) {
             $this->merchantID = "0020000387";
         }
 
-        if (isset($config->merchantSubID)) {
+        if ( isset( $config->merchantSubID ) ) {
             $this->merchantSubID = $config->merchantSubID;
         } else {
             $this->merchantSubID = "0";
@@ -120,11 +115,10 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
         $this->automatically_redirect = "1";
 
 
-        $this->context = new MandatesContext($config->localInstrumentCode);
+        $this->context = new MandatesContext( $config->localInstrumentCode );
     }
 
-    public function XmlString(): string
-    {
+    public function XmlString(): string {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -171,8 +165,7 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
                 */
     }
 
-    public function TransactionType(): string
-    {
+    public function TransactionType(): string {
         return "TRX";
     }
     // @todo: deprecated, remove

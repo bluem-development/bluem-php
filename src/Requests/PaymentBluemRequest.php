@@ -7,31 +7,15 @@ use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Carbon\Carbon;
 use Exception;
-use stdclass;
 
-class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
-{
-    private $xmlInterfaceName = "EPaymentInterface";
+class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface {
     public $request_url_type = "pr";
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "PTX";
     /**
      * @var string
      */
-    private $description;
-    /**
-     * @var mixed|string
-     */
-    private $currency;
-    /**
-     * @var string
-     */
     public $dueDateTime;
-    private $debtorReference;
-    /**
-     * @var float
-     */
-    private $amount;
     /**
      * @var array|string|string[]
      */
@@ -40,11 +24,22 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
      * @var string
      */
     public $paymentReference;
+    private $xmlInterfaceName = "EPaymentInterface";
+    /**
+     * @var string
+     */
+    private $description;
+    /**
+     * @var mixed|string
+     */
+    private $currency;
+    private $debtorReference;
+    /**
+     * @var float
+     */
+    private $amount;
+
 // @todo: deprecated, remove
-    public function TransactionType(): string
-    {
-        return $this->transaction_code;
-    }
 
     /**
      * @throws Exception
@@ -61,26 +56,25 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
         string $expected_return = "none",
         $debtorReturnURL = ""
     ) {
-        parent::__construct($config, $entranceCode, $expected_return);
+        parent::__construct( $config, $entranceCode, $expected_return );
 
 
-        if (isset($config->paymentBrandID) && $config->paymentBrandID !== "") {
-            $config->setBrandId($config->paymentBrandID);
+        if ( isset( $config->paymentBrandID ) && $config->paymentBrandID !== "" ) {
+            $config->setBrandId( $config->paymentBrandID );
         } else {
-            $config->setBrandId($config->brandID);
+            $config->setBrandId( $config->brandID );
         }
 
-        $this->description = $this->_sanitizeDescription($description);
+        $this->description = $this->_sanitizeDescription( $description );
 
         //  Default Currency EUR
-        $this->currency = $this->validateCurrency($currency);
+        $this->currency = $this->validateCurrency( $currency );
 
-        
 
-        if (is_null($dueDateTime)) {
-            $this->dueDateTime = Carbon::now()->addDay()->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
+        if ( is_null( $dueDateTime ) ) {
+            $this->dueDateTime = Carbon::now()->addDay()->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
         } else {
-            $this->dueDateTime = Carbon::parse($dueDateTime)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
+            $this->dueDateTime = Carbon::parse( $dueDateTime )->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
         }
 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
@@ -90,27 +84,27 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
             $debtorReference,
             $sanitizedDebtorReferenceParts
         );
-        if($sanitizedDebtorReferenceCount!==false && $sanitizedDebtorReferenceCount>0) {
+        if ( $sanitizedDebtorReferenceCount !== false && $sanitizedDebtorReferenceCount > 0 ) {
             $debtorReference = implode(
                 "",
                 $sanitizedDebtorReferenceParts[0]
             );
         }
         $this->debtorReference = $debtorReference;
-        
 
-        $this->amount = floatval($amount);
-        
+
+        $this->amount = floatval( $amount );
+
         $this->transactionID = $transactionID;
 
-        if (isset($debtorReturnURL) && $debtorReturnURL != "") {
+        if ( isset( $debtorReturnURL ) && $debtorReturnURL != "" ) {
             $this->debtorReturnURL = $debtorReturnURL;
         } else {
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
         $this->debtorReturnURL .= "?entranceCode=$this->entranceCode&transactionID=$this->transactionID";
 
-        $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
+        $this->debtorReturnURL = str_replace( '&', '&amp;', $this->debtorReturnURL );
 
         // note! different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class
@@ -120,8 +114,31 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
         $this->context = new PaymentsContext();
     }
 
-    public function XmlString(): string
-    {
+    /**
+     * validate based on a list of accepted currencies
+     *
+     * @param $currency
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function validateCurrency( $currency ): string {
+        $availableCurrencies = [ "EUR" ]; // @todo: add list of currencies based on 
+        if ( ! in_array( $currency, $availableCurrencies ) ) {
+            throw new Exception( "Currency not recognized, 
+                    should be one of the following available currencies: " .
+                                 implode( ",", $availableCurrencies )
+            );
+        }
+
+        return $currency;
+    }
+
+    public function TransactionType(): string {
+        return $this->transaction_code;
+    }
+
+    public function XmlString(): string {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -131,7 +148,7 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <Description>' . $this->description . '</Description>
                 <Currency>' . $this->currency . '</Currency>
-                <Amount>' . number_format($this->amount, 2, '.', '') . '</Amount>
+                <Amount>' . number_format( $this->amount, 2, '.', '' ) . '</Amount>
                 <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
                 $this->XmlWrapDebtorWallet() .
@@ -145,25 +162,6 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface
         );
 
         // @todo make documentType, sendOption and language a setting here?
-        
-    }
 
-    /**
-     * validate based on a list of accepted currencies
-     *
-     * @param $currency
-     * @return string
-     * @throws Exception
-     */
-    private function validateCurrency($currency): string
-    {
-        $availableCurrencies = ["EUR"]; // @todo: add list of currencies based on 
-        if(!in_array($currency,$availableCurrencies)) {
-            throw new Exception("Currency not recognized, 
-                    should be one of the following available currencies: ".
-                implode( ",",$availableCurrencies)
-            );
-        }
-        return $currency;
     }
 }
