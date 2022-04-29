@@ -55,18 +55,18 @@ Utilize this library to write your own applications in PHP that communicate with
 
 Utilized by other applications as well:
 
-- [WordPress and WooCommerce plug-in](https://github.com/daanrijpkema/bluem-woocommerce), available for Bluem customers.
-- [Magento2 module](https://github.com/DaanRijpkema/bluem-magento/), available for Bluem customers.
+- [WordPress and WooCommerce plug-in](https://github.com/bluem-development/bluem-woocommerce), available for Bluem customers.
+- [Magento2 module](https://github.com/bluem-development/bluem-magento/), available for Bluem customers.
 
 ## Getting started:
 This library can be installed through [Composer](https://getcomposer.org). Run Composer to install this library and dependencies from your project folder.
 
 ```bash
-composer require daanrijpkema/bluem-php
+composer require bluem-development/bluem-php
 ```
 ---
 
-Refer to the [examples folder](https://github.com/DaanRijpkema/bluem-php/tree/master/examples) for a full example implementation that you can base your own integration on. 
+Refer to the [examples folder](https://github.com/bluem-development/bluem-php/tree/master/examples) for a full example implementation that you can base your own integration on. 
 
 Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
 
@@ -98,7 +98,7 @@ $bluem->VerifyIPIsNetherlands();
 
 Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
 
-- If you use the [Preselection of banks using the DebtorWallet](https://github.com/DaanRijpkema/bluem-php#debtorwallet-preselecting-a-bank-for-mandate-payment-or-identity-request), you will have to update this library to ensure Triodos is no longer an option for iDIN. If you do not do this, customers that select Triodos will be presented with an error.
+- If you use the [Preselection of banks using the DebtorWallet](https://github.com/bluem-development/bluem-php#debtorwallet-preselecting-a-bank-for-mandate-payment-or-identity-request), you will have to update this library to ensure Triodos is no longer an option for iDIN. If you do not do this, customers that select Triodos will be presented with an error.
 
 - If you use the Bluem portal, you don't need to take action. This change is already applied within the Bluem portal.
 
@@ -115,7 +115,7 @@ Or use a class alias to ensure code functioning. This is a refactor since versio
 Furthermore, all generally available functions are still available.
 
 ### Versions before 2.0
-No changelog was recorded. Please refer to the [commit log](https://github.com/DaanRijpkema/bluem-php/commits/master) for more information
+No changelog was recorded. Please refer to the [commit log](https://github.com/bluem-development/bluem-php/commits/master) for more information
 
 
 
