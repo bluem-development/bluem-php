@@ -1,9 +1,9 @@
 {
-    "name": "daanrijpkema/bluem-php",
+    "name": "bluem-development/bluem-php",
     "type": "package",
     "description": "Bluem PHP interface",
     "keywords": ["bluem", "php", "interface", "wrapper", "emandate", "epayment", "idin"],
-    "homepage": "https://daanrijpkema.github.io/bluem-php/",
+    "homepage": "https://bluem-development.github.io/bluem-php/",
     "license": "GPL-3.0-or-later",
     "authors": [{
         "name": "Bluem Plugin Support",
@@ -12,7 +12,7 @@
         "role": "Developer"
     }],
     "support": {
-        "issues": "https://github.com/daanrijpkema/bluem-php"
+        "issues": "https://github.com/bluem-development/bluem-php"
     },
     "require": {
         "php": ">=7.0",
