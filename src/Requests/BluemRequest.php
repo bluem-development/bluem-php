@@ -9,6 +9,7 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\BIC;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Carbon\Carbon as Carbon;
@@ -44,7 +45,7 @@ class BluemRequest implements BluemRequestInterface {
     public $mandateID;
 
     /**
-     * @var
+     * @var BIC
      */
     public $debtorWallet = null;
     /**
@@ -308,6 +309,7 @@ class BluemRequest implements BluemRequestInterface {
         $possibleBICs = $this->context->getBICCodes();
 
         if ( ! in_array( $BIC, $possibleBICs ) ) {
+            // @todo validate based on localinstrument code in config for emandates
             throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
         }
         $this->debtorWallet = $BIC;

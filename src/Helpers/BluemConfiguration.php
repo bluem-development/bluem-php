@@ -79,10 +79,6 @@ class BluemConfiguration
     public $merchantSubID;
     
     /**
-     * @var BluemConfigurationValidator
-     */
-    private $validator;
-    /**
      * @var string
      */
     private $PaymentsBrandID;

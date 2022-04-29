@@ -47,7 +47,7 @@ $bluem_config->merchantID = "" ;                     // the PRODUCTION merchant 
 // required for eMandates prod environment
 // NOTE that MerchantID for test environment is set automatically to a valid test value
 $bluem_config->eMandateReason = "eMandateReason" ;   // Brief description of the debt collection at the time of issue
-$bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collection: CORE or B2B
+$bluem_config->localInstrumentCode = "BOTH" ;         // Choose type of collection: CORE or B2B
 
 
 /** 

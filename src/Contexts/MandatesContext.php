@@ -9,12 +9,23 @@
 namespace Bluem\BluemPHP\Contexts;
 
 use Bluem\BluemPHP\Helpers\BIC;
+use Bluem\BluemPHP\Helpers\CoreBIC;
 use Exception;
 
-class MandatesContext extends BluemContext {
+class MandatesContext extends BluemContext
+{
+    private const MANDATE_TYPE_CORE = 'CORE';
+    private const MANDATE_TYPE_B2B = 'B2B';
+    private const MANDATE_TYPE_BOTH = 'BOTH';
+    
+    /**
+     * @var string
+     */
     public $debtorWalletElementName = "INCASSOMACHTIGEN";
-
-    private $_possibleMandateTypes = [ 'CORE', 'B2B' ];
+    
+    /** @var string[]  */
+    private $possibleMandateTypes = [ self::MANDATE_TYPE_B2B, self::MANDATE_TYPE_CORE, self::MANDATE_TYPE_BOTH ];
+    
 
     /**
      * MandatesContext constructor.
@@ -25,30 +36,36 @@ class MandatesContext extends BluemContext {
      *
      * @throws Exception
      */
-    public function __construct( $type = "CORE" ) {
-        if ( ! in_array( $type, $this->_possibleMandateTypes ) ) {
+    public function __construct( $type = self::MANDATE_TYPE_CORE ) {
+        if ( ! in_array( $type, $this->possibleMandateTypes ) ) {
             throw new Exception(
                 "Unknown instrument code set as mandate type;
                 should be either 'CORE' or 'B2B'"
             );
         }
-        if ( $type == "CORE" ) {
-            $BICs = [
-                new BIC( "ABNANL2A", "ABN AMRO" ),
-                new BIC( "ASNBNL21", "ASN Bank" ),
-                new BIC( "INGBNL2A", "ING" ),
-                new BIC( "KNABNL2H", "Knab" ),
-                new BIC( "RABONL2U", "Rabobank" ),
-                new BIC( "RBRBNL21", "RegioBank" ),
-                new BIC( "SNSBNL2A", "SNS" ),
-                new BIC( "TRIONL2U", "Triodos Bank" ),
-            ];
-        } else {
-            $BICs = [
-                new BIC( "ABNANL2A", "ABN AMRO" ),
-                new BIC( "INGBNL2A", "ING" ),
-                new BIC( "RABONL2U", "Rabobank" ),
-            ];
+        
+        $coreBics = [
+            new BIC( "ABNANL2A", "ABN AMRO", self::MANDATE_TYPE_CORE ),
+            new BIC( "ASNBNL21", "ASN Bank", self::MANDATE_TYPE_CORE ),
+            new BIC( "INGBNL2A", "ING", self::MANDATE_TYPE_CORE ),
+            new BIC( "KNABNL2H", "Knab", self::MANDATE_TYPE_CORE ),
+            new BIC( "RABONL2U", "Rabobank", self::MANDATE_TYPE_CORE ),
+            new BIC( "RBRBNL21", "RegioBank", self::MANDATE_TYPE_CORE ),
+            new BIC( "SNSBNL2A", "SNS", self::MANDATE_TYPE_CORE ),
+            new BIC( "TRIONL2U", "Triodos Bank", self::MANDATE_TYPE_CORE ),
+        ];
+        $b2bBics = [
+            new BIC( "ABNANL2A", "ABN AMRO", self::MANDATE_TYPE_B2B ),
+            new BIC( "INGBNL2A", "ING", self::MANDATE_TYPE_B2B ),
+            new BIC( "RABONL2U", "Rabobank", self::MANDATE_TYPE_B2B ),
+        ];
+        
+        if ( $type == self::MANDATE_TYPE_CORE ) {
+            $BICs = $coreBics;
+        } elseif($type==self::MANDATE_TYPE_B2B) {
+            $BICs = $b2bBics;
+        } elseif($type==self::MANDATE_TYPE_BOTH) { // both
+            $BICs = array_merge($coreBics,$b2bBics);
         }
 
         parent::__construct( $BICs );

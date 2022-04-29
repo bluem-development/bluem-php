@@ -135,7 +135,7 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
                 [
                     // 'entranceCode'=>$this->entranceCode,  always sent already
                     'requestType'         => "Issuing",
-                    'localInstrumentCode' => $this->localInstrumentCode,
+                    'localInstrumentCode' => $this->possiblyOverrideLocalInstrumentCode(),
                     'merchantID'          => $this->merchantID,
                     'merchantSubID'       => $this->merchantSubID,
                 ]
@@ -165,6 +165,14 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
                 */
     }
 
+    private function possiblyOverrideLocalInstrumentCode() {
+        if(!empty($this->debtorWallet) && !empty($this->debtorWallet->localInstrumentCode)) {
+            return $this->debtorWallet->localInstrumentCode;
+        }
+        return $this->localInstrumentCode;
+    }
+    
+    
     public function TransactionType(): string {
         return "TRX";
     }

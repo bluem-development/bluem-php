@@ -2,6 +2,8 @@
 
 namespace Bluem\BluemPHP\Responses;
 
+use Bluem\BluemPHP\Responses\TransactionBluemResponse;
+
 class IBANNameCheckBluemResponse extends TransactionBluemResponse {
     public static $transaction_type = "IBANCheckTransactionResponse";
     public static $response_primary_key = "IBANCheckTransaction";
