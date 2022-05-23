@@ -1,4 +1,5 @@
 <?php
+
 namespace Bluem\Tests\Unit;
 
 use Bluem\BluemPHP\Bluem;
@@ -40,11 +41,12 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
         $bluem_config->test_accessToken = $_ENV['BLUEM_TEST_ACCESS_TOKEN'];
         $bluem_config->IDINBrandID = $_ENV['BLUEM_BRANDID'];
         $bluem_config->merchantID = $_ENV['BLUEM_MERCHANTID'];
-        $bluem_config->merchantReturnURLBase =$_ENV['BLUEM_MERCHANTRETURNURLBASE'];
+        $bluem_config->merchantReturnURLBase = $_ENV['BLUEM_MERCHANTRETURNURLBASE'];
 
         $bluem_config->production_accessToken = "" ;
         $bluem_config->expectedReturnStatus = "success" ;
         $bluem_config->eMandateReason = "eMandateReason" ;
+        $bluem_config->sequenceType = "OOFF" ;
         $bluem_config->localInstrumentCode = "B2B" ;
         // @todo: create env variables for these
 

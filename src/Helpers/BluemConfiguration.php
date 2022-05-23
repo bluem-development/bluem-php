@@ -50,6 +50,11 @@ class BluemConfiguration
     /**
      * @var mixed
      */
+    public $sequenceType;
+    
+    /**
+     * @var mixed
+     */
     public $merchantID;
     
     /**
@@ -79,10 +84,6 @@ class BluemConfiguration
     public $merchantSubID;
     
     /**
-     * @var BluemConfigurationValidator
-     */
-    private $validator;
-    /**
      * @var string
      */
     private $PaymentsBrandID;
@@ -109,6 +110,7 @@ class BluemConfiguration
         $this->validator = new BluemConfigurationValidator();
         
         $raw_validated = $this->validator->validate($raw);
+        
         if ($raw_validated === false) {
             throw new Exception('Bluem Configuration is not valid: '.$this->errorsAsString());
         }
@@ -117,16 +119,17 @@ class BluemConfiguration
         $this->senderID              = $raw_validated->senderID;
         $this->brandID               = $raw_validated->brandID;
         $this->accessToken           = $raw_validated->accessToken;
+        
         $this->merchantReturnURLBase = $raw_validated->merchantReturnURLBase ?? null;
         // @todo: if this is required, break. check that
 
         $this->test_accessToken = $raw_validated->test_accessToken;
 
         $this->IDINBrandID = $this->_assumeBrandID("Identity", $this->brandID);
-        // @todo: Test it
         $this->PaymentsBrandID = $this->_assumeBrandID("Payment", $this->brandID);
         $this->EmandateBrandID = $this->_assumeBrandID("Mandate", $this->brandID);
-        // @todo PeterMeester: create validation step for IDINBrandID
+        
+        $this->sequenceType = $raw_validated->sequenceType ?? null;
 
         $this->merchantID             = $raw_validated->merchantID;
         $this->production_accessToken = $raw_validated->production_accessToken;
