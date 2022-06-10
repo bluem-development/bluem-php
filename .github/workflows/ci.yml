@@ -13,7 +13,6 @@ jobs:
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v2
-              env:
               with:
                   bootstrap: vendor/autoload.php
                   configuration: test/phpunit.xml
