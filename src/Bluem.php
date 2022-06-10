@@ -735,8 +735,7 @@ class Bluem {
         // } else {
         // $public_key_file = "webhook.bluem.nl_pub_key_production.crt";
         // }
-        $key_folder           = $public_key_file = "bluem_nl.crt";
-        $public_key_file_path = __DIR__ . "/../keys/" . $public_key_file;
+        $public_key_file_path = __DIR__ . "/../keys/" . $this->getKeyFileName();
         // @todo: put the key in a different folder, relative to this PHP library
 
 
@@ -892,6 +891,15 @@ class Bluem {
         } catch ( Throwable $th ) {
             return false;
         }
+    }
+
+    private function getKeyFileName(): string
+    {
+        $filename = 'webhook_bluem_nl';
+        if(date("Y-m-d") >= "2022-06-28") {
+            return $filename.'.crt';
+        }
+        return $filename.'_pre2022.crt';
     }
 
 }
