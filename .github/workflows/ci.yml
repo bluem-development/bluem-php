@@ -1,19 +1,28 @@
 name: CI
-
-on: [push]
-
+on: 
+    push:
+    pull_request:
+        branches:
+            - master
+permissions:
+    actions: write
+    contents: write
+    packages: write
+    pull-requests: write
 jobs:
     build-test:
         runs-on: ubuntu-latest
         
         steps:
+            - name: test one-line script script
+              run: echo Hello from Octo Organization
+              
             - uses: actions/checkout@v2
 
             - uses: php-actions/composer@v5
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v2
-              env:
               with:
                   bootstrap: vendor/autoload.php
                   configuration: test/phpunit.xml
