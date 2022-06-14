@@ -123,7 +123,7 @@ class BluemConfiguration
         $this->merchantReturnURLBase = $raw_validated->merchantReturnURLBase ?? null;
         // @todo: if this is required, break. check that
 
-        $this->test_accessToken = $raw_validated->test_accessToken;
+        $this->test_accessToken = $raw_validated->test_accessToken ?? null;
 
         $this->IDINBrandID = $this->_assumeBrandID("Identity", $this->brandID);
         $this->PaymentsBrandID = $this->_assumeBrandID("Payment", $this->brandID);
@@ -132,7 +132,7 @@ class BluemConfiguration
         $this->sequenceType = $raw_validated->sequenceType ?? null;
 
         $this->merchantID             = $raw_validated->merchantID;
-        $this->production_accessToken = $raw_validated->production_accessToken;
+        $this->production_accessToken = $raw_validated->production_accessToken ?? null;
         $this->expectedReturnStatus   = $raw_validated->expectedReturnStatus ?? null;
         $this->eMandateReason         = $raw_validated->eMandateReason ?? null;
         $this->localInstrumentCode    = $raw_validated->localInstrumentCode;
