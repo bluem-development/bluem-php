@@ -57,4 +57,13 @@ class MandateStatusBluemResponse extends StatusBluemResponse {
         return false;
 
     }
+
+    public function GetDebtorAccountName()
+    {
+        if (isset($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorAccountName)) {
+            return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorAccountName . "";
+        }
+
+        return null;
+    }
 }
