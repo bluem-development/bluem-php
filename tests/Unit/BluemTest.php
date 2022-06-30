@@ -11,17 +11,6 @@ class BluemTest extends TestCase
 {
     private Bluem $bluem;
 
-    public function mandateIdTestDataProvider()
-    {
-        return [
-            [
-            'orderId'=>1,
-            'customerId'=>1,
-            'expectedMandateId'=>"",
-                ]
-        ];
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -38,13 +27,11 @@ class BluemTest extends TestCase
 
     public function testCreateMandateRequest()
     {
+        $this->markTestSkipped("Assertions need to be added");
         // arrange
-
         // act
         $request = $this->bluem->CreateMandateRequest("customer_id", "order_id");
-
         // assertions
-        var_dump($request);
 
     }
 
@@ -54,6 +41,17 @@ class BluemTest extends TestCase
         $mandateId = $this->bluem->CreateMandateID($orderId, $customerId);
         $this->assertIsString($mandateId);
 //        $this->assertEquals( $expectedMandateId , $mandateId, );
+    }
+
+    public function mandateIdTestDataProvider()
+    {
+        return [
+            [
+                'orderId'=>1,
+                'customerId'=>1,
+                'expectedMandateId'=>"",
+            ]
+        ];
     }
 
     private function getConfig(): stdClass
@@ -73,6 +71,7 @@ class BluemTest extends TestCase
         $bluem_config->eMandateReason = "eMandateReason";
         $bluem_config->sequenceType = "OOFF";
         $bluem_config->localInstrumentCode = "B2B";
+
         return $bluem_config;
     }
 }
