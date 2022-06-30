@@ -455,7 +455,7 @@ class BluemRequest implements BluemRequestInterface {
         // filter based on full list of invalid chars for description based on XSD
         // Wel toegestaan: -0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%"'/:;?$
         $description = preg_replace(
-            '/[^-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%\"\'\/:;?$]/',
+            '/[^-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%\"\'\/:;?$]/u',
             '',
             $description
         );
