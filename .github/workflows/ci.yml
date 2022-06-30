@@ -5,7 +5,7 @@ on: [push]
 jobs:
     build-test:
         runs-on: ubuntu-latest
-        
+
         steps:
             - uses: actions/checkout@v2
 
@@ -15,4 +15,4 @@ jobs:
               uses: php-actions/phpunit@v2
               with:
                   bootstrap: vendor/autoload.php
-                  configuration: test/phpunit.xml
+                  configuration: phpunit.xml
