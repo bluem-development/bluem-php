@@ -20,7 +20,7 @@ jobs:
                   envkey_BLUEM_BRANDID_IDENTITY: "ExampleIdentity"
                   envkey_BLUEM_BRANDID_MANDATES: "ExampleMandate"
                   envkey_BLUEM_MERCHANTRETURNURLBASE: "https://bluem.nl"
-                  directory: /app/.env
+                  directory: app
                   file_name: .env
                   fail_on_empty: false
 
