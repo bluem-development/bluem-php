@@ -20,7 +20,6 @@ jobs:
                   envkey_BLUEM_BRANDID_IDENTITY: "ExampleIdentity"
                   envkey_BLUEM_BRANDID_MANDATES: "ExampleMandate"
                   envkey_BLUEM_MERCHANTRETURNURLBASE: "https://bluem.nl"
-                  directory: .
                   file_name: .env
                   fail_on_empty: false
 
@@ -31,5 +30,6 @@ jobs:
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v2
               with:
+                  php_version: 7.4
                   bootstrap: vendor/autoload.php
-                  configuration: phpunit.xml
+                  configuration: ./phpunit.xml
