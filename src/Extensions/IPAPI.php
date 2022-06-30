@@ -7,7 +7,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Bluem\BluemPHP\Extension;
+namespace Bluem\BluemPHP\Extensions;
 
 if ( ! defined( "BLUEM_STATIC_IPAPI_KEY" ) ) {
     define( "BLUEM_STATIC_IPAPI_KEY", "ec7b6c41a0f51d87cfc8c53fcf64fe83" );
@@ -18,7 +18,7 @@ if ( ! defined( "BLUEM_STATIC_IPAPI_KEY" ) ) {
  * goal of this integration is to allow IP Geolocation determination to filter request IPs
  * check ipstack.com for more information on the integration
  */
-class IPAPI {
+final class IPAPI {
     /** @var bool */
     private $_debug = false;
 
@@ -41,14 +41,15 @@ class IPAPI {
 
         // if we encountered an error, return true for now
         if ( isset( $result['success'] )
-             && $result['success'] === false
+            && $result['success'] === false
         ) {
             return true;
         }
         // if we can't check for IP or the response is invalid, return true for now
-        if ( is_null( $result['country_code'] ) ) {
+        if ( empty( $result['country_code'] ) ) {
             return true;
         }
+        var_dump($result);
 
         return ( $result['country_code'] === "NL" );
     }

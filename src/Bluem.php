@@ -13,7 +13,7 @@ use Bluem\BluemPHP\Contexts\IdentityContext;
 use Bluem\BluemPHP\Contexts\MandatesContext;
 use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
-use Bluem\BluemPHP\Helpers\IPAPI;
+use Bluem\BluemPHP\Extensions\IPAPI;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateStatusBluemRequest;
