@@ -1,17 +1,18 @@
 <?php
 
-namespace Bluem\Tests\Unit;
+namespace Integration;
 
 use Bluem\BluemPHP\Bluem;
-use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
 use stdClass;
+use Unit\Exception;
 
 /**
  * Abstract base class for all BluemPHP unit tests.
  */
-abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
+abstract class BluemGenericTest extends TestCase
 {
     /**
      * The Bluem integration object
@@ -31,7 +32,7 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
         $env_file =__DIR__. '/../..';
         $dotenv = Dotenv::createImmutable($env_file);
         $dotenv->load();
-        
+
         // Create a Bluem object and set the Bluem configuration details based on your .env file.
         $bluem_config = new stdClass;
         $bluem_config->environment = $_ENV['BLUEM_ENV'];
@@ -55,32 +56,32 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
         } catch (\Exception $e) {
             $this->fail("While initializing Bluem, ".$e->getMessage()." occurred");
         }
-        
+
     }
 
-    
+
     // test that we can set the configuration
     public function testSetConfiguration()
     {
         $setting = $this->bluem->setConfig("environment",true);
-        
+
         // assert result is true
         $this->assertTrue($setting);
-        
+
     }
-    
+
     // test that we can get the configuration
     public function testGetConfiguration()
     {
         $this->bluem->setConfig("environment","test");
-        
+
         $result = $this->bluem->getConfig("environment");
-        
+
         // assert result is string
         $this->assertIsString($result);
         $this->assertEquals("test",$result);
     }
-    
+
 
     /**
      * Perform assertions based on a created BluemPHP Request object
@@ -100,7 +101,7 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
                 $e->getMessage()
             );
         }
-    
+
         if (is_a($response, "Bluem\BluemPHP\Responses\ErrorBluemResponse", false)) {
             $this->fail(
                 "Erroneous response returned: " .
@@ -111,5 +112,5 @@ abstract class BluemGenericTest extends \PHPUnit\Framework\TestCase
             $this->assertTrue(true, "Can utilize {$cname} request and perform it");
         }
     }
- 
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Bluem\Tests\Unit;
+namespace Integration;
 
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 
@@ -22,9 +22,9 @@ class MandateRequestTest extends BluemGenericTest
         } catch (\Exception $e) {
             $this->fail("Exception while creating mandate request: ". $e->getMessage());
         }
-        
+
         $this->assertInstanceOf(
-            EmandateBluemRequest::class, 
+            EmandateBluemRequest::class,
             $request
         );
 

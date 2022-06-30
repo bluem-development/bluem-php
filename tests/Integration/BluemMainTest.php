@@ -1,10 +1,10 @@
 <?php
-namespace Bluem\Tests\Unit;
+namespace Integration;
 
 use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
 use Bluem\BluemPHP\Helpers\BluemMaxAmount;
-use Bluem\BluemPHP\Requests\IdentityBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
+use Bluem\BluemPHP\Requests\IdentityBluemRequest;
 use Bluem\BluemPHP\Requests\PaymentBluemRequest;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 use Bluem\BluemPHP\Responses\MandateStatusBluemResponse;
