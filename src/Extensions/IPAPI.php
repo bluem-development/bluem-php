@@ -49,7 +49,6 @@ final class IPAPI {
         if ( empty( $result['country_code'] ) ) {
             return true;
         }
-        var_dump($result);
 
         return ( $result['country_code'] === "NL" );
     }
