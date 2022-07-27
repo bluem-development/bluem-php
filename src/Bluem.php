@@ -65,15 +65,15 @@ define( "BLUEM_DATE_FORMAT_RFC1123", "D, d M Y H:i:s \G\M\T" );
  */
 class Bluem {
     /** @var bool Used for development and debugging purposes. */
-    static $verbose = false;
+    static bool $verbose = false;
     /**
      * @var string
      */
-    public $environment;
+    public string $environment;
     /**
      * @var BluemConfiguration
      */
-    private $configuration;
+    private BluemConfiguration $configuration;
 
     /**
      * Bluem constructor.
