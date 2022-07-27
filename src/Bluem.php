@@ -587,9 +587,9 @@ class Bluem {
         return new IdentityBluemRequest(
             $this->configuration,
             $entranceCode,
-            ( $this->configuration->environment == BLUEM_ENVIRONMENT_TESTING &&
+            $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
               isset( $this->configuration->expectedReturnStatus ) ?
-                $this->configuration->expectedReturnStatus : "" ),
+                $this->configuration->expectedReturnStatus : "",
             $requestCategory,
             $description,
             $debtorReference,
@@ -642,119 +642,15 @@ class Bluem {
      * Webhook for Bluem Mandate signature verification procedure
      * @throws Exception
      */
-    public function Webhook() {
-        // The following checks will be performed:
-        // @todo URL must start with https://
-
-
-        // Check: ONLY Accept post requests
-        if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
-            if ( self::$verbose ) {
-                exit( "Not post" );
-            }
-            http_response_code( 400 );
-            exit();
-        }
-
-        // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK
-        $postData = file_get_contents( 'php://input' );
-
-        if ( $postData === "" ) {
-            if ( self::$verbose ) {
-                echo "NO POST";
-            }
-            http_response_code( 200 );
-            exit();
-        }
-
-        // Check: content type has to be: "Content-type", "text/xml; charset=UTF-8"
-
-        // Parsing XML data from POST body
-        try {
-            $xmlObject = new SimpleXMLElement( $postData );
-        } catch ( Exception $e ) {
-            if ( self::$verbose ) {
-                echo( $e->getMessage() );
-                exit();
-            }
-            http_response_code( 400 ); // could not parse XML
-            exit();
-        }
-
-        // Check: if signature is valid in postdata
-        if ( ! $this->_validateWebhookSignature( $postData ) ) {
-            if ( self::$verbose ) {
-                exit( 'no valid webhook sig' );
-            }
-
-            http_response_code( 400 );
-            // echo 'The XML signature is not valid.';
-            // echo PHP_EOL;
-            exit;
-        }
-
-
-        // @todo: finish this code
-        throw new Exception( "Not implemented fully yet, please contact the developer or work around this error" );
-        // @todo webhook response dependent on the interface, check the status update
-
-        // @todo webhook response mandates
-
-        // @todo webhook response payments
-//        if (!isset($xmlObject->EPaymentInterface->PaymentStatusUpdate)) {
-//            http_response_code(400);
-//            exit;
-//        }
-//        return $xmlObject->EPaymentInterface->PaymentStatusUpdate;
-
-        // @todo webhook response identity
-
-        // @todo webhook response and more
-
-        // @todo catch exceptions
+    public function Webhook(): void 
+    {
+        $webhook = new BluemWebhook(
+            $this->configuration->senderID,
+            $this->getConfig('webhookDebug') === true
+        );
+        $webhook->execute();
     }
 
-    /**
-     * Validate webhook signature based on a key file
-     * available in the `keys` folder
-     *
-     * @param  $xmlInput
-     *
-     * @return bool
-     */
-    private function _validateWebhookSignature( $xmlInput ): bool {
-        $temp_file = tmpfile();
-        fwrite( $temp_file, $xmlInput );
-        $temp_file_path = stream_get_meta_data( $temp_file )['uri'];
-        // @todo: move this to an abstract validator
-        $signatureValidator = new XmlSignatureValidator();
-
-        // @todo Check if keyfile has to be chosen according to env
-        // if ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
-        // $public_key_file = "webhook.bluem.nl_pub_cert_test.crt";
-        // } else {
-        // $public_key_file = "webhook.bluem.nl_pub_key_production.crt";
-        // }
-        $public_key_file_path = __DIR__ . "/../keys/" . $this->getKeyFileName();
-        // @todo: put the key in a different folder, relative to this PHP library
-
-
-        try {
-            $signatureValidator->loadPublicKeyFile( $public_key_file_path );
-        } catch ( Throwable $th ) {
-            return false;
-            // echo "Error: " . $th->getMessage();
-        }
-
-        $isValid = $signatureValidator->verifyXmlFile( $temp_file_path );
-        fclose( $temp_file );
-
-        if ( $isValid ) {
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * Retrieve a list of all possible identity request types, which can be useful for reference
@@ -828,9 +724,7 @@ class Bluem {
      * @throws Exception
      */
     public function retrieveBICCodesForContext( $contextName ): array {
-        $context = $this->_retrieveContext( $contextName );
-
-        return $context->getBICCodes();
+        return $this->_retrieveContext( $contextName )->getBICCodes();
     }
 
     /**
@@ -872,9 +766,7 @@ class Bluem {
      * @throws Exception
      */
     public function retrieveBICsForContext( $contextName ): array {
-        $context = $this->_retrieveContext( $contextName );
-
-        return $context->getBICs();
+        return $this->_retrieveContext( $contextName )->getBICs();
     }
 
     /**
@@ -885,21 +777,10 @@ class Bluem {
      */
     public function VerifyIPIsNetherlands(): bool {
         try {
-            $IPAPI = new IPAPI();
-
-            return $IPAPI->CheckIsNetherlands();
+            return (new IPAPI())->CheckIsNetherlands();
         } catch ( Throwable $th ) {
             return false;
         }
-    }
-
-    private function getKeyFileName(): string
-    {
-        $filename = 'webhook_bluem_nl';
-        if(date("Y-m-d") >= "2022-06-28") {
-            return $filename.'.crt';
-        }
-        return $filename.'_pre2022.crt';
     }
 
 }
