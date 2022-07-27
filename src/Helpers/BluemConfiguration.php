@@ -87,11 +87,20 @@ class BluemConfiguration
      * @var string
      */
     private $PaymentsBrandID;
+    // @todo: consider deprecating this?
     
     /**
      * @var string
      */
     private $EmandateBrandID;
+    // @todo: consider deprecating this?
+    
+    // additional helper flags
+    /**
+     * Allows for testing webhook on local environments with no HTTPS check and verbose output.
+     * @var bool 
+     */
+    public bool $webhookDebug = false;
 
     /**
      * An object containing the configuration for the Bluem integration. Can be an array or object
@@ -137,6 +146,8 @@ class BluemConfiguration
         $this->eMandateReason         = $raw_validated->eMandateReason ?? null;
         $this->localInstrumentCode    = $raw_validated->localInstrumentCode;
         $this->merchantSubID          = "0";
+        
+        $this->webhookDebug = false;
     }
 
     /**
