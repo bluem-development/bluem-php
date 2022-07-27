@@ -23,7 +23,7 @@ require_once __DIR__.'/initialization.php';
 if ($_GET['action'] === "webhook") {
     
     // if you want debug information and verbose results when testing the webhook, set this to true
-    $bluem_object->setConfig("webhookDebugging", false);
+    $bluem_object->setConfig("webhookDebug", false);
     
     // this call will exit with a 200 or 400 HTTP status code, and perform the necessary work for you
     $bluem_object->Webhook();
