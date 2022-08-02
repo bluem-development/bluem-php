@@ -5,6 +5,7 @@ namespace Bluem\BluemPHP\Validators;
 use SimpleXMLElement;
 
 // @todo: add XML validator tests
+// @todo: use XSD validation with given XSDs
 
 class WebhookXmlValidation extends WebhookValidator
 {
