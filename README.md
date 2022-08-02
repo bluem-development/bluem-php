@@ -4,11 +4,10 @@
 * [Notes per version](#notes-per-version)
 * [Testing](#testing)
 * [Frequently asked questions](#frequently-asked-questions)
-* [Installation](#installation)
 * [Configuration](#configuration)
 * [General concept](#general-concept)
 * [Payments](#payments)
-    + [Create a payment transaction](#create-a-payment-transaction)
+    + [Creating a payment transaction](#creating-a-payment-transaction)
     + [Requesting a payment status](#requesting-a-payment-status)
     + [Tip for testing with payments](#tip-for-testing-with-payments)
     + [Adding additional data to a request](#adding-additional-data-to-a-request)
@@ -25,11 +24,10 @@
         - [DynamicData](#dynamicdata)
 * [eMandates](#emandates)
     + [Mandate specific configuration fields](#mandate-specific-configuration-fields)
-    + [Creating an eMandate Transaction - helper functions](#creating-an-emandate-transaction--helper-functions)
-        - [Creating an eMandate transaction](#creating-an-emandate-transaction)
-        - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
+    - [Creating an eMandate transaction](#creating-an-emandate-transaction)
+    - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
     + [Requesting an eMandate Transaction status](#requesting-an-emandate-transaction-status)
-* [Identity - iDIN](#identity----idin)
+* Identity—iDIN
     + [Configuring iDIN](#configuring-idin)
     + [Identity request types explained](#identity-request-types-explained)
     + [Creating an identity request](#creating-an-identity-request)
@@ -139,7 +137,7 @@ This is currently focused around unit testing to see if new changes break the sy
 
 ## Frequently asked questions
 
-*I get the message "Unauthorized: Check your account credentials" - what should I do?*<br>
+*I get the message “Unauthorized: Check your account credentials“. What should I do?*<br>
 Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. 
 If you have checked that the credentials are correct, but you still receive this message, please contact your Bluem account manager.
 
@@ -307,11 +305,11 @@ _Note_: Most functions return string values, unless otherwise specified.
 **Functions available in all services:**
 
 ```php
-$callbackObject->getEntranceCode();
-$callbackObject->getPaymentReference();
-$callbackObject->getCreationDateTime();
-$callbackObject->getStatus();
-$callbackObject->getDebtorReference();
+$webhook->getEntranceCode();
+$webhook->getPaymentReference();
+$webhook->getCreationDateTime();
+$webhook->getStatus();
+$webhook->getDebtorReference();
 ```
 
 **Payments specific functions:**
