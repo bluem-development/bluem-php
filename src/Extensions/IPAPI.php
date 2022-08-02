@@ -9,6 +9,8 @@
 
 namespace Bluem\BluemPHP\Extensions;
 
+use JsonException;
+
 if ( ! defined( "BLUEM_STATIC_IPAPI_KEY" ) ) {
     define( "BLUEM_STATIC_IPAPI_KEY", "ec7b6c41a0f51d87cfc8c53fcf64fe83" );
 }
@@ -20,13 +22,13 @@ if ( ! defined( "BLUEM_STATIC_IPAPI_KEY" ) ) {
  */
 final class IPAPI {
     /** @var bool */
-    private $_debug = false;
+    private bool $_debug = false;
 
     /** @var string */
-    private $base_url = "http://api.ipstack.com/";
+    private string $base_url = "http://api.ipstack.com/";
 
     /** @var string */
-    private $_access_key = BLUEM_STATIC_IPAPI_KEY;
+    private string $_access_key = BLUEM_STATIC_IPAPI_KEY;
 
     /**
      * Verify if a given or server IP is country coded NL (and default to true in case of error)
@@ -45,11 +47,11 @@ final class IPAPI {
         ) {
             return true;
         }
+        
         // if we can't check for IP or the response is invalid, return true for now
         if ( empty( $result['country_code'] ) ) {
             return true;
         }
-
         return ( $result['country_code'] === "NL" );
     }
 
@@ -62,7 +64,7 @@ final class IPAPI {
      */
     public function QueryIP( string $ip = "" ) {
         // @todo Add IP datatype with validation
-        if ( $ip == "" ) {
+        if ( $ip === "" ) {
             // @todo: move this to the ip class
             $ip = $this->GetCurrentIP();
         }
@@ -80,7 +82,14 @@ final class IPAPI {
         curl_close( $ch );
 
         // Decode JSON response:
-        $api_result = json_decode( $json, true );
+        try {
+            $api_result = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            if ( $this->_debug === true ) {
+                var_dump( "Error: ". $e );
+            }
+            return false;
+        }
 
         // verbose for debugging
         if ( $this->_debug === true ) {

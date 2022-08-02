@@ -12,15 +12,17 @@ class IPAPITest extends TestCase
         $this->IPAPI = new IPAPI();
     }
 
-    public function testCheckIsNetherlandsReturnsTrueIfNoIPAddressGiven()
+    public function testCheckIsNetherlandsReturnsTrueIfNoIPAddressGiven(): void
     {
         $result = $this->IPAPI->checkIsNetherlands();
         $this->assertTrue($result);
     }
+    
     /** @dataProvider NetherlandsIPTestDataProvider */
     public function testCheckIPAdressGivenDataProvider($ipAddress,$expectedNetherlands): void
     {
         $isNetherlands = $this->IPAPI->checkIsNetherlands($ipAddress);
+        var_dump($isNetherlands);
         $this->assertEquals($expectedNetherlands, $isNetherlands);
     }
 
@@ -28,27 +30,23 @@ class IPAPITest extends TestCase
     {
         return [
             [
-                'ipAddress'=>'123.1.1.1',
+                'ipAddress'=>'31.187.128.0',
                 '$expectedNetherlands' => true,
-            ],
-//            [
-//                'ipAddress'=>'100.52.65.9',
-//                '$expectedNetherlands' => false,
-//            ]
-            // @todo: add more test cases
+            ]
+            // @todo: add true negative test and check for usage rate limits to prevent false negatives.
         ];
     }
 
-    public function testQueryIP()
+    public function testQueryIP(): void
     {
         $result = $this->IPAPI->QueryIP();
 
         $this->assertEquals(null, $result);
     }
 
-    public function testGetCurrentIP()
+    public function testGetCurrentIP(): void
     {
-        $result = $this->IPAPI->checkIsNetherlands("");
+        $result = $this->IPAPI->checkIsNetherlands();
         $this->assertTrue($result);
     }
 }
