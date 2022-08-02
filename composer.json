@@ -18,13 +18,12 @@
         "php": ">=7.4",
         "nesbot/carbon": "^2.31",
         "pear/http_request2": "v2.4.2",
+        "selective/xmldsig": "^2.4",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
-        "robrichards/xmlseclibs": "^3.1",
         "ext-curl": "*",
-        "ext-json": "*",
-        "selective/xmldsig": "^2.4"
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
