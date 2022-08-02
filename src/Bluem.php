@@ -641,15 +641,21 @@ class Bluem {
 
     /**
      * Webhook for Bluem Mandate signature verification procedure
-     * @throws Exception
+     * Returns null if the webhook failed to be parsed
+     * @returns null|PaymentStatusBluemResponse|MandateStatusBluemResponse|IdentityStatusBluemResponse
      */
-    public function Webhook(): void 
+    public function Webhook()
     {
-        $webhook = new Webhook(
-            $this->configuration->senderID,
-            $this->getConfig('webhookDebug') === true
-        );
-        $webhook->execute();
+        try {
+            $webhook = new Webhook(
+                $this->configuration->senderID,
+                $this->getConfig('webhookDebug') === true
+            );
+        } catch (Exception $e) {
+            return null;
+        }
+        
+        return $webhook;
     }
 
 
@@ -782,5 +788,4 @@ class Bluem {
             return false;
         }
     }
-
 }
