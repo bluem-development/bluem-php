@@ -4,5 +4,5 @@ namespace Bluem\BluemPHP\Validators;
 
 interface WebhookValidatorInterface
 {
-    public function validate(): self;
+    public function errorMessage(): string;
 }

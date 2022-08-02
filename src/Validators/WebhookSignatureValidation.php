@@ -2,59 +2,45 @@
 
 namespace Bluem\BluemPHP\Validators;
 
+use Selective\XmlDSig\Exception\XmlSignatureValidatorException;
 use Selective\XmlDSig\XmlSignatureValidator;
 use Throwable;
 
+// @todo: add signature validator tests
 class WebhookSignatureValidation extends WebhookValidator
 {
-    private string $postdata;
-
-    public function __construct(string $xmlObject)
-    {
-        $this->postdata = $xmlObject;
-    }
-
+    private const KEY_NAME = 'bluem_nl.crt';
+    private const KEY_FOLDER = __DIR__ . "/../../keys/";
+    private const KEY_PATH = self::KEY_FOLDER . self::KEY_NAME;
 
     /**
      * Validate webhook signature based on a key file
-     * available in the `keys` folder
+     * available in the `keys` folder.
      *
+     * @param string $postData
      * @return WebhookSignatureValidation
      */
-    public function validate(): WebhookSignatureValidation {
+    public function validate(string $postData): self {
+        
         $temp_file = tmpfile();
-        fwrite( $temp_file, $this->postdata );
+        fwrite( $temp_file, $postData );
         $temp_file_path = stream_get_meta_data( $temp_file )['uri'];
         
         $signatureValidator = new XmlSignatureValidator();
+        $public_key_file_path = self::KEY_PATH;
 
-        // @todo Check if keyfile has to be chosen according to env
-        // if ($this->_config->environment === BLUEM_ENVIRONMENT_TESTING) {
-        // $public_key_file = "webhook.bluem.nl_pub_cert_test.crt";
-        // } else {
-        // $public_key_file = "webhook.bluem.nl_pub_key_production.crt";
-        // }
-        $public_key_file_path = __DIR__ . "/../../keys/" . $this->getKeyFileName();
-        
         try {
             $signatureValidator->loadPublicKeyFile( $public_key_file_path );
-        } catch ( Throwable $th ) {
+        } catch ( Throwable $ex) {
             $this->addError("Couldn't load public key file");
-            // echo "Error: " . $th->getMessage();
         }
 
-        $isValid = $signatureValidator->verifyXmlFile( $temp_file_path );
-        fclose( $temp_file );
-        if ( ! $isValid ) {
+        $xmlVerified = $signatureValidator->verifyXmlFile( $temp_file_path );
+        if ( ! $xmlVerified ) {
             $this->addError("Invalid signature");
         }
+        fclose( $temp_file );
 
         return $this;
-    }
-
-    private function getKeyFileName(): string
-    {
-//        webhook_
-        return 'bluem_nl.crt';
     }
 }

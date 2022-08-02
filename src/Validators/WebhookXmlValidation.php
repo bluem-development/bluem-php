@@ -4,23 +4,23 @@ namespace Bluem\BluemPHP\Validators;
 
 use SimpleXMLElement;
 
+// @todo: add XML validator tests
+
 class WebhookXmlValidation extends WebhookValidator
 {
-    private SimpleXMLElement $xmlObject;
     private string $senderID;
     
-    private const ALLOWED_SERVICE_INTERFACES = ['EPaymentInterface'];
+    private const ALLOWED_SERVICE_INTERFACES = [
+        'EPaymentInterface', 'IdentityInterface', 'EMandateInterface'
+    ];
     
-    
-    public function __construct(SimpleXMLElement $xmlObject, string $senderID) {
-        $this->xmlObject = $xmlObject;
+    public function __construct(string $senderID) {
         $this->senderID = $senderID;
     }
     
-    public function validate(): WebhookXmlValidation
+    public function validate(SimpleXMLElement $xmlObject): self
     {
-
-        $serviceInterface = $this->xmlObject->children()[0];
+        $serviceInterface = $xmlObject->children()[0];
         if (!in_array($serviceInterface->getName(), self::ALLOWED_SERVICE_INTERFACES)) {
             $this->addError("Invalid service interface name: " . $serviceInterface->getName());
         }
@@ -37,11 +37,11 @@ class WebhookXmlValidation extends WebhookValidator
             $this->addError("Invalid service interface messageCount attribute");
         }
         
-        if ( ! $this->xmlObject->Signature->SignatureValue ) {
+        if ( ! $xmlObject->Signature->SignatureValue ) {
             $this->addError("Invalid Signature Value");
         }
         
-        if ( ! $this->xmlObject->Signature->KeyInfo->KeyName ) {
+        if ( ! $xmlObject->Signature->KeyInfo->KeyName ) {
             $this->addError("Invalid KeyName");
         }
         

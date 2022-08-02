@@ -4,14 +4,21 @@ namespace Bluem\BluemPHP\Validators;
 
 abstract class WebhookValidator implements WebhookValidatorInterface
 {
-    public bool $isValid = true;
-    public array $errors = [];
-
+    public static bool $isValid = true;
+    
+    /* @var string[] */
+    protected static array $errors = [];
 
     protected function addError($error): void
     {
-        $this->isValid = false;
-        $this->errors[] = $error;
+        self::$isValid = false;
+        self::$errors[] = $error;
+    }
+    
+    public function errorMessage(): string 
+    {
+        return "Validation fails: " 
+            . implode(', ', self::$errors);
     }
 
 
