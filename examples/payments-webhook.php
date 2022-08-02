@@ -16,15 +16,50 @@ require_once __DIR__.'/initialization.php';
  * 
  * when running this in a webserver, this allows you to expose the webhook to the url like this:
  * 
- * http://localhost/code.php?action=webhook
+ * http://example.com/payments-webhook.php
  * 
- * change this URL to match your webserver and code location
+ * change this URL to match your web server.
  */
 if ($_GET['action'] === "webhook") {
     
     // if you want debug information and verbose results when testing the webhook, set this to true
     $bluem_object->setConfig("webhookDebug", false);
     
-    // this call will exit with a 200 or 400 HTTP status code, and perform the necessary work for you
-    $bluem_object->Webhook();
+    // this call will exit with a 200 or 400 HTTP status code, and parse the incoming data
+    // Returns null if the webhook didn't parse successfully.
+    $webhook = $bluem_object->Webhook();
+
+    // implement this like you implemented the callback for the regular services in your application
+    if ($webhook !== null) {
+
+        $status = $webhook->getStatus();
+        
+        if ($status === "Success") {
+
+            $transactionID = $webhook->getTransactionID();
+            $amount = $webhook->getAmount();
+            $amountPaid = $webhook->getAmountPaid();
+            $currency = $webhook->getCurrency();
+            $paymentMethod = $webhook->getPaymentMethod();
+            
+            // note: these are currently iDEAL specific
+            $debtorAccountName = $webhook->getDebtorAccountName();
+            $debtorIBAN = $webhook->getDebtorIBAN();
+            $debtorBankID = $webhook->getDebtorBankID();
+            
+            // deal with the successful callback
+        } elseif($status ==="Cancelled") {
+            // deal with the cancelled callback
+        } elseif($status ==="Open") {
+            // deal with the open callback
+        } elseif($status ==="Expired"){
+            // deal with the failed or expired callback
+        } else {
+            // deal with any other status
+        }
+
+        // refer to the readme on webhooks for example methods to use for retrieving data from the callback object.
+        
+    }
+    
 }

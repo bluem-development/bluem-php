@@ -266,46 +266,146 @@ Input of a different context will trigger an exception. If valid, the result is 
 
 Please note that the BIC list will vary when a different `localInstrumentCode` is configured. The localInstrumentCode `CORE` and `B2B` are supported by different banks. Based on your configuration, the right BIC list is loaded from context automatically and used to verify the debtorWallet.
 
+## Webhooks
+
+Webhooks exist for Payments, eMandates and Identity. They trigger during requests to the Bluem flow and send data to your application.
+They are vital to ensure all processes are always completed, even if the customer/user does not reach your regular callback method(s) in your flow. 
+
+Activate the endpoints by creating an endpoint for testing and production environments. 
+They then need to be configured on Bluem's side and implemented on the client side.
+
+### 1. How to implement
+Create an HTTP-reachable endpoint for TEST and PRODUCTION environments. Examples are:
+
+- [https://example.com/webhook/test](https://example.com/webhook/test)
+or [https://example.com/webhook_test.php](https://example.com/webhook/test)
+- [https://example.com/webhook/production](https://example.com/webhook/production)
+- etc.
+
+Call the `Webhook()` function within that endpoint:
+
+```php
+$bluem_object->setConfig("webhookDebug", false);
+$webhook = $bluem_object->Webhook();
+
+// implement this like you implemented the callback
+// for the regular services in your application
+if ($webhook !== null) {     
+    if ($webhook->getStatus() === "Success") {
+        // deal with the successful callback
+    }
+    // ...etc
+}
+```
+Refer to the `examples/payments-webhook.php` for a more in-depth example implementation and retrieval of the data when a webhook is received in your application. 
+
+
+You can utilize the following functions on the callback object to get the data from the webhook and process the relevant data. 
+
+_Note_: Most functions return string values, unless otherwise specified.
+
+**Functions available in all services:**
+
+```php
+$callbackObject->getEntranceCode();
+$callbackObject->getPaymentReference();
+$callbackObject->getCreationDateTime();
+$callbackObject->getStatus();
+$callbackObject->getDebtorReference();
+```
+
+**Payments specific functions:**
+```php
+$transactionID = $webhook->getTransactionID();
+$amount = $webhook->getAmount();
+$amountPaid = $webhook->getAmountPaid();
+$currency = $webhook->getCurrency();
+$paymentMethod = $webhook->getPaymentMethod();
+
+// note: these return a SimpleXML object
+$paymentMethodDetails = $webhook->getPaymentMethodDetails(); 
+$iDealDetails = $webhook->getIDealDetails();
+
+// note: these are currently iDEAL specific
+$debtorAccountName = $webhook->getDebtorAccountName();
+$debtorIBAN = $webhook->getDebtorIBAN();
+$debtorBankID = $webhook->getDebtorBankID();
+```
+
+**EMandates specific functions:**
+```php
+$mandateID = $webhook->getMandateID();
+$statusDateTime = $webhook->getStatusDateTime();
+$originalReport = $webhook->getOriginalReport(); // note: returns raw XML cdata object that still needs to be parsed
+$acceptanceReport = $webhook->getAcceptanceReportArray(); // note: returns array with a lot of values that are of use
+```
+
+**Identity specific functions:**
+
+```php
+$requestType = $webhook->getRequestType();
+$transactionID = $webhook->getTransactionID();
+$debtorReference = $webhook->getDebtorReference();
+$authenticationAuthorityID = $webhook->getAuthenticationAuthorityID();
+$authenticationAuthorityName = $webhook->getAuthenticationAuthorityName();
+
+// note: returns array with a lot of values that are of use
+$identityReportArray = $webhook->getIdentityReportArray(); 
+```
+
+### 2. How to configure
+**Communicate the endpoint URLs to [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl?subject=Bluem+Webhook+Endpoints) to have these URLs be configured in your account.**
+Please allow for a few working days for this to be configured. We will follow-up as soon as the endpoints have been added.
+
+### 3. Verify that it works
+You can POST to your own endpoints to verify that it works. Please contact us for a sample Webhook call that you can use for your service.
+
+### Support for webhooks
+We can help you troubleshoot any problems you might face after creating the endpoints. We can also help you verify that data gets sent properly.
+Please contact us if you need assistance in this regard.
 
 ## Payments
 
-The following attributes in the bluem_config are vital for proper eMandate functionality:
+The following attributes in the config are vital for proper eMandate functionality:
 
-- PaymentReference: a reference visible within the administration, which can be used to identify the customer and the transaction details.
-- Amount (Amount Mutable, MinAmount, MaxAmount, AmountArray),
-- A valid brandID set for payments.
+- `PaymentReference`: a reference visible within the administration, which can be used to identify the customer and the transaction details.
+- `Amount` 
+  - Amount Mutable
+  - MinAmount
+  - MaxAmount
+  - AmountArray,
+- A valid `brandID` set and enabled for payments.
 
-### Create a payment transaction
+### Creating a payment transaction
 
-The Payments service is very similar to the eMandates service, but utilises other parameters:
+The Payments service is like the eMandates service, but utilises other parameters. Here is an example:
 
 ```php
-    $description = "Test payment"; // a concise description with possible references to order name and such
-    $amount = 100.00;	 // as a float
-    $currency = "EUR"; // if set to null, will default to EUR as string
-    $debtorReference = "1234023"; 
-    $dueDateTime = null; // set it automatically a day in advance. if you want to set it, use a datetime string in "YYYY-MM-DD H:i:s" format
+$description = "Test payment"; // a concise description with possible references to order name and such
+$amount = 100.00;	 // as a float
+$currency = "EUR"; // if set to null, will default to EUR as string
+$debtorReference = "1234023"; 
+$dueDateTime = null; // set it automatically a day in advance. if you want to set it, use a datetime string in "YYYY-MM-DD H:i:s" format
 
-    $entranceCode = $bluem->CreateEntranceCode();
+$entranceCode = $bluem->CreateEntranceCode();
 
-    // To create AND perform a request:
-    $request = $bluem->CreatePaymentRequest(
-        $description,
-        $debtorReference,
-        $amount,
-        $dueDateTime,
-        $currency,
-        $entranceCode
-    );
-    // Or, to create and perform a request together in shorthand:
-    $response = $bluem->Payment(
-        $description,
-		$debtorReference,
-		$amount,
-		$dueDateTime,
-        $currency
-    );
-
+// To create AND perform a request:
+$request = $bluem->CreatePaymentRequest(
+    $description,
+    $debtorReference,
+    $amount,
+    $dueDateTime,
+    $currency,
+    $entranceCode
+);
+// Or, to create and perform a request together in shorthand:
+$response = $bluem->Payment(
+    $description,
+    $debtorReference,
+    $amount,
+    $dueDateTime,
+    $currency
+);
 ```
 
 ### Requesting a payment status
