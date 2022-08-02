@@ -3,15 +3,13 @@
 namespace Bluem\BluemPHP;
 
 use Exception;
-use Selective\XmlDSig\XmlSignatureValidator;
 use SimpleXMLElement;
-use Throwable;
 
-class BluemWebhook
+class Webhook
 {
 
     private string $senderID;
-    private bool $webhookDebugging = false;
+    private bool $webhookDebugging;
     
     public function __construct(
         $senderID, $webhookDebugging = false
@@ -21,41 +19,34 @@ class BluemWebhook
         $this->webhookDebugging = $webhookDebugging;
     }
     
-    public function execute() {
-
-        // The following checks will be performed:
-        // Check: Must be secure connection (if not in debug mode)
+    public function execute(): void
+    {
+        // Check: secure connection (if not in debug mode)
         if (!$this->isHttpsRequest()) {
             if ($this->webhookDebugging) {
-                echo "Warning: not HTTPS".PHP_EOL;
+                echo "Warning: not HTTPS" . PHP_EOL;
             } else {
-                http_response_code( 400 );
-                exit('Webhook request is not HTTPS');
+                $this->exitWithError('Webhook request is not HTTPS');
             }
         }
 
         // Check: ONLY Accept post requests
         if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
-            http_response_code( 400 );
-            if ( $this->webhookDebugging ) {
-                exit( "Validation error: Not post" );
-            }
-            exit();
+            $this->exitWithError('Validation error: Not post');
         }
 
-        // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK
+        // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK.
         $postData = file_get_contents( 'php://input' );
 
         if ( $postData === "" ) {
-            if ( $this->webhookDebugging ) {
-                exit("Input error: no data body given");
-            }
-            http_response_code( 200 );
-            exit();
+            $this->exitWithError('Input error: no data body given');
         }
 
-        // Check: content type has to be: "Content-type", "text/xml; charset=UTF-8"
-
+        // Check: content type: XML with utf-8 encoding
+        if ($_SERVER["CONTENT_TYPE"] !== "text/xml; charset=UTF-8") {
+            $this->exitWithError('Wrong Content-Type given; should be xml with UTF-8 encoding');
+        }
+        
         // Parsing XML data from POST body
         try {
             $xmlObject = new SimpleXMLElement( $postData );
@@ -68,29 +59,21 @@ class BluemWebhook
             exit();
         }
 
-        // Check: XML data has to be a valid XML structure
+        // Check: XML data validates
         $xmlValidation = (new Validators\WebhookXmlValidation($xmlObject, $this->senderID))->validate();
 
         if(!$xmlValidation->isValid) {
-            http_response_code(400);
-            if($this->webhookDebugging) {
-                exit("Invalid input XML data given: " . implode(', ', $xmlValidation->errors));
-            }
-            exit;
+            $this->exitWithError("Invalid input XML data given: " . implode(', ', $xmlValidation->errors));
         }
 
         // Check: if signature is valid in postdata
         $signatureValidation = (new Validators\WebhookSignatureValidation($postData))->validate();
         if ( ! $signatureValidation->isValid ) {
-            http_response_code( 400 );
-            if ( $this->webhookDebugging ) {
-                exit( 'The XML signature is not valid: '. implode(', ', $signatureValidation->errors) );
-            }
-            // echo 'The XML signature is not valid.';
-            // echo PHP_EOL;
-            exit;
+            $this->exitWithError('The XML signature is not valid: '. implode(', ', $signatureValidation->errors));
         }
-
+        
+        // ----
+        echo "You have a valid webhook here!";
         // @todo webhook response dependent on the interface, check the status update
 
         // @todo webhook response mandates
@@ -122,5 +105,14 @@ class BluemWebhook
                 && $_SERVER['HTTPS'] !== 'off')
             || $_SERVER['SERVER_PORT'] === 443
         );
+    }
+
+    private function exitWithError(string $string, int $errorCode = 400): void
+    {
+        http_response_code( $errorCode );
+        if ($this->webhookDebugging) {
+            exit($string);
+        }
+        exit;
     }
 }
