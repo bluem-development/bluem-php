@@ -16,10 +16,12 @@ require_once __DIR__.'/initialization.php';
  * 
  * when running this in a webserver, this allows you to expose the webhook to the url like this:
  * 
- * http://example.com/payments-webhook.php
+ * http://example.com/payments-webhook.php?action=webhook
  * 
  * change this URL to match your web server.
  */
+
+// This GET parameter is an example. This is not required.
 if ($_GET['action'] === "webhook") {
     
     // if you want debug information and verbose results when testing the webhook, set this to true
