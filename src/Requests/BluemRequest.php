@@ -11,7 +11,8 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
-use Carbon\Carbon as Carbon;
+
+use Carbon\Carbon;
 use Exception;
 use SimpleXMLElement;
 
@@ -313,6 +314,7 @@ class BluemRequest implements BluemRequestInterface {
         $this->debtorWallet = $BIC;
     }
 
+    
     /**
      * Create the XML element necessary to be added to the request XML string.
      *
@@ -323,14 +325,17 @@ class BluemRequest implements BluemRequestInterface {
             return "";
         }
 
-        if ( $this->debtorWallet == "" ) {
+        if ( $this->debtorWallet === "" ) {
             return "";
         }
 
-        if ( ! isset( $this->context->debtorWalletElementName ) || $this->context->debtorWalletElementName == "" ) {
+        if ( ! isset( $this->context->debtorWalletElementName ) || $this->context->debtorWalletElementName === "" ) {
             return '';
         }
-
+        
+        
+        
+        
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
         $res .= "<BIC>" . $this->debtorWallet . "</BIC>";

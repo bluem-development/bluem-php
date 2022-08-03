@@ -3,9 +3,24 @@
 namespace Bluem\BluemPHP\Contexts;
 
 use Bluem\BluemPHP\Helpers\BIC;
+use RuntimeException;
 
 class PaymentsContext extends BluemContext {
-    public $debtorWalletElementName = "IDEAL";
+    
+    public const PAYMENT_METHOD_IDEAL = 'IDEAL';
+    public const PAYMENT_METHOD_PAYPAL = 'PAYPAL';
+    public const PAYMENT_METHOD_CREDITCARD = 'VISA_MASTER';
+    
+    public const PAYMENT_METHODS = [
+        self::PAYMENT_METHOD_IDEAL,
+        self::PAYMENT_METHOD_PAYPAL,
+        self::PAYMENT_METHOD_CREDITCARD
+    ];
+    
+    
+    public string $debtorWalletElementName = self::PAYMENT_METHOD_IDEAL;
+    
+    private array $paymentMethodDetails;
 
     /**
      * PaymentsContext constructor.
@@ -32,5 +47,79 @@ class PaymentsContext extends BluemContext {
 
     public function getValidationSchema(): string {
         return parent::getValidationSchema() . 'EPayment.xsd';
+    }
+
+    public function addPaymentMethodDetails(array $details = [])
+    {
+        $validationErrors = $this->validateDetails($details);
+        if(count($validationErrors) > 0 ) {
+            throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
+        }
+        $this->paymentMethodDetails = $details;
+    }
+
+    private function validateDetails(array $details = []): array
+    {
+        $errors = [];
+        
+        if($this->isIDEAL()) {
+            if (!$details['BIC']) {
+                $errors[] = 'BIC missing';
+            }
+        }
+        if($this->isPayPal()) {
+            if(!$details['PayPalAccount']) {
+                $errors[] = 'PayPalAccount missing';
+            }
+                // @todo: validate is valid email
+        }
+        if($this->isCreditCard()) {
+            if(!$details["CardNumber"]) {
+                $errors[] = 'CardNumber missing';
+
+//            <xsd:restriction base="xsd:token">  x
+//        </xsd:restriction>
+            }
+                
+            if(!$details["Name"]) {
+                $errors[] = 'Name missing';
+            // length 1-32 chars
+            }
+                
+            if(!$details["SecurityCode"]) {
+                $errors[] = 'SecurityCode missing';
+            //<xsd:pattern value="[0-9]{3,4}"/>  <!-- 3 or 4 digits -->
+            }
+                
+            if(!$details["ExpirationDateMonth"]) {
+                $errors[] = 'ExpirationDateMonth missing';
+            }
+            
+            if(!$details["ExpirationDateYear"]) {
+                $errors[] = 'ExpirationDateYear missing';
+            }
+        }
+        
+        return $errors;
+    }
+
+    public function isIDEAL()
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_IDEAL;
+    }
+
+    public function isPayPal()
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_PAYPAL;
+    }
+
+    public function isCreditCard()
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_CREDITCARD;
+    }
+
+    public function getPaymentDetail(string $key)
+    {
+        return $this->paymentMethodDetails[$key] ?? '';
     }
 }

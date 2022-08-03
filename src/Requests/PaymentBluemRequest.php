@@ -4,42 +4,31 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
-use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
+
 use Carbon\Carbon;
 use Exception;
 
-class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface {
+class PaymentBluemRequest extends BluemRequest
+{
     public $request_url_type = "pr";
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "PTX";
-    /**
-     * @var string
-     */
-    public $dueDateTime;
+    
+    public string $dueDateTime;
     /**
      * @var array|string|string[]
      */
     public $debtorReturnURL;
-    /**
-     * @var string
-     */
-    public $paymentReference;
-    private $xmlInterfaceName = "EPaymentInterface";
-    /**
-     * @var string
-     */
-    private $description;
+    
+    public string $paymentReference;
+    private string $xmlInterfaceName = "EPaymentInterface";
+    private string $description;
     /**
      * @var mixed|string
      */
     private $currency;
     private $debtorReference;
-    /**
-     * @var float
-     */
-    private $amount;
-
-// @todo: deprecated, remove
+    private float $amount;
 
     /**
      * @throws Exception
@@ -80,7 +69,7 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
         $sanitizedDebtorReferenceParts = [];
         $sanitizedDebtorReferenceCount = preg_match_all(
-            "/[0-9a-zA-Z]{1,35}/i",
+            "/[\da-zA-Z]{1,35}/i",
             $debtorReference,
             $sanitizedDebtorReferenceParts
         );
@@ -93,11 +82,11 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface 
         $this->debtorReference = $debtorReference;
 
 
-        $this->amount = floatval( $amount );
+        $this->amount = (float)$amount;
 
         $this->transactionID = $transactionID;
 
-        if ( isset( $debtorReturnURL ) && $debtorReturnURL != "" ) {
+        if ( isset( $debtorReturnURL ) && $debtorReturnURL !== "" ) {
             $this->debtorReturnURL = $debtorReturnURL;
         } else {
             $this->debtorReturnURL = $config->merchantReturnURLBase;
@@ -106,8 +95,8 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface 
 
         $this->debtorReturnURL = str_replace( '&', '&amp;', $this->debtorReturnURL );
 
-        // note! different variable name in config
-        // added entranceCode as well, useful. Defined in generic bluem request class
+        // Note: different variable name in config
+        // added entranceCode as well, useful. Defined in generic bluem request class.
 
         $this->paymentReference = "$this->debtorReference$this->transactionID";
 
@@ -115,7 +104,7 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface 
     }
 
     /**
-     * validate based on a list of accepted currencies
+     * Validate based on a list of accepted currencies
      *
      * @param $currency
      *
@@ -124,7 +113,7 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface 
      */
     private function validateCurrency( $currency ): string {
         $availableCurrencies = [ "EUR" ]; // @todo: add list of currencies based on 
-        if ( ! in_array( $currency, $availableCurrencies ) ) {
+        if ( !in_array($currency, $availableCurrencies, true)) {
             throw new Exception( "Currency not recognized, 
                     should be one of the following available currencies: " .
                                  implode( ",", $availableCurrencies )
@@ -151,7 +140,7 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface 
                 <Amount>' . number_format( $this->amount, 2, '.', '' ) . '</Amount>
                 <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
-                $this->XmlWrapDebtorWallet() .
+                $this->XmlWrapDebtorWalletForPaymentMethod() .
                 $this->XmlWrapDebtorAdditionalData(),
                 [
                     'documentType' => "PayRequest",
@@ -163,5 +152,69 @@ class PaymentBluemRequest extends BluemRequest implements BluemRequestInterface 
 
         // @todo make documentType, sendOption and language a setting here?
 
+    }
+    
+    private function setPaymentMethod(string $method): void {
+        if(in_array($method, $this->context::PAYMENT_METHODS, true)) {
+            $this->context->debtorWalletElementName = $method;
+        }
+    }
+    
+    public function setPaymentMethodToIDEAL($BIC = ""): self {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_IDEAL);
+        
+        $this->context->addPaymentMethodDetails([
+            'BIC'=>$BIC
+        ]);
+        
+        return $this;
+    }
+    
+    public function setPaymentMethodToPayPal($payPalAccount = ""): self {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_PAYPAL);
+        
+        $this->context->addPaymentMethodDetails([
+            'PayPalAccount'=>$payPalAccount
+        ]);
+        
+        return $this;
+    }
+    
+    public function setPaymentMethodToCreditCard(
+        string $cardNumber, string $name, int $securityCode, int $expirationDateMonth, int $expirationDateYear
+    ): self {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_CREDITCARD);
+        
+        $this->context->addPaymentMethodDetails([
+            'CardNumber'=>$cardNumber,
+            'Name'=>$name,
+            'SecurityCode'=>$securityCode,
+            'ExpirationDateMonth'=>$expirationDateMonth,
+            'ExpirationDateYear'=>$expirationDateYear,
+        ]);
+        
+        return $this;
+    }
+
+    private function XmlWrapDebtorWalletForPaymentMethod(): string
+    {
+        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+        $res .= "<{$this->context->debtorWalletElementName}>";
+        if($this->context->isIDEAL()) {
+            $res .= "<BIC>" . $this->context->getPaymentDetail('BIC') ?? $this->debtorWallet . "</BIC>";
+        } elseif($this->context->isPayPal()) {
+            $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
+        } elseif($this->context->isCreditCard()) {
+            $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
+            $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
+            $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
+            $res .= "<ExpirationDate>
+                        <Month>" . $this->context->getPaymentDetail('ExpirationDateMonth') . "</Month>
+                        <Year>" . $this->context->getPaymentDetail('ExpirationDateYear') . "</Year>
+                    </ExpirationDate>";
+        }
+        $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+        $res .= "</DebtorWallet>" . PHP_EOL;
+        return $res;
     }
 }

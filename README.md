@@ -159,23 +159,8 @@ Testing is done given a `.env` file. Please ensure that a filled `.env` file is 
 Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. 
 If you have checked that the credentials are correct, but you still receive this message, please contact your Bluem account manager.
 
-*How can I make the experience of identifying more user-friendly?*<br>
-- You can reduce the amount of steps required by performing the selection of the bank within your own application and interface by utilizing the preselection feature from the PHP library on the request object as so:
-
-```php
-    $BIC = "INGBNL2A";
-    $request->selectDebtorWallet($BIC);
-```
-See the section **DebtorWallet: preselecting a bank for Mandate, Payment or Identity request** for more information.
-This method can be used when creating iDIN and when creating iDEAL requests; you could store the selected bank (“Issuer”) on user level and use it when creating a request for your user.
-- You can inform the user WHY this is necessary and refer to the new laws and rules, in your own website/application or refer to the news/public announcements.
-- You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience: that it ensures integrity, and a valid webshop experience.
-
-
 *Can I connect the Identity service with a payment service like Emandates or iDEAL so the user is only redirected once?*<br>
 - No, you cannot, as these are separate processes.
-
-
 
 
 
@@ -252,24 +237,16 @@ The user is redirected to the response URL at the Bluem servers. In this Bluem e
 4. **StatusRequest (from the website to Bluem)**: Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality.
 5. **StatusUpdate (from Bluem to the website)**: This response object that comes back from a callback or webhook, contains an updated status that you can process within your application. For example: when the user has paid or verified, and you have to change a product, order or process' status and go to a next step.
 6. **Webhook**: The webhook functionality allows Bluem to directly and safely push status changes and transaction results to your site or app. Therefore, your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
-<<<<<<< HEAD
+
 The Webhook is only needed for ePayments and eMandates: online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification. See the Webhook paragraph for implementation instructions.
 
 Please note that the flow for the IBAN-Name check is shorter: a TransactionRequest is performed. The results return as a TransactionResponse. 
 This is because the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
 
-### DebtorWallet: Preselecting a bank for Mandate, Payment or Identity request 
-=======
-The Webhook is only needed for ePayments and eMandates: online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification (there is no place where the end user can close the browser). See the Webhook paragraph for implementation instructions. 
-
-Please note that the flow for the IBAN-Name check is shorter: Only a TransactionRequest and the results come directly back in the TransactionResponse. This is as the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
-
-### DebtorWallet - Preselecting a bank for Mandate, Payment or Identity request 
->>>>>>> origin/master
-
+## Preselecting a bank for Mandate, Payment or Identity request using debtorWallet 
 It is possible to preselect a Bank within your own application based on an IssuerID (BIC/Swift code) when creating a Mandate, Payment or Identity request. This can be used if you want to user to select the given bank in your own interface and skip the bank selection within the Bluem portal interface.
 
-To preselect a bank in a request, use the following function on a request object (supported for Mandates, Payments and Identity only) for an example BIC:
+This reduces the amount of steps required by performing the selection of the bank within your own application and interface by utilizing the preselection feature from the PHP library on the request object as so:
 
 ```php
 $BIC = "INGBNL2A";
@@ -287,6 +264,48 @@ $IdentityBICs = $bluem->retrieveBICsForContext("Identity");
 Input of a different context will trigger an exception. If valid, the result is an array of `Bluem\BluemPHP\BIC` objects with attributes `IssuerID` and `IssuerName`: the BIC and Bank name respectively. You can use this to populate your user interface.
 
 Please note that the BIC list will vary when a different `localInstrumentCode` is configured. The localInstrumentCode `CORE` and `B2B` are supported by different banks. Based on your configuration, the right BIC list is loaded from context automatically and used to verify the debtorWallet.
+
+This method can be used when creating iDIN and when creating iDEAL requests; you could store the selected bank (“Issuer”) on user level and use it when creating a request for your user.
+- You can inform the user WHY this is necessary and refer to the new laws and rules, in your own website/application or refer to the news/public announcements.
+- You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience: that it ensures integrity, and a valid webshop experience.
+
+
+## Changing between Creditcards, Paypal and iDeal ePayment methods
+
+You can allow the PayPal and Creditcard payment methods by selecting these within the request object before sending it.
+
+To use iDeal, (the default). A BIC can be provided. If left empty, bank selection will occur in the Bluem portal.
+```php
+$BIC = 'INGBNL2A';
+$request->setPaymentMethodToIDEAL($BIC); 
+```
+
+To use PayPal, give in a PayPal account email address.
+```php
+$payPalAccount = 'john.doe@gmail.com';
+$request->setPaymentMethodToPayPal($payPalAccount); 
+```
+To use Creditcards
+
+```php
+$cardNumber = '1234000012340000';
+$name = 'John Doe';
+$securityCode = 123;
+$expirationDateMonth = 11;
+$expirationDateYear = 2025;
+
+$request->setPaymentMethodToCreditCard(
+    $cardNumber,
+    $name,
+    $securityCode,
+    $expirationDateMonth,
+    $expirationDateYear
+); 
+```
+
+These methods will throw an exception if required information is missing.
+
+Once the request executes, the link to the transaction will send you to the Bluem Portal with the corresponding interface and flow.
 
 ## Webhooks
 
