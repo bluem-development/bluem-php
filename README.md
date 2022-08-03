@@ -187,17 +187,16 @@ This library makes it easy to perform communication with Bluem for its services 
 
 1. **TransactionRequest (from the website to Bluem)**: Your application creates a request object, sends it to Bluem's servers with authentication.
 2. **TransactionResponse (including TransactionURL) (from Bluem to site)**: Your application receives a response with a URL as entry point into the Bluem environment, if the request was successful.
-3. **Bluem Environment**: Redirect client to TransactionURL, client (via the checkout) to bank, confirm transaction, back to Merchant (via MerchantReturnURL with Emandates, and via DebtorReturnURL with Payments/Identity), this is trigger for StatusRequest
+3. **Bluem Environment**: Redirect client to TransactionURL, client (via checkout) to bank, confirm transaction, back to Merchant (via MerchantReturnURL with Emandates, and via DebtorReturnURL with Payments/Identity), this is trigger for StatusRequest
 The user is redirected to the response URL at the Bluem servers. In this Bluem environment, the user performs a payment/mandate signing or identity/IDIN check and returns to a predefined URL.
 4. **StatusRequest (from the website to Bluem)**: Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality.
 5. **StatusUpdate (from Bluem to the website)**: This response object that comes back from a callback or webhook, contains an updated status that you can process within your application. For example: when the user has paid or verified, and you have to change a product, order or process' status and go to a next step.
 6. **Webhook**: The webhook functionality allows Bluem to directly and safely push status changes and transaction results to your site or app. Therefore, your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
-The Webhook is only needed for ePayments and eMandates: online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification. See the Webhook paragraph for implementation instructions.
+The Webhook is only needed for ePayments and eMandates: online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification (there is no place where the end user can close the browser). See the Webhook paragraph for implementation instructions. 
 
-Please note that the flow for the IBAN-Name check is shorter: a TransactionRequest is performed. The results return as a TransactionResponse. 
-This is because the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
+Please note that the flow for the IBAN-Name check is shorter: Only a TransactionRequest and the results come directly back in the TransactionResponse. This is as the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
 
-### DebtorWallet: Preselecting a bank for Mandate, Payment or Identity request 
+### DebtorWallet - Preselecting a bank for Mandate, Payment or Identity request 
 
 It is possible to preselect a Bank within your own application based on an IssuerID (BIC/Swift code) when creating a Mandate, Payment or Identity request. This can be used if you want to user to select the given bank in your own interface and skip the bank selection within the Bluem portal interface.
 
@@ -243,7 +242,7 @@ $bluem_object->setConfig("webhookDebug", false);
 $webhook = $bluem_object->Webhook();
 
 // implement this like you implemented the callback
-// for the regular services in your application.
+// for the regular services in your application
 if ($webhook !== null) {     
     if ($webhook->getStatus() === "Success") {
         // deal with the successful callback
@@ -280,7 +279,7 @@ $paymentMethod = $webhook->getPaymentMethod();
 $paymentMethodDetails = $webhook->getPaymentMethodDetails(); 
 $iDealDetails = $webhook->getIDealDetails();
 
-// note: these are iDEAL specific
+// note: these are currently iDEAL specific
 $debtorAccountName = $webhook->getDebtorAccountName();
 $debtorIBAN = $webhook->getDebtorIBAN();
 $debtorBankID = $webhook->getDebtorBankID();
@@ -290,8 +289,8 @@ $debtorBankID = $webhook->getDebtorBankID();
 ```php
 $mandateID = $webhook->getMandateID();
 $statusDateTime = $webhook->getStatusDateTime();
-$originalReport = $webhook->getOriginalReport(); // note: returns raw XML cdata object that still needs to be parsed.
-$acceptanceReport = $webhook->getAcceptanceReportArray(); // note: returns array with a lot of values that are of use.
+$originalReport = $webhook->getOriginalReport(); // note: returns raw XML cdata object that still needs to be parsed
+$acceptanceReport = $webhook->getAcceptanceReportArray(); // note: returns array with a lot of values that are of use
 ```
 
 **Identity specific functions:**
@@ -303,26 +302,26 @@ $debtorReference = $webhook->getDebtorReference();
 $authenticationAuthorityID = $webhook->getAuthenticationAuthorityID();
 $authenticationAuthorityName = $webhook->getAuthenticationAuthorityName();
 
-// note: returns array with a lot of values that are of use.
+// note: returns array with a lot of values that are of use
 $identityReportArray = $webhook->getIdentityReportArray(); 
 ```
 
 ### 2. How to configure
 **Communicate the endpoint URLs to [pluginsupport@bluem.nl](mailto:pluginsupport@bluem.nl?subject=Bluem+Webhook+Endpoints) to have these URLs be configured in your account.**
-Please allow for a few working days for this to be configured. We will follow up as soon as the endpoints have been added.
+Please allow for a few working days for this to be configured. We will follow-up as soon as the endpoints have been added.
 
 ### 3. Verify that it works
 You can POST to your own endpoints to verify that it works. Please contact us for a sample Webhook call that you can use for your service.
 
 ### Support for webhooks
 We can help you troubleshoot any problems you might face after creating the endpoints. We can also help you verify that data gets sent properly.
-Please contact us if you need help in this regard.
+Please contact us if you need assistance in this regard.
 
 ## Payments
 
 The following attributes in the config are vital for proper eMandate functionality:
 
-- `PaymentReference`: a reference visible within the administration, which can be used to identify the customer and/or the transaction details.
+- `PaymentReference`: a reference visible within the administration, which can be used to identify the customer and the transaction details.
 - `Amount` 
   - Amount Mutable
   - MinAmount
@@ -335,11 +334,11 @@ The following attributes in the config are vital for proper eMandate functionali
 The Payments service is like the eMandates service, but utilises other parameters. Here is an example:
 
 ```php
-$description = "Test payment"; // a concise description with possible references to order name and such.
+$description = "Test payment"; // a concise description with possible references to order name and such
 $amount = 100.00;	 // as a float
 $currency = "EUR"; // if set to null, will default to EUR as string
 $debtorReference = "1234023"; 
-$dueDateTime = null; // Set it automatically a day in advance. If you want to set it, use a datetime string in "YYYY-MM-DD H:i:s" format
+$dueDateTime = null; // set it automatically a day in advance. if you want to set it, use a datetime string in "YYYY-MM-DD H:i:s" format
 
 $entranceCode = $bluem->CreateEntranceCode();
 
@@ -381,10 +380,10 @@ if ($statusresponse->ReceivedResponse()) {
             // do something when the request is still processing (for example tell the user to come back later to this page)
             break;
         case 'Cancelled':
-            // do something when the request has been canceled by the user.
+            // do something when the request has been canceled by the user
             break;
         case 'Open':
-            // do something when the request has not yet been completed by the user, redirecting to the transactionURL again.
+            // do something when the request has not yet been completed by the user, redirecting to the transactionURL again 
             break;
         case 'Expired':
             // do something when the request has expired
@@ -420,9 +419,9 @@ $value = "john@doe.com";
 $request->addAdditionalData($key, $value);
 // but before performing it
 ```
-Providing an unknown key or invalid formatted value will cause an exception. 
+Providing a key that is not in the above list of options or a value that does not match the expected format for each option will trigger an exception.
 
-The key options are:
+The key options are described below:
 
 #### EmailAddress
 Include an email address of the customer.
@@ -438,10 +437,10 @@ Include a customer number.
 #### CustomerName
 Include a customer name.
 #### AttentionOf
-Include a customer title or name of person to be addressed.
+Include a customer title or name of person to be addressed
 
 #### Salutation
-Include a customer title or name of person to be saluted.
+Include a customer title or name of person to be saluted
 
 #### CustomerAddressLine1
 Include a first part of an address of the customer.
@@ -460,23 +459,27 @@ More instructions follow.
 
 
 ### Mandate specific configuration fields
-The following attributes in the `bluem_config` are vital for proper eMandate functionality. Below is a short description what each configuration field means:
+The following attributes in the bluem_config are vital for proper eMandate functionality. Below is a short description what each configuration field means:
 
-- Local Instrument Code (CORE, B2B)
-- RequestType 
-  - Issuing is the default. Amendment/Cancellation are not used.
-- SequenceType: 
+Local Instrument Code (CORE, B2B)
+
+RequestType 
+- Issuing is the default. Amendment/Cancellation are not actually used in practice at this time.
+
+SequenceType: 
   - One-off, or`OOFF`
   - Recurring, or `RCUR`
-- MandateID,
-- MerchantID,
-- MaxAmount (for B2B),
-- ValidationReference
 
-### Creating an eMandate Transaction: helper functions
-You need certain information to reference a transaction request: an ID (in this case the MandateID), and an entranceCode 
-(basically a timestamp when you started the request). Creating this information can be done using helper functions. 
-When creating a new transaction, the entranceCode and MandateID will be generated within the `$bluem`.
+MandateID,
+
+MerchantID,
+
+MaxAmount (for B2B),
+
+ValidationReference
+
+### Creating an eMandate Transaction - helper functions
+You need certain information to reference a transaction request: an ID (in this case the MandateID) and an entranceCode (basically a timestamp when you started the request). Creating this information can be done using helper functions. When creating a new transaction,  the entranceCode and MandateID will be generated within the `$bluem`.
 
 
 Generating a mandate ID:
@@ -512,7 +515,7 @@ $response = $bluem->Mandate($customer_id, $order_id,"default");
 
 If you do anything wrong, or you are unauthorized, the Response object will be of type `Bluem\BluemPHP\ErrorBluemResponse` and has an `Error()` function to retrieve a string of information regarding your error that you could display to your user or handle yourself.
 
-An example about incorrect access token and Ids could be: “Unauthorized: check your access credentials“.
+An example about incorrect access token and Ids could be: "Unauthorized: check your access credentials".
 
 #### Redirection after eMandate transaction creation
 When you have performed a transaction request successfully, you receive a response object from Bluem. This object tells you where to redirect the user to, to actually perform the administrative steps at the Bluem portal.
@@ -558,7 +561,7 @@ The possible statuses are `Success`, `Processing`, `Pending`, `Cancelled`, `Open
 
 ### Configuring iDIN
 
-Make sure a `IDINBrandID` property is set in configuration to utilize iDIN in parallel to other Bluem services.
+Make sure that there is a `IDINBrandID` property set in config to utilize iDIN in parallel to other Bluem services.
 The BrandID of different services might differ: e.g. CompanyPayment, CompanyMandate and CompanyIdentity.
 Set it like this:
 ```php
@@ -568,7 +571,7 @@ $config->IDINBrandID = "CompanyIdentity";
 
 ### Identity request types explained
 
-Several possible IdentityRequests exist. One or more request types can be accessed simultaneously.
+There are several possible IdentityRequests. One or more request types can be accessed simultaneously.
 On a successful response, the details within each type will be returned by the bank for further processing on your side.
 The possibilities are:
 
@@ -587,15 +590,14 @@ The possibilities are:
 ]
 ```
 
-For information on these specific request types, a more comprehensive guide will follow soon. For now, contact your Bluem account manager for help in choosing the use case that matches your desired activities.
+For information on these specific request types, a more comprehensive guide will follow soon. For now, contact your Bluem account manager for assistance in choosing the use case that matches your desired activities.
 
 The three most commonly used cases with Identity requests are:
 
 1. Full identification (request 1 or multiple of: `Name`, `Address`, `BirthDate`, `Gender`, `EmailAddress`, `PhoneNumber`, `CustomerID`). 
 This is used for KYC, Wwft, AML compliance and for Account Creation.
 2. Age verify 18+ (request `AgeVerify`) **and cannot be combined with the other request categories**.
-3. A safe login with iDIN (request `CustomerIDLogin`) **and cannot be combined with the other request categories**; Here you utilize iDIN login as an alternative safe login method next to a traditional username – password login. 
-Please note that Safe login with iDIN requires the first time a Full identification.
+3. Safe login with iDIN (request `CustomerIDLogin`) **and cannot be combined with the other request categories**; Here you utilize iDIN login as an alternative safe login method next to a traditional username – password login. Please note that use of Safe login with iDIN requires the first time a Full identification.
 
 
 
@@ -604,13 +606,12 @@ Please note that Safe login with iDIN requires the first time a Full identificat
 Creating an Identity Transaction Request can be done after the Bluem object has been properly instantiated.
 Keep in mind that the BrandID has to be compatible with Identity requests. Usually the corresponding brand ID ends with “Identity” instead of for example "Mandate" or "Payment".
 
-The `$returnURL` is vital, as Bluem will redirect the user to that location after the process completion. The next section deals with creating the callback function.
+The `$returnURL` is vital, as Bluem will redirect the user to that location after the process within the portal is done. The next section deals with creating the callback function.
 
 ```php
-$description = "Test identity"; // description shown to customer
+$description = "Test identity"; // description is shown to customer
 $debtorReference = "1234"; // client reference/number
-$returnURL = "https://yourdomain.com/integration/identity.php?action=callback"; 
-// provide a link here to the callback function; either in this script or another script.
+$returnURL = "https://yourdomain.com/integration/identity.php?action=callback"; // provide a link here to the callback function; either in this script or another script
 
 $request = $bluem->CreateIdentityRequest(
 	["BirthDateRequest", "AddressRequest"],
@@ -648,11 +649,11 @@ if ($response->ReceivedResponse()) {
 
 ### The Identity Response callback
 
-Processing the callback function can be done after the Bluem object has been properly instantiated.
+Processing the Identity transaction callback function can be done after the Bluem object has been properly instantiated.
 
 ```php
-// Retrieve from a store, preferably more persistent than session.
-// The code below is purely for demonstrative purposes.
+// retrieve from a store, preferably more persistent than session.
+// the code below is purely for demonstrative purposes.
 $transactionID = $_SESSION['transactionID'];
 $entranceCode = $_SESSION['entranceCode'];
 
@@ -664,7 +665,7 @@ $statusResponse = $bluem->IdentityStatus(
 
 ```
 
-Now, based on the response, you can act:
+Now, based on the response, you can take action:
 
 ```php
 if ($statusResponse->ReceivedResponse()) {
