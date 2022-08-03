@@ -189,19 +189,45 @@ class PaymentBluemRequest extends BluemRequest
             'CardNumber'=>$cardNumber,
             'Name'=>$name,
             'SecurityCode'=>$securityCode,
-            'ExpirationDateMonth'=>$expirationDateMonth,
+            'ExpirationDateMonth'=>$this->addZeroPrefix($expirationDateMonth),
             'ExpirationDateYear'=>$expirationDateYear,
         ]);
         
         return $this;
     }
+    
+    private function addZeroPrefix($number) {
+        if(strlen($number.'') === 1) {
+            return (int) '0'.$number;
+        }
+    }
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
+        
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
+        
+        var_dump("debtorwallet");
+        var_dump($this->debtorWallet);
+        var_dump($this->context->isIDEAL());
         if($this->context->isIDEAL()) {
-            $res .= "<BIC>" . $this->context->getPaymentDetail('BIC') ?? $this->debtorWallet . "</BIC>";
+            
+            $bicPaymentDetail = $this->context->getPaymentDetail('BIC');
+            var_dump($bicPaymentDetail);
+            if($bicPaymentDetail===null || $bicPaymentDetail==="") {
+                 $bic = $this->debtorWallet ?? '';
+            } else {
+                $bic = $bicPaymentDetail;
+            }
+
+            // if still null, just return nothing
+//            if(is_null($bic)) {
+//                return '';
+//            }
+            var_dump("BIC");
+            var_dump($bic);
+            $res .= "<BIC>" . $bic . "</BIC>";
         } elseif($this->context->isPayPal()) {
             $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
         } elseif($this->context->isCreditCard()) {
@@ -217,4 +243,22 @@ class PaymentBluemRequest extends BluemRequest
         $res .= "</DebtorWallet>" . PHP_EOL;
         return $res;
     }
+
+    /**
+     * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
+     *
+     * @param [type] $BIC
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function selectDebtorWallet( $BIC ) {
+
+        if ( ! in_array( $BIC, $this->context->getBICCodes() ) ) {
+            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        }
+
+        $this->debtorWallet = $BIC;
+    }
+
 }

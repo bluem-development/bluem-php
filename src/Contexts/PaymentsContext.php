@@ -8,8 +8,8 @@ use RuntimeException;
 class PaymentsContext extends BluemContext {
     
     public const PAYMENT_METHOD_IDEAL = 'IDEAL';
-    public const PAYMENT_METHOD_PAYPAL = 'PAYPAL';
-    public const PAYMENT_METHOD_CREDITCARD = 'VISA_MASTER';
+    public const PAYMENT_METHOD_PAYPAL = 'PayPal';
+    public const PAYMENT_METHOD_CREDITCARD = 'CreditCard';
     
     public const PAYMENT_METHODS = [
         self::PAYMENT_METHOD_IDEAL,
@@ -55,6 +55,7 @@ class PaymentsContext extends BluemContext {
         if(count($validationErrors) > 0 ) {
             throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
         }
+     
         $this->paymentMethodDetails = $details;
     }
 
@@ -120,6 +121,6 @@ class PaymentsContext extends BluemContext {
 
     public function getPaymentDetail(string $key)
     {
-        return $this->paymentMethodDetails[$key] ?? '';
+        return $this->paymentMethodDetails[$key] ?? null;
     }
 }

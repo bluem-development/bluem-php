@@ -34,7 +34,7 @@ use Bluem\BluemPHP\Validators\BluemXMLValidator;
 use Carbon\Carbon;
 use DOMException;
 use Exception;
-use HTTP_Request2 as BluemHttpRequest;
+use HTTP_Request2;
 use HTTP_Request2_LogicException;
 use RuntimeException;
 use Throwable;
@@ -181,7 +181,7 @@ class Bluem {
             $customer_id,
             $order_id,
             $mandate_id,
-            ( $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            ( $this->configuration->environment === "test" &&
               isset( $this->configuration->expectedReturnStatus ) ?
                 $this->configuration->expectedReturnStatus : "" )
         );
@@ -243,10 +243,10 @@ class Bluem {
 
         $request_url = $transaction_request->HttpRequestUrl();
 
-        $req = new BluemHttpRequest();
+        $req = new HTTP_Request2();
 
         $req->setUrl( $request_url );
-        $req->setMethod( BluemHttpRequest::METHOD_POST );
+        $req->setMethod( HTTP_Request2::METHOD_POST );
 
         $req->setHeader( 'Access-Control-Allow-Origin', '*' );
         $req->setHeader( "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8" );

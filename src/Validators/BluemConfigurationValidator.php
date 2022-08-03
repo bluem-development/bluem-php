@@ -50,14 +50,11 @@ class BluemConfigurationValidator {
     }
 
     private function _validateEnvironment( $config ) {
-        if ( ! in_array(
-            $config->environment,
-            [
-                BLUEM_ENVIRONMENT_TESTING,
-                BLUEM_ENVIRONMENT_ACCEPTANCE,
-                BLUEM_ENVIRONMENT_PRODUCTION
-            ]
-        )
+        if ( !in_array($config->environment, [
+            BLUEM_ENVIRONMENT_TESTING,
+            BLUEM_ENVIRONMENT_ACCEPTANCE,
+            BLUEM_ENVIRONMENT_PRODUCTION
+        ], true)
         ) {
             throw new Exception(
                 "Invalid environment setting, should be either

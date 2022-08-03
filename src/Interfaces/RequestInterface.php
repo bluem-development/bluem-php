@@ -21,10 +21,6 @@ interface RequestInterface {
 
     public function retrieveBICCodes(): array;
 
-    public function selectDebtorWallet( $BIC );
-
-    public function XmlWrapDebtorWallet(): string;
-
     public function XmlWrapDebtorAdditionalData(): string;
 
     public function addAdditionalData( $key, $value ): BluemRequest;

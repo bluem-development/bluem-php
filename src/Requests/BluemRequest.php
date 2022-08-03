@@ -96,14 +96,14 @@ class BluemRequest implements BluemRequestInterface {
     /**
      * BluemRequest constructor.
      *
-     * @param BluemConfiguration $config
+     * @param BluemConfiguration|object $config
      * @param string $entranceCode
      * @param string $expectedReturn
      *
      * @throws Exception
      */
     public function __construct(
-        BluemConfiguration $config,
+        $config,
         string $entranceCode = "",
         string $expectedReturn = ""
     ) {
@@ -295,54 +295,6 @@ class BluemRequest implements BluemRequestInterface {
      */
     public function retrieveBICCodes(): array {
         return $this->context->getBICCodes();
-    }
-
-    /**
-     * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
-     *
-     * @param [type] $BIC
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function selectDebtorWallet( $BIC ) {
-        $possibleBICs = $this->context->getBICCodes();
-
-        if ( ! in_array( $BIC, $possibleBICs ) ) {
-            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
-        }
-        $this->debtorWallet = $BIC;
-    }
-
-    
-    /**
-     * Create the XML element necessary to be added to the request XML string.
-     *
-     * @return string
-     */
-    public function XmlWrapDebtorWallet(): string {
-        if ( is_null( $this->debtorWallet ) ) {
-            return "";
-        }
-
-        if ( $this->debtorWallet === "" ) {
-            return "";
-        }
-
-        if ( ! isset( $this->context->debtorWalletElementName ) || $this->context->debtorWalletElementName === "" ) {
-            return '';
-        }
-        
-        
-        
-        
-        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-        $res .= "<{$this->context->debtorWalletElementName}>";
-        $res .= "<BIC>" . $this->debtorWallet . "</BIC>";
-        $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
-        $res .= "</DebtorWallet>" . PHP_EOL;
-
-        return $res;
     }
 
     /**

@@ -121,7 +121,7 @@ class BluemConfiguration
         $raw_validated = $this->validator->validate($raw);
         
         if ($raw_validated === false) {
-            throw new Exception('Bluem Configuration is not valid: '.$this->errorsAsString());
+            throw new Exception('Bluem Configuration is not valid: ' . $this->errorsAsString());
         }
 
         $this->environment           = $raw_validated->environment;
