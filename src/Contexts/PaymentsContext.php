@@ -8,8 +8,8 @@ use RuntimeException;
 class PaymentsContext extends BluemContext {
     
     public const PAYMENT_METHOD_IDEAL = 'IDEAL';
-    public const PAYMENT_METHOD_PAYPAL = 'PAYPAL';
-    public const PAYMENT_METHOD_CREDITCARD = 'VISA_MASTER';
+    public const PAYMENT_METHOD_PAYPAL = 'PayPal';
+    public const PAYMENT_METHOD_CREDITCARD = 'CreditCard';
     
     public const PAYMENT_METHODS = [
         self::PAYMENT_METHOD_IDEAL,
