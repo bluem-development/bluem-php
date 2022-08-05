@@ -205,14 +205,14 @@ class PaymentBluemRequest extends BluemRequest
             } else {
                 $bic = $this->context->getPaymentDetail('BIC');
             }
-
+            
             if($bic === null) {
                 return '';
             }
 
             $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
             $res .= "<{$this->context->debtorWalletElementName}>";
-            $res .= "<BIC>" . $this->context->getPaymentDetail('BIC') ?? $this->debtorWallet . "</BIC>";
+            $res .= "<BIC>" . $bic . "</BIC>";
             $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
             $res .= "</DebtorWallet>" . PHP_EOL;
 
