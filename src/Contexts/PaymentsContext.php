@@ -6,20 +6,19 @@ use Bluem\BluemPHP\Helpers\BIC;
 use RuntimeException;
 
 class PaymentsContext extends BluemContext {
-    
+
     public const PAYMENT_METHOD_IDEAL = 'IDEAL';
     public const PAYMENT_METHOD_PAYPAL = 'PayPal';
     public const PAYMENT_METHOD_CREDITCARD = 'CreditCard';
-    
+
     public const PAYMENT_METHODS = [
         self::PAYMENT_METHOD_IDEAL,
         self::PAYMENT_METHOD_PAYPAL,
         self::PAYMENT_METHOD_CREDITCARD
     ];
-    
-    
+
     public string $debtorWalletElementName = self::PAYMENT_METHOD_IDEAL;
-    
+
     private array $paymentMethodDetails;
 
     /**
@@ -61,45 +60,52 @@ class PaymentsContext extends BluemContext {
     private function validateDetails(array $details = []): array
     {
         $errors = [];
-        
+
         if($this->isIDEAL()) {
-            if (!$details['BIC']) {
-                $errors[] = 'BIC missing';
-            }
+            //
         }
         if($this->isPayPal()) {
-            if(!$details['PayPalAccount']) {
-                $errors[] = 'PayPalAccount missing';
-            }
-                // @todo: validate is valid email
+            /**
+             * For future use.
+             *
+             * @todo: validate is valid emailaddress
+             *
+             * if(!$details['PayPalAccount']) {
+             * $errors[] = 'PayPalAccount missing';
+             * }
+             *
+             */
         }
         if($this->isCreditCard()) {
-            if(!$details["CardNumber"]) {
-                $errors[] = 'CardNumber missing';
-
-//            <xsd:restriction base="xsd:token">  x
-//        </xsd:restriction>
-            }
-                
-            if(!$details["Name"]) {
-                $errors[] = 'Name missing';
-            // length 1-32 chars
-            }
-                
-            if(!$details["SecurityCode"]) {
-                $errors[] = 'SecurityCode missing';
-            //<xsd:pattern value="[0-9]{3,4}"/>  <!-- 3 or 4 digits -->
-            }
-                
-            if(!$details["ExpirationDateMonth"]) {
-                $errors[] = 'ExpirationDateMonth missing';
-            }
-            
-            if(!$details["ExpirationDateYear"]) {
-                $errors[] = 'ExpirationDateYear missing';
-            }
+            /**
+             * For future use.
+             *
+             * if(!$details["CardNumber"]) {
+             * $errors[] = 'CardNumber missing';
+             * //<xsd:restriction base="xsd:token">x</xsd:restriction>
+             * }
+             *
+             * if(!$details["Name"]) {
+             * $errors[] = 'Name missing';
+             * // length 1-32 chars
+             * }
+             *
+             * if(!$details["SecurityCode"]) {
+             * $errors[] = 'SecurityCode missing';
+             * //<xsd:pattern value="[0-9]{3,4}"/>  <!-- 3 or 4 digits -->
+             * }
+             *
+             * if(!$details["ExpirationDateMonth"]) {
+             * $errors[] = 'ExpirationDateMonth missing';
+             * }
+             *
+             * if(!$details["ExpirationDateYear"]) {
+             * $errors[] = 'ExpirationDateYear missing';
+             * }
+             *
+             */
         }
-        
+
         return $errors;
     }
 
