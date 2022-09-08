@@ -211,17 +211,20 @@ class PaymentBluemRequest extends BluemRequest
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
-        if($this->context->isIDEAL()) {
-            $bic = null;
-            if($this->context->getPaymentDetail('BIC') === '') {
-                if($this->debtorWallet!==null && $this->debtorWallet !=='') {
+        $res = '';
+
+        if ($this->context->isIDEAL()) {
+            $bic = '';
+
+            if (empty($this->context->getPaymentDetail('BIC'))) {
+                if (!empty($this->debtorWallet)) {
                     $bic = $this->debtorWallet;
                 }
             } else {
                 $bic = $this->context->getPaymentDetail('BIC');
             }
-            
-            if($bic === null) {
+
+            if (empty($bic)) {
                 return '';
             }
 
