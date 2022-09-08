@@ -175,9 +175,15 @@ class PaymentBluemRequest extends BluemRequest
     public function setPaymentMethodToPayPal($payPalAccount = ""): self {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_PAYPAL);
 
-        $this->context->addPaymentMethodDetails([
-            'PayPalAccount'=>$payPalAccount
-        ]);
+        /**
+         * Prepared for future use.
+         */
+        if (!empty($payPalAccount))
+        {
+            $this->context->addPaymentMethodDetails([
+                'PayPalAccount'=>$payPalAccount
+            ]);
+        }
 
         return $this;
     }
