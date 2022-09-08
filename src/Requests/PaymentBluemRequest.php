@@ -161,9 +161,15 @@ class PaymentBluemRequest extends BluemRequest
     public function setPaymentMethodToIDEAL($BIC = ""): self {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_IDEAL);
 
-        $this->context->addPaymentMethodDetails([
-            'BIC'=>$BIC
-        ]);
+        /**
+         * Add BIC to transaction if given
+         */
+        if (!empty($BIC))
+        {
+            $this->context->addPaymentMethodDetails([
+                'BIC'=>$BIC
+            ]);
+        }
 
         return $this;
     }
