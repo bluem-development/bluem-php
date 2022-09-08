@@ -147,7 +147,6 @@ class PaymentBluemRequest extends BluemRequest
         );
 
         // @todo make documentType, sendOption and language a setting here?
-
     }
 
     private function setPaymentMethod(string $method): void {
@@ -189,17 +188,23 @@ class PaymentBluemRequest extends BluemRequest
     }
 
     public function setPaymentMethodToCreditCard(
-        string $cardNumber, string $name, int $securityCode, int $expirationDateMonth, int $expirationDateYear
+        string $cardNumber = '', string $name = '', string $securityCode = '', string $expirationDateMonth = '', string $expirationDateYear = ''
     ): self {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CREDITCARD);
 
-        $this->context->addPaymentMethodDetails([
-            'CardNumber'=>$cardNumber,
-            'Name'=>$name,
-            'SecurityCode'=>$securityCode,
-            'ExpirationDateMonth'=>$expirationDateMonth,
-            'ExpirationDateYear'=>$expirationDateYear,
-        ]);
+        /**
+         * Prepared for future use.
+         */
+        if (!empty($cardNumber) || !empty($name) || !empty($securityCode) || !empty($expirationDateMonth) || !empty($expirationDateYear))
+        {
+            $this->context->addPaymentMethodDetails([
+                'CardNumber'=>$cardNumber,
+                'Name'=>$name,
+                'SecurityCode'=>$securityCode,
+                'ExpirationDateMonth'=>$expirationDateMonth,
+                'ExpirationDateYear'=>$expirationDateYear,
+            ]);
+        }
 
         return $this;
     }
