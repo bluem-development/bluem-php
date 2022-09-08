@@ -45,8 +45,7 @@ class PaymentBluemRequest extends BluemRequest
     ) {
         parent::__construct( $config, $entranceCode, $expected_return );
 
-
-        if ( isset( $config->paymentBrandID ) && $config->paymentBrandID !== "" ) {
+        if ( !empty( $config->paymentBrandID ) ) {
             $config->setBrandId( $config->paymentBrandID );
         } else {
             $config->setBrandId( $config->brandID );
@@ -56,7 +55,6 @@ class PaymentBluemRequest extends BluemRequest
 
         //  Default Currency EUR
         $this->currency = $this->validateCurrency( $currency );
-
 
         if ( is_null( $dueDateTime ) ) {
             $this->dueDateTime = Carbon::now()->addDay()->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
@@ -112,7 +110,7 @@ class PaymentBluemRequest extends BluemRequest
     private function validateCurrency( $currency ): string {
         $availableCurrencies = [ "EUR" ]; // @todo: add list of currencies based on
         if ( !in_array($currency, $availableCurrencies, true)) {
-            throw new Exception( "Currency not recognized, 
+            throw new Exception( "Currency not recognized,
                     should be one of the following available currencies: " .
                                  implode( ",", $availableCurrencies )
             );
