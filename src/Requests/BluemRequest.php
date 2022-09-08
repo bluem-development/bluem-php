@@ -39,6 +39,7 @@ class BluemRequest implements BluemRequestInterface {
      * @var string
      */
     public $entranceCode;
+
     /**
      * @var
      */
@@ -48,6 +49,7 @@ class BluemRequest implements BluemRequestInterface {
      * @var
      */
     public $debtorWallet = null;
+
     /**
      * @var
      */
@@ -56,22 +58,27 @@ class BluemRequest implements BluemRequestInterface {
      * @var
      */
     protected $senderID;
+
     /**
      * @var string
      */
     protected $createDateTime;
+
     /**
      * @var
      */
     protected $transactionID;
+
     /**
      * @var string
      */
     protected $environment;
+
     /**
      * @var array
      */
     private $_debtorAdditionalData = [];
+
     /**
      * @var string[]
      */
@@ -88,6 +95,7 @@ class BluemRequest implements BluemRequestInterface {
         "DebtorBankID",
         "DynamicData",
     ];
+
     /**
      * @var string
      */
@@ -314,7 +322,7 @@ class BluemRequest implements BluemRequestInterface {
         $this->debtorWallet = $BIC;
     }
 
-    
+
     /**
      * Create the XML element necessary to be added to the request XML string.
      *
@@ -332,10 +340,7 @@ class BluemRequest implements BluemRequestInterface {
         if ( ! isset( $this->context->debtorWalletElementName ) || $this->context->debtorWalletElementName === "" ) {
             return '';
         }
-        
-        
-        
-        
+
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
         $res .= "<BIC>" . $this->debtorWallet . "</BIC>";
@@ -354,7 +359,6 @@ class BluemRequest implements BluemRequestInterface {
         }
 
         $res = PHP_EOL . "<DebtorAdditionalData>" . PHP_EOL;
-
 
         foreach ( $this->_debtorAdditionalData as $key => $value ) {
             if ( ! in_array( $key, $this->_possibleDebtorAdditionalDataKeys ) ) {
