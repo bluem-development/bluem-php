@@ -237,24 +237,28 @@ class PaymentBluemRequest extends BluemRequest
             return $res;
         }
 
-        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-        $res .= "<{$this->context->debtorWalletElementName}>";
+        /**
+         * For future use.
+         *
+         * $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+         * $res .= "<{$this->context->debtorWalletElementName}>";
 
-        if($this->context->isPayPal()) {
-            $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
+         * if($this->context->isPayPal()) {
+         * $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
+         * } elseif($this->context->isCreditCard()) {
+         * $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
+         * $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
+         * $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
+         * $res .= "<ExpirationDate>
+         * <Month>" . $this->context->getPaymentDetail('ExpirationDateMonth') . "</Month>
+         * <Year>" . $this->context->getPaymentDetail('ExpirationDateYear') . "</Year>
+         * </ExpirationDate>";
+         * }
 
-        } elseif($this->context->isCreditCard()) {
-            $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
-            $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
-            $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
-            $res .= "<ExpirationDate>
-                        <Month>" . $this->context->getPaymentDetail('ExpirationDateMonth') . "</Month>
-                        <Year>" . $this->context->getPaymentDetail('ExpirationDateYear') . "</Year>
-                    </ExpirationDate>";
-        }
-
-        $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
-        $res .= "</DebtorWallet>" . PHP_EOL;
+         * $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+         * $res .= "</DebtorWallet>" . PHP_EOL;
+         *
+         */
 
         return $res;
     }
