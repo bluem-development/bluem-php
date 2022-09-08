@@ -124,6 +124,17 @@ class PaymentBluemRequest extends BluemRequest
     }
 
     public function XmlString(): string {
+        $extraOptions = [
+            'documentType' => "PayRequest",
+            'sendOption'   => "none",
+            'language'     => "nl",
+        ];
+
+        if (!empty($this->brandID))
+        {
+            $extraOptions['brandID'] = $this->brandID;
+        }
+
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -138,11 +149,7 @@ class PaymentBluemRequest extends BluemRequest
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
                 $this->XmlWrapDebtorWalletForPaymentMethod() .
                 $this->XmlWrapDebtorAdditionalData(),
-                [
-                    'documentType' => "PayRequest",
-                    'sendOption'   => "none",
-                    'language'     => "nl",
-                ]
+                $extraOptions
             )
         );
 
