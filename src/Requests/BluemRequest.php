@@ -54,6 +54,12 @@ class BluemRequest implements BluemRequestInterface {
      * @var
      */
     public $context;
+
+    /**
+     * @var
+     */
+    protected $brandID;
+
     /**
      * @var
      */
@@ -123,10 +129,10 @@ class BluemRequest implements BluemRequestInterface {
 
         $this->environment = $config->environment;
 
+        $this->brandID     = $config->brandID;
         $this->senderID    = $config->senderID;
         $this->accessToken = $config->accessToken;
         // @todo just use the config directly instead of copying all configuration elements
-
 
         $this->createDateTime = Carbon::now()->timezone( 'Europe/Amsterdam' )->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
 
