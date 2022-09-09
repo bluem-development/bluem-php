@@ -58,24 +58,24 @@ class PaymentBluemRequest extends BluemRequest
         }
 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
-        $sanitizedDebtorReferenceParts = [];
-        $sanitizedDebtorReferenceCount = preg_match_all(
-            "/[\da-zA-Z]{1,35}/i",
-            $debtorReference,
-            $sanitizedDebtorReferenceParts
-        );
-        if ( $sanitizedDebtorReferenceCount !== false && $sanitizedDebtorReferenceCount > 0 ) {
-            $debtorReference = implode(
-                "",
-                $sanitizedDebtorReferenceParts[0]
-            );
-        }
-        $this->debtorReference = $debtorReference;
+//         $sanitizedDebtorReferenceParts = [];
+//         $sanitizedDebtorReferenceCount = preg_match_all(
+//             "/[\da-zA-Z]{1,35}/i",
+//             $debtorReference,
+//             $sanitizedDebtorReferenceParts
+//         );
+//         if ( $sanitizedDebtorReferenceCount !== false && $sanitizedDebtorReferenceCount > 0 ) {
+//             $debtorReference = implode(
+//                 "",
+//                 $sanitizedDebtorReferenceParts[0]
+//             );
+//         }
+        $this->debtorReference = substr($debtorReference, 0, 35);
 
 
         $this->amount = (float)$amount;
 
-        $this->transactionID = $transactionID;
+        $this->transactionID = $this->sanitizeTransactionID($transactionID);
 
         if ( isset( $debtorReturnURL ) && $debtorReturnURL !== "" ) {
             $this->debtorReturnURL = $debtorReturnURL;
@@ -95,6 +95,24 @@ class PaymentBluemRequest extends BluemRequest
         
         $this->context = new PaymentsContext();
     }
+    
+    private function sanitizeTransactionID(string $transactionID): string {
+         $sanitizedTransactionIDParts = [];
+         $sanitizedTransactionIDCount = preg_match_all(
+             "/[\da-zA-Z]{1,64}/i",
+             $debtorReference,
+             $sanitizedTransactionIDParts
+         );
+         if ( $sanitizedTransactionIDCount !== false && $sanitizedTransactionIDCount > 0 ) {
+             $transactionID = implode(
+                 "",
+                 $sanitizedTransactionIDParts[0]
+             );
+         }
+     
+        return $transactionID;
+    }
+    
 
     /**
      * Validate based on a list of accepted currencies
