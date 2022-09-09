@@ -45,12 +45,6 @@ class PaymentBluemRequest extends BluemRequest
     ) {
         parent::__construct( $config, $entranceCode, $expected_return );
 
-        if ( !empty( $config->paymentBrandID ) ) {
-            $config->setBrandId( $config->paymentBrandID );
-        } else {
-            $config->setBrandId( $config->brandID );
-        }
-
         $this->description = $this->_sanitizeDescription( $description );
 
         //  Default Currency EUR
