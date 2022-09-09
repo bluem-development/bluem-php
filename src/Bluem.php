@@ -495,7 +495,8 @@ class Bluem {
         $dueDateTime = null,
         string $currency = "EUR",
         $entranceCode = null,
-        string $debtorReturnURL = ""
+        string $debtorReturnURL = "",
+        string $paymentReference = ""
     ): PaymentBluemRequest {
         if ( is_null( $entranceCode ) ) {
             $entranceCode = $this->CreateEntranceCode();
@@ -520,7 +521,8 @@ class Bluem {
             ( $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
               isset( $this->configuration->expectedReturnStatus ) ?
                 $this->configuration->expectedReturnStatus : "" ),
-            $debtorReturnURL
+            $debtorReturnURL,
+            $paymentReference
         );
     }
 
