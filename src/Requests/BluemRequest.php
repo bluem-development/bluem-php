@@ -499,4 +499,8 @@ class BluemRequest implements BluemRequestInterface {
     <DynamicData>{0,1}</DynamicData>
     </DebtorAdditionalData>
     */
+    
+    public function setBrandId(string $brandID): void {
+        $this->brandID = $brandID;
+    }
 }
