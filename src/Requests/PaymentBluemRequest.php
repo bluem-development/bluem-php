@@ -100,7 +100,7 @@ class PaymentBluemRequest extends BluemRequest
          $sanitizedTransactionIDParts = [];
          $sanitizedTransactionIDCount = preg_match_all(
              "/[\da-zA-Z]{1,64}/i",
-             $debtorReference,
+             $transactionID,
              $sanitizedTransactionIDParts
          );
          if ( $sanitizedTransactionIDCount !== false && $sanitizedTransactionIDCount > 0 ) {
