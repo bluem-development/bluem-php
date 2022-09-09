@@ -37,13 +37,7 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
      * @var string
      */
     private $debtorReturnURL;
-    /**
-     * @var string
-     */
-    private $brandID;
-
-// @todo: deprecated, remove
-
+    
     /**
      * @param $config
      * @param $entranceCode
