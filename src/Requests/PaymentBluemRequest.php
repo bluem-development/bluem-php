@@ -41,7 +41,8 @@ class PaymentBluemRequest extends BluemRequest
         $transactionID = null,
         $entranceCode = "",
         string $expected_return = "none",
-        $debtorReturnURL = ""
+        $debtorReturnURL = "",
+        $paymentReference =""
     ) {
         parent::__construct( $config, $entranceCode, $expected_return );
 
@@ -88,8 +89,10 @@ class PaymentBluemRequest extends BluemRequest
         // Note: different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class.
 
-        $this->paymentReference = "$this->debtorReference$this->transactionID";
-
+        $this->paymentReference = !empty($paymentReference)
+            ? $paymentReference
+            : "$this->debtorReference$this->transactionID";
+        
         $this->context = new PaymentsContext();
     }
 
