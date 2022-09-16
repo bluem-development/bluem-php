@@ -39,6 +39,7 @@ class BluemRequest implements BluemRequestInterface {
      * @var string
      */
     public $entranceCode;
+
     /**
      * @var
      */
@@ -48,30 +49,42 @@ class BluemRequest implements BluemRequestInterface {
      * @var
      */
     public $debtorWallet = null;
+    
     /**
      * @var
      */
     public $context;
+
+    /**
+     * @var
+     */
+    protected $brandID;
+
     /**
      * @var
      */
     protected $senderID;
+    
     /**
      * @var string
      */
     protected $createDateTime;
+    
     /**
      * @var
      */
     protected $transactionID;
+
     /**
      * @var string
      */
     protected $environment;
+
     /**
      * @var array
      */
     private $_debtorAdditionalData = [];
+
     /**
      * @var string[]
      */
@@ -88,6 +101,7 @@ class BluemRequest implements BluemRequestInterface {
         "DebtorBankID",
         "DynamicData",
     ];
+
     /**
      * @var string
      */
@@ -115,10 +129,10 @@ class BluemRequest implements BluemRequestInterface {
 
         $this->environment = $config->environment;
 
+        $this->brandID     = $config->brandID;
         $this->senderID    = $config->senderID;
         $this->accessToken = $config->accessToken;
         // @todo just use the config directly instead of copying all configuration elements
-
 
         $this->createDateTime = Carbon::now()->timezone( 'Europe/Amsterdam' )->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
 
@@ -298,6 +312,51 @@ class BluemRequest implements BluemRequestInterface {
     }
 
     /**
+     * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
+     *
+     * @param [type] $BIC
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function selectDebtorWallet( $BIC ) {
+        $possibleBICs = $this->context->getBICCodes();
+
+        if ( ! in_array( $BIC, $possibleBICs ) ) {
+            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        }
+        $this->debtorWallet = $BIC;
+    }
+
+
+    /**
+     * Create the XML element necessary to be added to the request XML string.
+     *
+     * @return string
+     */
+    public function XmlWrapDebtorWallet(): string {
+        if ( is_null( $this->debtorWallet ) ) {
+            return "";
+        }
+
+        if ( $this->debtorWallet === "" ) {
+            return "";
+        }
+
+        if ( ! isset( $this->context->debtorWalletElementName ) || $this->context->debtorWalletElementName === "" ) {
+            return '';
+        }
+
+        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+        $res .= "<{$this->context->debtorWalletElementName}>";
+        $res .= "<BIC>" . $this->debtorWallet . "</BIC>";
+        $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+        $res .= "</DebtorWallet>" . PHP_EOL;
+
+        return $res;
+    }
+
+    /**
      * @return string
      */
     public function XmlWrapDebtorAdditionalData(): string {
@@ -306,7 +365,6 @@ class BluemRequest implements BluemRequestInterface {
         }
 
         $res = PHP_EOL . "<DebtorAdditionalData>" . PHP_EOL;
-
 
         foreach ( $this->_debtorAdditionalData as $key => $value ) {
             if ( ! in_array( $key, $this->_possibleDebtorAdditionalDataKeys ) ) {
@@ -441,4 +499,8 @@ class BluemRequest implements BluemRequestInterface {
     <DynamicData>{0,1}</DynamicData>
     </DebtorAdditionalData>
     */
+    
+    public function setBrandId(string $brandID): void {
+        $this->brandID = $brandID;
+    }
 }
