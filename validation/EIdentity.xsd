@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.3.1">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.4.0">
 	<!--=====================================================================-->
 	<!--                        Schema Management                            -->
 	<!--=====================================================================-->
@@ -9,7 +9,7 @@
 		<xsd:documentation xml:lang="en"/>
 		<xsd:documentation>
 			<name>Identity Interface</name>
-			<revision version="1.3.1">
+			<revision version="1.4.0">
 				<date>2020-MAY-20</date>
 			</revision>
 		</xsd:documentation>
@@ -134,7 +134,8 @@
     
     <xsd:simpleType name="DebtorReferenceSimpleType">
         <xsd:restriction base="xsd:token">
-            <xsd:minLength value="1"/>
+            <!-- allow empty DebtorReference element upon request -->
+            <xsd:minLength value="0"/>
             <xsd:maxLength value="35"/>
         </xsd:restriction>
     </xsd:simpleType>
@@ -184,7 +185,7 @@
     
     <xsd:simpleType name="DescriptionSimpleType">
         <xsd:restriction base="xsd:token">
-		      <xsd:pattern value="[-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{0,128}"/>
+		      <xsd:pattern value="[-0-9a-zA-ZéèëïôóöüúÉÈËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{0,128}"/>
         </xsd:restriction>
     </xsd:simpleType>
     

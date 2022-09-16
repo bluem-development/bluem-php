@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.2.0">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.4.0">
 	<!--=====================================================================-->
 	<!--                        Schema Management                            -->
 	<!--=====================================================================-->
@@ -9,8 +9,8 @@
 		<xsd:documentation xml:lang="en"/>
 		<xsd:documentation>
 			<name>EMandate Interface</name>
-			<revision version="1.2.0">
-				<date>2019-JUN-07</date>
+			<revision version="1.4.0">
+				<date>2020-MAY-20</date>
 			</revision>
 		</xsd:documentation>
 	</xsd:annotation>
@@ -45,7 +45,7 @@
         <xsd:restriction base="xsd:token">
             <xsd:minLength value="1"/>
             <xsd:maxLength value="32"/>
-            <xsd:pattern value="([\w\-]+){1,32}"/>
+            <xsd:pattern value="[0-9a-zA-Z_\-]{1,32}"/>
          </xsd:restriction>
     </xsd:simpleType>
 
@@ -184,7 +184,7 @@
 	
 	<xsd:simpleType name="ReasonSimpleType">
         <xsd:restriction base="xsd:token">
-		      <xsd:pattern value="[-0-9a-zA-ZéëïóöüÉËÏÓÖÜ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{0,70}"/>
+		      <xsd:pattern value="[-0-9a-zA-ZéèëïôóöüúÉÈËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,70}"/>
         </xsd:restriction>
 	</xsd:simpleType>
 	
@@ -218,6 +218,7 @@
 			<xsd:enumeration value="Pending"/>
 			<xsd:enumeration value="New"/>
             <xsd:enumeration value="SuccessManual"/>
+            <xsd:enumeration value="BankSelected"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 	<xsd:simpleType name="MandateRequestTypeSimpleType">
@@ -343,6 +344,7 @@
 
 			<xsd:element name="DebtorAdditionalData" type="DebtorAdditionalDataComplexType" minOccurs="0"/>
             <xsd:element name="Doc" type="DocComplexType" minOccurs="0"/>
+			<xsd:element name="DebtorWallet" type="DebtorWalletComplexType" minOccurs="0"/>
 		</xsd:sequence>
 		<xsd:attributeGroup ref="RequestAttributes"/>
 	</xsd:complexType>
@@ -354,7 +356,7 @@
 				<xsd:element name="EMandateStatus" type="EMandateStatusComplexType" maxOccurs="1"/>
 			</xsd:choice>
 		</xsd:sequence>
-		<xsd:attribute name="entranceCode" type="EntranceCodeSimpleType"/>
+		<xsd:attribute name="entranceCode" type="EntranceCodeSimpleType" use="required"/>
         <xsd:attribute name="brandID" type="RelaxedIdentifierSimpleType"/>
 		<xsd:attribute name="requestType" use="required" type="MandateRequestTypeSimpleType"/>
 	</xsd:complexType>
@@ -377,7 +379,6 @@
             <xsd:element name="Salutation" type="TokenLength70SimpleType" minOccurs="0"/>
             <xsd:element name="CustomerAddressLine1" type="TokenLength70SimpleType" minOccurs="0"/>
             <xsd:element name="CustomerAddressLine2" type="TokenLength70SimpleType" minOccurs="0"/>
-			<xsd:element name="DebtorBankID" type="BICSimpleType" minOccurs="0"/>
 			<xsd:element name="DynamicData" type="DynamicDataComplexType" minOccurs="0"/>			
 			
 		</xsd:sequence>
@@ -390,6 +391,33 @@
       		</xsd:extension>
       	</xsd:simpleContent>
 	</xsd:complexType>
+	
+	
+<!-- BEGIN - DebtorWallet additions -->
+    <xsd:simpleType name="NonEmptyBICSimpleType">
+	    <xsd:restriction base="xsd:token">
+            <xsd:minLength value="8"/>
+            <xsd:maxLength value="11"/>
+            <xsd:pattern value="[A-Z0-9]{8,11}"/>
+         </xsd:restriction>
+     </xsd:simpleType>
+
+
+   <xsd:complexType name="INCASSOMACHTIGENComplexType">
+        <xsd:all>
+	        <xsd:element name="BIC" type="NonEmptyBICSimpleType" minOccurs="1"/>
+        </xsd:all>
+    </xsd:complexType>
+
+    
+    <xsd:complexType name="DebtorWalletComplexType">
+        <xsd:choice>
+            <xsd:element name="INCASSOMACHTIGEN" type="INCASSOMACHTIGENComplexType" maxOccurs="1"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+
+<!-- END - DebtorWallet additions -->
 
     <xsd:complexType name="DocComplexType">
         <xsd:sequence>
@@ -488,7 +516,7 @@
 		<xsd:sequence>
 			<xsd:element name="MandateID" type="MandateIDSimpleType"/>
 		</xsd:sequence>
-		<xsd:attribute name="entranceCode" type="EntranceCodeSimpleType"/>
+		<xsd:attribute name="entranceCode" type="EntranceCodeSimpleType" use="required"/>
 	</xsd:complexType>
 
 
