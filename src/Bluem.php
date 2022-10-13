@@ -304,7 +304,7 @@ class Bluem {
                             case 'ITX':
                             case 'ISU':
                             case 'ISX':
-                                $errorMessage = (string) $response->IDentityErrorResponse->Error->ErrorMessage;
+                                $errorMessage = (string) $response->IdentityErrorResponse->Error->ErrorMessage;
                                 break;
                             case 'INS':
                             case 'INX':
@@ -656,7 +656,7 @@ class Bluem {
         } catch (Exception $e) {
             return null;
         }
-        
+
         return $webhook;
     }
 
