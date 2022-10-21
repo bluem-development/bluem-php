@@ -53,7 +53,7 @@ class IBANBluemRequest extends BluemRequest implements BluemRequestInterface {
      */
     private function _sanitizeIban( string $iban ): string {
         return trim(
-            str_replace( ' ', '', htmlentities( $iban ) )
+            str_replace( ' ', '', $iban )
         );
     }
 
@@ -65,9 +65,7 @@ class IBANBluemRequest extends BluemRequest implements BluemRequestInterface {
      * @return string
      */
     private function _sanitizeName( string $name ): string {
-        return trim(
-            htmlentities( $name )
-        );
+        return trim( $name );
     }
 
     /**
