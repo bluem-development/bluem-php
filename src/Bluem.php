@@ -219,7 +219,7 @@ class Bluem {
         $validator = new BluemXMLValidator();
         if ( ! $validator->validate(
             $transaction_request->RequestContext(),
-            utf8_encode( $transaction_request->XmlString() )
+            $transaction_request->XmlString()
         )
         ) {
             return new ErrorBluemResponse(
@@ -262,10 +262,10 @@ class Bluem {
             echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-files-count: ' . '1';
             echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-filename: ' . $xttrs_filename;
             echo "<HR>";
-            echo PHP_EOL . "BODY: " . utf8_encode( $transaction_request->XmlString() );
+            echo PHP_EOL . "BODY: " . $transaction_request->XmlString();
         }
 
-        $req->setBody( utf8_encode( $transaction_request->XmlString() ) );
+        $req->setBody( $transaction_request->XmlString() );
         try {
             $http_response = $req->send();
             if ( self::$verbose ) {
