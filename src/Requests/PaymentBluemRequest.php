@@ -232,14 +232,6 @@ class PaymentBluemRequest extends BluemRequest
             ]);
         }
 
-        $this->context->addPaymentMethodDetails([
-            'CardNumber'=>$cardNumber,
-            'Name'=>$name,
-            'SecurityCode'=>$securityCode,
-            'ExpirationDateMonth'=>$this->addZeroPrefix($expirationDateMonth),
-            'ExpirationDateYear'=>$expirationDateYear,
-        ]);
-
         return $this;
     }
 
@@ -291,16 +283,27 @@ class PaymentBluemRequest extends BluemRequest
 
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
+        
         if ($this->context->isPayPal()) {
-            $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
+            if (!empty($this->context->getPaymentDetail('PayPalAccount'))) {
+                $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
+            }
         } elseif ($this->context->isCreditCard()) {
-            $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
-            $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
-            $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
-            $res .= "<ExpirationDate>
+            if (!empty($this->context->getPaymentDetail('CardNumber'))) {
+                $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
+            }
+            if (!empty($this->context->getPaymentDetail('Name'))) {
+                $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
+            }
+            if (!empty($this->context->getPaymentDetail('Name'))) {
+                $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
+            }
+            if (!empty($this->context->getPaymentDetail('ExpirationDateMonth')) && !empty($this->context->getPaymentDetail('ExpirationDateYear'))) {
+                $res .= "<ExpirationDate>
                         <Month>" . $this->context->getPaymentDetail('ExpirationDateMonth') . "</Month>
                         <Year>" . $this->context->getPaymentDetail('ExpirationDateYear') . "</Year>
                     </ExpirationDate>";
+            }
         } elseif ($this->context->isSofort()) {
             // if specific sofort body becomes required in the future; please add it here
         } elseif ($this->context->isCarteBancaire()) {
