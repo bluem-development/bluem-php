@@ -71,7 +71,7 @@ Please contact us if you have any questions regarding the examples or the implem
 ### Version 2.2 (latest)
 Webhooks and new payment methods
 - Added explicit webhook functionality and relevant documentation
-- Support for PayPal and Creditcards
+- Support for PayPal, Creditcards, SOFORT and Carte Bancaire
 
 ### Version 2.1 
 
