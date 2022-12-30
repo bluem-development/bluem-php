@@ -94,7 +94,7 @@
     <xsd:simpleType name="MessageCountSimpleType">
         <xsd:restriction base="xsd:nonNegativeInteger">
             <xsd:minInclusive value="0"/>
-            <xsd:maxInclusive value="1000"/>
+            <xsd:maxInclusive value="3000"/>
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -128,7 +128,8 @@
 
     <xsd:simpleType name="DescriptionSimpleType">
         <xsd:restriction base="xsd:token">
-		<xsd:pattern value="[-0-9a-zA-ZéèëïôóöüúÉÈËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,35}"/>
+	        <xsd:pattern value="[-0-9a-zA-ZàáâäæãåāçćčèéêëēėęîïíīįìłñńôöòóœøōõßśšûüùúūÿžźżÀÁÂÄÆÃÅĀÇĆČÈÉÊËĒĖĘÎÏÍĪĮÌŁÑŃÔÖÒÓŒØŌÕŚŠÛÜÙÚŪŸŽŹŻ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,35}"/>
+            <!--<xsd:pattern value="[-0-9a-zA-ZéèëïôóöüúÉÈËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,35}"/>  -->
             <!-- <xsd:pattern value="[-\\x00-\\x7F ()+,.@&amp;=%&quot;&apos;/:;?$]{0,35}"/>  -->
 
         </xsd:restriction>
@@ -329,6 +330,7 @@
             <xsd:enumeration value="PAYPAL"/>
             <xsd:enumeration value="VISA_MASTER"/>
             <xsd:enumeration value="SOFORT"/>
+            <xsd:enumeration value="CARTE_BANCAIRE"/>
         </xsd:restriction>
     </xsd:simpleType>
     
@@ -512,13 +514,13 @@
        
     
    <xsd:complexType name="DebtorCreditCardComplexType">
-        <xsd:all>
+<!--         <xsd:all>
             <xsd:element name="CardNumber" type="CreditCardNumberSimpleType" minOccurs="1"/>
             <xsd:element name="Name" type="CreditCardNameSimpleType" minOccurs="1"/>
             <xsd:element name="SecurityCode" type="CreditCardSecurityCodeSimpleType" minOccurs="1"/>
             <xsd:element name="ExpirationDate" type="CreditCardExpirationDateComplexType" minOccurs="1"/>
         </xsd:all>
-    </xsd:complexType>
+ -->    </xsd:complexType>
 
     <xsd:complexType name="IDealComplexType">
         <xsd:all>
@@ -527,16 +529,27 @@
     </xsd:complexType>
 
     <xsd:complexType name="PayPalComplexType">
-        <xsd:all>
+ <!--        <xsd:all>
 	        <xsd:element name="PayPalAccount" type="EmailSimpleType" minOccurs="1"/>
-        </xsd:all>
+      </xsd:all>
+ -->    </xsd:complexType>
+ 
+    <xsd:complexType name="SofortComplexType">
+ 
     </xsd:complexType>
+    
+   <xsd:complexType name="CarteBancaireComplexType">
+ 
+    </xsd:complexType>
+
 
     <xsd:complexType name="DebtorWalletComplexType">
         <xsd:choice>
             <xsd:element name="IDEAL" type="IDealComplexType" maxOccurs="1"/>            
             <xsd:element name="PayPal" type="PayPalComplexType" maxOccurs="1"/>
             <xsd:element name="CreditCard" type="DebtorCreditCardComplexType" maxOccurs="1"/>
+            <xsd:element name="Sofort" type="SofortComplexType" maxOccurs="1"/>
+            <xsd:element name="CarteBancaire" type="CarteBancaireComplexType" maxOccurs="1"/>
         </xsd:choice>
     </xsd:complexType>
     
@@ -552,6 +565,9 @@
             <xsd:element name="IDealDetails" type="IDealDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="PayPalDetails" type="PayPalDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="VisaMasterDetails" type="VisaMasterDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="SofortDetails" type="SofortDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="CarteBancaireDetails" type="CarteBancaireDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+
         </xsd:sequence>
     </xsd:complexType>
 
@@ -574,9 +590,24 @@
     <xsd:complexType name="VisaMasterDetailsComplexType">
         <xsd:sequence>
             <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
-            <xsd:element name="DebtorCard" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
+    
+    <xsd:complexType name="SofortDetailsComplexType">
+        <xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="CarteBancaireDetailsComplexType">
+        <xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
 
 
 
