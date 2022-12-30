@@ -102,6 +102,8 @@ class BluemConfiguration
      */
     public bool $webhookDebug = false;
 
+    private const TESTING_ENVIRONMENT = 'test';
+
     /**
      * An object containing the configuration for the Bluem integration. Can be an array or object
      *
@@ -124,7 +126,7 @@ class BluemConfiguration
             throw new Exception('Bluem Configuration is not valid: ' . $this->errorsAsString());
         }
 
-        $this->environment           = $raw_validated->environment;
+        $this->environment           = $raw_validated->environment ?? self::TESTING_ENVIRONMENT;
         $this->senderID              = $raw_validated->senderID;
         $this->brandID               = $raw_validated->brandID;
         $this->accessToken           = $raw_validated->accessToken;

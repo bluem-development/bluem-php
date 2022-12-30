@@ -31,6 +31,7 @@ use Bluem\BluemPHP\Responses\MandateTransactionBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentStatusBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentTransactionBluemResponse;
 use Bluem\BluemPHP\Validators\BluemXMLValidator;
+use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Carbon\Carbon;
 use DOMException;
 use Exception;
@@ -39,25 +40,23 @@ use HTTP_Request2_LogicException;
 use RuntimeException;
 use Throwable;
 
-// libxml_use_internal_errors(false);
-
-if ( ! defined( "BLUEM_ENVIRONMENT_PRODUCTION" ) ) {
-    define( "BLUEM_ENVIRONMENT_PRODUCTION", "prod" );
+if (!defined("BLUEM_ENVIRONMENT_PRODUCTION" )) {
+    define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
 }
-if ( ! defined( "BLUEM_ENVIRONMENT_TESTING" ) ) {
-    define( "BLUEM_ENVIRONMENT_TESTING", "test" );
+if (!defined("BLUEM_ENVIRONMENT_TESTING")) {
+    define("BLUEM_ENVIRONMENT_TESTING", "test");
 }
-if ( ! defined( "BLUEM_ENVIRONMENT_ACCEPTANCE" ) ) {
-    define( "BLUEM_ENVIRONMENT_ACCEPTANCE", "acc" );
+if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
+    define("BLUEM_ENVIRONMENT_ACCEPTANCE", "acc");
 }
-if ( ! defined( "BLUEM_STATIC_MERCHANT_ID" ) ) {
-    define( "BLUEM_STATIC_MERCHANT_ID", "0020000387" );
+if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
+    define("BLUEM_STATIC_MERCHANT_ID", "0020000387");
 }
-if ( ! defined( "BLUEM_LOCAL_DATE_FORMAT" ) ) {
-    define( "BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s" );
+if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
+    define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
 }
 
-define( "BLUEM_DATE_FORMAT_RFC1123", "D, d M Y H:i:s \G\M\T" );
+define("BLUEM_DATE_FORMAT_RFC1123", "D, d M Y H:i:s \G\M\T");
 
 /**
  * Bluem Integration main class
@@ -74,23 +73,26 @@ class Bluem {
      */
     private BluemConfiguration $configuration;
 
+
     /**
      * Bluem constructor.
+     * Give a mixed configuration object to initialize the Bluem object
      *
-     * @param $_config
+     * @param mixed $rawConfig
      *
-     * @throws Exception
+     * @throws InvalidBluemConfigurationException
      */
-    public function __construct( $_config ) {
-
-        try {
-            $config = new BluemConfiguration( $_config );
-        } catch ( Exception $e ) {
-            throw new RuntimeException( $e->getMessage() );
+    public function __construct($rawConfig)
+    {
+        if ($rawConfig ===null) {
+            throw new InvalidBluemConfigurationException('No configuration given');
         }
 
-        $this->configuration = $config;
-        $this->environment   = $config->environment ?? "test";
+        try {
+            $this->configuration = new BluemConfiguration( $rawConfig );
+        } catch (Exception $e) {
+            throw new InvalidBluemConfigurationException($e->getMessage());
+        }
     }
 
 
