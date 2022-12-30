@@ -1,69 +1,6 @@
-x![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
+![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
 
-## Table of Contents
-- [Bluem-php for Payment, Mandates, iDIN & IBAN-Name check](#bluem-php-for-payment--mandates--idin---iban-name-check)
-    * [Getting started:](#getting-started-)
-    * [Requirements](#requirements)
-    * [Notes per version](#notes-per-version)
-        + [Version 2.2 (latest)](#version-22--latest-)
-        + [Version 2.1](#version-21)
-        + [Version 2.0.12](#version-2012)
-        + [Version 2.0.2:](#version-202-)
-        + [Version 2.0.1:](#version-201-)
-        + [Versions before 2.0](#versions-before-20)
-    * [Testing](#testing)
-        + [Description of the base tests:](#description-of-the-base-tests-)
-    * [Frequently asked questions](#frequently-asked-questions)
-    * [Configuration](#configuration)
-    * [General concept](#general-concept)
-        + [DebtorWallet: Preselecting a bank for Mandate, Payment or Identity request](#debtorwallet--preselecting-a-bank-for-mandate--payment-or-identity-request)
-        + [DebtorWallet - Preselecting a bank for Mandate, Payment or Identity request](#debtorwallet---preselecting-a-bank-for-mandate--payment-or-identity-request)
-    * [Webhooks](#webhooks)
-        + [1. How to implement](#1-how-to-implement)
-        + [2. How to configure](#2-how-to-configure)
-        + [3. Verify that it works](#3-verify-that-it-works)
-        + [Support for webhooks](#support-for-webhooks)
-    * [Payments](#payments)
-        + [Creating a payment transaction](#creating-a-payment-transaction)
-        + [Requesting a payment status](#requesting-a-payment-status)
-        + [Tip for testing with payments](#tip-for-testing-with-payments)
-        + [Adding additional data to a request](#adding-additional-data-to-a-request)
-            - [EmailAddress](#emailaddress)
-            - [MobilePhoneNumber](#mobilephonenumber)
-            - [CustomerProvidedDebtorIBAN](#customerprovideddebtoriban)
-            - [CustomerNumber](#customernumber)
-            - [CustomerName](#customername)
-            - [AttentionOf](#attentionof)
-            - [Salutation](#salutation)
-            - [CustomerAddressLine1](#customeraddressline1)
-            - [CustomerAddressLine2](#customeraddressline2)
-            - [DebtorBankID](#debtorbankid)
-            - [DynamicData](#dynamicdata)
-    * [eMandates](#emandates)
-        + [Mandate specific configuration fields](#mandate-specific-configuration-fields)
-        + [Creating an eMandate Transaction: helper functions](#creating-an-emandate-transaction--helper-functions)
-            - [Creating an eMandate transaction](#creating-an-emandate-transaction)
-            - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
-        + [Requesting an eMandate Transaction status](#requesting-an-emandate-transaction-status)
-    * [Identity (iDIN)](#identity--idin-)
-        + [Configuring iDIN](#configuring-idin)
-        + [Identity request types explained](#identity-request-types-explained)
-        + [Creating an identity request](#creating-an-identity-request)
-        + [The Identity Response callback](#the-identity-response-callback)
-        + [Testing identity return statuses](#testing-identity-return-statuses)
-        + [CustomerIDLoginRequest](#customeridloginrequest)
-    * [IBAN-Name check](#iban-name-check)
-        + [Use-cases for IBAN-Name checking and Edge cases](#use-cases-for-iban-name-checking-and-edge-cases)
-    * [Important miscellaneous notes](#important-miscellaneous-notes)
-        + [Enable secure Webhook reception through a certificate check](#enable-secure-webhook-reception-through-a-certificate-check)
-    * [Appendices](#appendices)
-        + [List of all supported BICs per context](#list-of-all-supported-bics-per-context)
-            - [ePayments](#epayments)
-            - [eMandates CORE](#emandates-core)
-            - [eMandates B2B](#emandates-b2b)
-            - [Identity](#identity)
-
-# Bluem-php for Payment, Mandates, iDIN & IBAN-Name check
+**Bluem-php for Payment, Mandates, iDIN & IBAN-Name check**
 
 A PHP interface for utilizing the Bluem services ePayments, eMandates, iDIN and/or IBAN-Name check.
 Utilize this library to write your own applications in PHP that communicate with Bluem, without having to handle the flow yourself.
@@ -72,6 +9,51 @@ Utilized by other applications as well:
 
 - [WordPress and WooCommerce plug-in](https://github.com/bluem-development/bluem-woocommerce), available for Bluem customers.
 - [Magento2 module](https://github.com/bluem-development/bluem-magento/), available for Bluem customers.
+- Several third-party customer applications by Bluem customers.
+
+## Table of Contents
+* [Requirements](#requirements)
+* [Getting started:](#getting-started-)
+* [Notes per version](#notes-per-version)
+    + [Version 2.2 (latest)](#version-22--latest-)
+    + [Version 2.1](#version-21)
+    + [Versions before 2.1](#versions-before-21)
+* [Testing](#testing)
+    + [Description of the base tests:](#description-of-the-base-tests-)
+* [Frequently asked questions](#frequently-asked-questions)
+* [Configuration](#configuration)
+* [General concept](#general-concept)
+* [Webhooks](#webhooks)
+* [Payments](#payments)
+    + [Creating a payment transaction](#creating-a-payment-transaction)
+    + [Requesting a payment status](#requesting-a-payment-status)
+    + [Tip for testing with payments](#tip-for-testing-with-payments)
+    + [Adding additional data to a request](#adding-additional-data-to-a-request)
+* [eMandates](#emandates)
+    + [Mandate specific configuration fields](#mandate-specific-configuration-fields)
+    + [Creating an eMandate Transaction: helper functions](#creating-an-emandate-transaction--helper-functions)
+        - [Creating an eMandate transaction](#creating-an-emandate-transaction)
+        - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
+    + [Requesting an eMandate Transaction status](#requesting-an-emandate-transaction-status)
+* [Identity (iDIN)](#identity--idin-)
+    + [Configuring iDIN](#configuring-idin)
+    + [Identity request types explained](#identity-request-types-explained)
+    + [Creating an identity request](#creating-an-identity-request)
+    + [The Identity Response callback](#the-identity-response-callback)
+    + [Testing identity return statuses](#testing-identity-return-statuses)
+    + [CustomerIDLoginRequest](#customeridloginrequest)
+* [IBAN-Name check](#iban-name-check)
+    + [Use-cases for IBAN-Name checking and Edge cases](#use-cases-for-iban-name-checking-and-edge-cases)
+* [Important miscellaneous notes](#important-miscellaneous-notes)
+    + [Enable secure Webhook reception through a certificate check](#enable-secure-webhook-reception-through-a-certificate-check)
+* [Appendices](#appendices)
+    + [List of all supported BICs per context](#list-of-all-supported-bics-per-context)
+
+## Requirements
+
+- **PHP 7.4** is minimum required version for this library. PHP 8.0 is recommended.
+- Please use the [major git releases](https://github.com/bluem-development/bluem-php/releases) for the stable versions of this plugin.
+- Refer to the `composer.json` requirements for any other dependencies
 
 ## Getting started:
 Install the library through [Composer](https://getcomposer.org). Run Composer to install this library and dependencies from your project folder.
@@ -79,16 +61,11 @@ Install the library through [Composer](https://getcomposer.org). Run Composer to
 ```bash
 composer require bluem-development/bluem-php
 ```
----
 
 Refer to the [examples](https://github.com/bluem-development/bluem-php/tree/master/examples) for a full example implementation that you can base your own integration on. 
 
 Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
 
-## Requirements
-
-- PHP 7.0+ is required for all versions of this library. Please use the major git releases for the stable versions of this plugin. 
-- Refer to the `composer.json` requirements for any other dependencies
 
 ## Notes per version
 ### Version 2.2 (latest)
@@ -105,16 +82,17 @@ Major improvement in code style.
 - Added more unit testing coverage
 - Separated more responsibilities for cleaner code
 
-### Version 2.0.12 
-Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IPAPI).
+### Versions before 2.1
+#### Version 2.0.12
+Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IP-API).
 
 ```php
 $bluem->VerifyIPIsNetherlands();
 // returns bool true if NL or error, returns false if no error and other country.
 ```
-*This feature can be used to determine whether to use IDIN identity checking in any application, as this supports only Dutch banks.*
+*This feature can be used to determine whether to use iDIN identity checking in any application, as this supports only Dutch banks.*
 
-### Version 2.0.2:
+#### Version 2.0.2:
 
 Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 june 2021. See: https://www.triodos.nl/veelgestelde-vragen/kan-ik-idin-gebruiken?id=4de127e85eee
 
@@ -123,7 +101,7 @@ Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 jun
 - If you use the Bluem portal, you don't need to act. This change is already applied within the Bluem portal.
 
 
-### Version 2.0.1:
+#### Version 2.0.1:
 Major release with more stability, validation and features.
 
 Please note: The main Integration class is called Bluem, so to include it, use:
@@ -134,10 +112,9 @@ Or use a class alias to ensure code functioning. This is a refactor since versio
 
 Furthermore, all generally available functions are still available.
 
-### Versions before 2.0
-No changelog was recorded. Please refer to the [commit log](https://github.com/bluem-development/bluem-php/commits/master) for more information.
+---
 
-
+No earlier changelog was recorded. Please refer to the [commit log](https://github.com/bluem-development/bluem-php/commits/master) for more information.
 
 ## Testing
 For improving future features, unit testing is introduced since november 2021.
@@ -155,11 +132,11 @@ Testing is done given a `.env` file. Please ensure that a filled `.env` file is 
 
 ## Frequently asked questions
 
-*I get the message “Unauthorized: Check your account credentials“. What should I do?*<br>
+*I get the message "Unauthorized: Check your account credentials". What should I do?*<br>
 Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. 
 If you have checked that the credentials are correct, but you still receive this message, please contact your Bluem account manager.
 
-*Can I connect the Identity service with a payment service like Emandates or iDEAL so the user is only redirected once?*<br>
+*Can I connect the Identity service with a payment service like E-Mandates or iDEAL so the user is only redirected once?*<br>
 - No, you cannot, as these are separate processes.
 
 
@@ -230,13 +207,13 @@ If parts of the Bluem object are not instantiated correctly, the instantiation m
 
 This library makes it easy to perform communication with Bluem for its services (ePayments, eMandates, iDIN and IBAN-Name Check). The flow for each service is similar and thus easy to understand once you understand and implement one of them.
 
-1. **TransactionRequest (from the website to Bluem)**: Your application creates a request object, sends it to Bluem's servers with authentication.
+1. **TransactionRequest (from the website to Bluem)**: Your application creates a request object, sends it to Bluem servers with authentication.
 2. **TransactionResponse (including TransactionURL) (from Bluem to site)**: Your application receives a response with a URL as entry point into the Bluem environment, if the request was successful.
-3. **Bluem Environment**: Redirect client to TransactionURL, client (via the checkout) to bank, confirm transaction, back to Merchant (via MerchantReturnURL with Emandates, and via DebtorReturnURL with Payments/Identity), this is trigger for StatusRequest
-The user is redirected to the response URL at the Bluem servers. In this Bluem environment, the user performs a payment/mandate signing or identity/IDIN check and returns to a predefined URL.
-4. **StatusRequest (from the website to Bluem)**: Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on Bluem's status. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality.
+3. **Bluem Environment**: Redirect client to TransactionURL, client (via the checkout) to bank, confirm transaction, back to Merchant (via MerchantReturnURL with eMandates, and via DebtorReturnURL with Payments/Identity), this is trigger for StatusRequest
+The user is redirected to the response URL at the Bluem servers. In this Bluem environment, the user performs a payment/mandate signing or identity/iDIN check and returns to a predefined URL.
+4. **StatusRequest (from the website to Bluem)**: Using this same package one can check the Status of a request using a second endpoint (given an ID and entranceCode of the transaction defined at the creation of the request). This is vital, as it allows you to change the status of an order or check within your site or app based on transaction status retrieved from Bluem. It is recommended to do this check when the user comes back to your site/app directly after handling the transaction at Bluem AND using a webhook functionality.
 5. **StatusUpdate (from Bluem to the website)**: This response object that comes back from a callback or webhook, contains an updated status that you can process within your application. For example: when the user has paid or verified, and you have to change a product, order or process' status and go to a next step.
-6. **Webhook**: The webhook functionality allows Bluem to directly and safely push status changes and transaction results to your site or app. Therefore, your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting Bluem's transaction page.
+6. **Webhook**: The webhook functionality allows Bluem to directly and safely push status changes and transaction results to your site or app. Therefore, your orders and transactions will always get updated to the corresponding statuses, no matter what your user does after visiting the Bluem transaction page.
 
 The Webhook is only needed for ePayments and eMandates: online stores/portals that need to know directly the status, for those cases that client closes the browser at a bank after successful confirmation of transaction. Webhook not needed for iDIN as with iDIN the client ALWAYS comes back to website after successful identification. See the Webhook paragraph for implementation instructions.
 
@@ -270,7 +247,7 @@ This method can be used when creating iDIN and when creating iDEAL requests; you
 - You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience: that it ensures integrity, and a valid webshop experience.
 
 
-## Changing between Creditcards, Paypal and iDeal ePayment methods
+## Changing between Creditcards, PayPal and iDeal ePayment methods
 
 You can allow the PayPal and Creditcard payment methods by selecting these within the request object before sending it.
 
@@ -599,7 +576,7 @@ $response = $bluem->Mandate($customer_id, $order_id,"default");
 
 If you do anything wrong, or you are unauthorized, the Response object will be of type `Bluem\BluemPHP\ErrorBluemResponse` and has an `Error()` function to retrieve a string of information regarding your error that you could display to your user or handle yourself.
 
-An example about incorrect access token and Ids could be: “Unauthorized: check your access credentials“.
+An example about incorrect access token and Ids could be: "Unauthorized: check your access credentials".
 
 #### Redirection after eMandate transaction creation
 When you have performed a transaction request successfully, you receive a response object from Bluem. This object tells you where to redirect the user to, to actually perform the administrative steps at the Bluem portal.
@@ -738,13 +715,9 @@ if ($response->ReceivedResponse()) {
 Processing the callback function can be done after the Bluem object has been properly instantiated.
 
 ```php
-<<<<<<< HEAD
 // Retrieve from a store, preferably more persistent than session.
 // The code below is purely for demonstrative purposes.
-=======
-// retrieve from a store, preferably more persistent than session.
-// the code below is purely for demonstrative purposes.
->>>>>>> origin/master
+
 $transactionID = $_SESSION['transactionID'];
 $entranceCode = $_SESSION['entranceCode'];
 
@@ -908,3 +881,9 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - SNS   <BR> BIC: `SNSBNL2A`
 
 Please note: Triodos Bank with BIC: `TRIONL2U` does not support Identity anymore as of 1st of June 2021.
+
+
+---
+Todo:
+- [ ] Add improved ToC
+- [ ] implement shields.io (https://github.com/badges/shields)
