@@ -3,6 +3,7 @@
 namespace Unit;
 
 use Bluem\BluemPHP\Bluem;
+use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -10,6 +11,7 @@ use stdClass;
 class BluemTest extends TestCase
 {
     private Bluem $bluem;
+
 
     protected function setUp(): void
     {
@@ -25,14 +27,23 @@ class BluemTest extends TestCase
         }
     }
 
-    public function testCreateMandateRequest()
-    {
-        $this->markTestSkipped("Assertions need to be added");
-        // arrange
-        // act
-        $request = $this->bluem->CreateMandateRequest("customer_id", "order_id");
-        // assertions
 
+    /**
+     * @dataProvider invalidConfigurationsDataProvider
+     */
+    public function testThrowsExceptionWhenNoConfigurationGiven($data) {
+
+        $this->expectException(InvalidBluemConfigurationException::class);
+        new Bluem($data);
+    }
+
+    public function invalidConfigurationsDataProvider()
+    {
+        return [
+            'null config given' => [null],
+            'empty object config given' => [new StdClass()],
+            'empty array config given' => [[]],
+        ];
     }
 
     /** @dataProvider mandateIdTestDataProvider */
