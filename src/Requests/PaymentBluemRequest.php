@@ -92,10 +92,10 @@ class PaymentBluemRequest extends BluemRequest
         $this->paymentReference = !empty($paymentReference)
             ? $paymentReference
             : "$this->debtorReference$this->transactionID";
-        
+
         $this->context = new PaymentsContext();
     }
-    
+
     private function sanitizeTransactionID(string $transactionID): string {
          $sanitizedTransactionIDParts = [];
          $sanitizedTransactionIDCount = preg_match_all(
@@ -109,10 +109,9 @@ class PaymentBluemRequest extends BluemRequest
                  $sanitizedTransactionIDParts[0]
              );
          }
-     
+
         return $transactionID;
     }
-    
 
     /**
      * Validate based on a list of accepted currencies
@@ -210,14 +209,19 @@ class PaymentBluemRequest extends BluemRequest
     }
 
     public function setPaymentMethodToCreditCard(
-        string $cardNumber = '', string $name = '', string $securityCode = '', string $expirationDateMonth = '', string $expirationDateYear = ''
+        string $cardNumber = '',
+        string $name = '',
+        string $securityCode = '',
+        string $expirationDateMonth = '',
+        string $expirationDateYear = ''
     ): self {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CREDITCARD);
 
         /**
          * Prepared for future use.
          */
-        if (!empty($cardNumber) || !empty($name) || !empty($securityCode) || !empty($expirationDateMonth) || !empty($expirationDateYear))
+        if (!empty($cardNumber) || !empty($name) || !empty($securityCode)
+            || !empty($expirationDateMonth) || !empty($expirationDateYear))
         {
             $this->context->addPaymentMethodDetails([
                 'CardNumber'=>$cardNumber,
@@ -227,7 +231,7 @@ class PaymentBluemRequest extends BluemRequest
                 'ExpirationDateYear'=>$expirationDateYear,
             ]);
         }
-        
+
         $this->context->addPaymentMethodDetails([
             'CardNumber'=>$cardNumber,
             'Name'=>$name,
@@ -235,10 +239,22 @@ class PaymentBluemRequest extends BluemRequest
             'ExpirationDateMonth'=>$this->addZeroPrefix($expirationDateMonth),
             'ExpirationDateYear'=>$expirationDateYear,
         ]);
-        
+
         return $this;
     }
-    
+
+    public function setPaymentMethodToSofort(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_SOFORT);
+        return $this;
+    }
+
+    public function setPaymentMethodToCarteBancaire(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_CARTE_BANCAIRE);
+        return $this;
+    }
+
     private function addZeroPrefix($number) {
         if(strlen($number.'') === 1) {
             return (int) '0'.$number;
@@ -273,56 +289,11 @@ class PaymentBluemRequest extends BluemRequest
             return $res;
         }
 
-        /**
-         * For future use.
-         *
-         * $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-         * $res .= "<{$this->context->debtorWalletElementName}>";
-
-         * if($this->context->isPayPal()) {
-         * $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
-         * } elseif($this->context->isCreditCard()) {
-         * $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
-         * $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
-         * $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
-         * $res .= "<ExpirationDate>
-         * <Month>" . $this->context->getPaymentDetail('ExpirationDateMonth') . "</Month>
-         * <Year>" . $this->context->getPaymentDetail('ExpirationDateYear') . "</Year>
-         * </ExpirationDate>";
-         * }
-
-         * $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
-         * $res .= "</DebtorWallet>" . PHP_EOL;
-         *
-         */
-
-        
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
-        
-        var_dump("debtorwallet");
-        var_dump($this->debtorWallet);
-        var_dump($this->context->isIDEAL());
-        if($this->context->isIDEAL()) {
-            
-            $bicPaymentDetail = $this->context->getPaymentDetail('BIC');
-            var_dump($bicPaymentDetail);
-            if($bicPaymentDetail===null || $bicPaymentDetail==="") {
-                 $bic = $this->debtorWallet ?? '';
-            } else {
-                $bic = $bicPaymentDetail;
-            }
-
-            // if still null, just return nothing
-//            if(is_null($bic)) {
-//                return '';
-//            }
-            var_dump("BIC");
-            var_dump($bic);
-            $res .= "<BIC>" . $bic . "</BIC>";
-        } elseif($this->context->isPayPal()) {
+        if ($this->context->isPayPal()) {
             $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";
-        } elseif($this->context->isCreditCard()) {
+        } elseif ($this->context->isCreditCard()) {
             $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
             $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
             $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
@@ -330,7 +301,12 @@ class PaymentBluemRequest extends BluemRequest
                         <Month>" . $this->context->getPaymentDetail('ExpirationDateMonth') . "</Month>
                         <Year>" . $this->context->getPaymentDetail('ExpirationDateYear') . "</Year>
                     </ExpirationDate>";
+        } elseif ($this->context->isSofort()) {
+            // if specific sofort body becomes required in the future; please add it here
+        } elseif ($this->context->isCarteBancaire()) {
+            // if specific carte bancaire body becomes required in the future; please add it here
         }
+
         $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
         $res .= "</DebtorWallet>" . PHP_EOL;
         return $res;

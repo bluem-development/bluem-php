@@ -221,8 +221,9 @@ Please note that the flow for the IBAN-Name check is shorter: a TransactionReque
 This is because the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
 
 ## Preselecting a bank for Payment requests using debtorWallet 
-It is possible to preselect a Bank within your own application for Payments, based on an IssuerID (BIC/Swift code) when creating a Mandate, Payment or Identity request. This can be used if you want to user to select the given bank in your own interface and skip the bank selection within the Bluem portal interface.
+**Note:** This is relevant for bank-based transactions and services:
 
+It is possible to preselect a Bank within your own application for Payments, based on an IssuerID (BIC/Swift code) when creating a Mandate, Payment or Identity request. This can be used if you want to user to select the given bank in your own interface and skip the bank selection within the Bluem portal interface.
 This reduces the amount of steps required by performing the selection of the bank within your own application and interface by utilizing the preselection feature from the PHP library on the request object as so:
 
 ```php
@@ -247,23 +248,29 @@ This method can be used when creating iDIN and when creating iDEAL requests; you
 - You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience: that it ensures integrity, and a valid webshop experience.
 
 
-## Changing between Creditcards, PayPal and iDeal ePayment methods
+## Using different Payment transaction methods
+
+**Important note: ensure you have the right BrandID set up for specific payment methods. Refer to your account manager to retrieve a list of the specific BrandIDs per payment method**
 
 You can allow the PayPal and Creditcard payment methods by selecting these within the request object before sending it.
 
-To use iDeal, (the default). A BIC can be provided. If left empty, bank selection will occur in the Bluem portal.
+To use iDeal, (default option). A BIC **can** be provided. If left empty, bank selection will occur in the Bluem portal.
 ```php
 $BIC = 'INGBNL2A';
-$request->setPaymentMethodToIDEAL($BIC); 
+$request = $request->setPaymentMethodToIDEAL($BIC); 
 ```
 
-To use PayPal, give in a PayPal account email address.
+To use PayPal, give in a PayPal account email address. The email is also not required.
 ```php
 $payPalAccount = 'john.doe@gmail.com';
-$request->setPaymentMethodToPayPal($payPalAccount); 
+$request = $request->setPaymentMethodToPayPal($payPalAccount); 
 ```
-To use Creditcards
 
+To use Creditcards, you can set the credit card details as follows (not required)
+```php
+$request = $request->setPaymentMethodToCreditCard();
+```
+or
 ```php
 $cardNumber = '1234000012340000';
 $name = 'John Doe';
@@ -271,13 +278,23 @@ $securityCode = 123;
 $expirationDateMonth = 11;
 $expirationDateYear = 2025;
 
-$request->setPaymentMethodToCreditCard(
+$request = $request->setPaymentMethodToCreditCard(
     $cardNumber,
     $name,
     $securityCode,
     $expirationDateMonth,
     $expirationDateYear
 ); 
+```
+
+To use Sofort, use the following method:
+```php
+$request = $request->setPaymentMethodToSofort(); 
+```
+
+To use Carte Bancaire, use the following method:
+```php
+$request = $request->setPaymentMethodToCarteBancaire(); 
 ```
 
 These methods will throw an exception if required information is missing.
@@ -312,7 +329,7 @@ if ($webhook !== null) {
     if ($webhook->getStatus() === "Success") {
         // deal with the successful callback
     }
-    // ...etc
+    // elseif (...) {...etc
 }
 ```
 Refer to the `examples/payments-webhook.php` for a more in-depth example implementation and retrieval of the data when a webhook is received in your application. 

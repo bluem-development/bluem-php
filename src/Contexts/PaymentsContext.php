@@ -5,17 +5,22 @@ namespace Bluem\BluemPHP\Contexts;
 use Bluem\BluemPHP\Helpers\BIC;
 use RuntimeException;
 
-class PaymentsContext extends BluemContext 
+class PaymentsContext extends BluemContext
 {
     public const PAYMENT_METHOD_IDEAL = 'IDEAL';
     public const PAYMENT_METHOD_PAYPAL = 'PayPal';
     public const PAYMENT_METHOD_CREDITCARD = 'CreditCard';
+    public const PAYMENT_METHOD_SOFORT = 'Sofort';
+    public const PAYMENT_METHOD_CARTE_BANCAIRE = 'CarteBancaire';
+
     public const PAYMENT_METHODS = [
         self::PAYMENT_METHOD_IDEAL,
         self::PAYMENT_METHOD_PAYPAL,
-        self::PAYMENT_METHOD_CREDITCARD
+        self::PAYMENT_METHOD_CREDITCARD,
+        self::PAYMENT_METHOD_SOFORT,
+        self::PAYMENT_METHOD_CARTE_BANCAIRE
     ];
-    
+
     public string $debtorWalletElementName = self::PAYMENT_METHOD_IDEAL;
 
     /**
@@ -53,10 +58,10 @@ class PaymentsContext extends BluemContext
     public function addPaymentMethodDetails(array $details = [])
     {
         $validationErrors = $this->validateDetails($details);
-        if(count($validationErrors) > 0 ) {
+        if (count($validationErrors) > 0 ) {
             throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
         }
-     
+
         $this->paymentMethodDetails = $details;
     }
 
@@ -64,10 +69,10 @@ class PaymentsContext extends BluemContext
     {
         $errors = [];
 
-        if($this->isIDEAL()) {
+        if ($this->isIDEAL()) {
             // no validation yet
         }
-        if($this->isPayPal()) {
+        if ($this->isPayPal()) {
             /**
              * For future use.
              *
@@ -108,6 +113,12 @@ class PaymentsContext extends BluemContext
              *
              */
         }
+        if ($this->isSofort()) {
+            // add upcoming validation here
+        }
+        if ($this->isCarteBancaire()) {
+            // add upcoming validation here
+        }
 
         return $errors;
     }
@@ -130,5 +141,15 @@ class PaymentsContext extends BluemContext
     public function getPaymentDetail(string $key)
     {
         return $this->paymentMethodDetails[$key] ?? null;
+    }
+
+    public function isSofort(): bool
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_SOFORT;
+    }
+
+    public function isCarteBancaire(): bool
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_CARTE_BANCAIRE;
     }
 }
