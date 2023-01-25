@@ -15,7 +15,7 @@
         "issues": "https://github.com/bluem-development/bluem-php"
     },
     "require": {
-        "php": ">=7.4|>=8.0",
+        "php": ">=8.0",
         "nesbot/carbon": "^2.31",
         "pear/http_request2": "v2.4.2",
         "selective/xmldsig": "^2.4",
@@ -24,7 +24,8 @@
         "ext-simplexml": "*",
         "ext-curl": "*",
         "ext-json": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+        "robrichards/xmlseclibs": "^3.1"
     },
     "autoload": {
         "psr-4": {
