@@ -16,7 +16,7 @@ class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInt
     /**
      * @var string
      */
-    private $xmlInterfaceName;
+    private $xmlInterfaceName = "EMandateInterface";
 
 
     /**
@@ -33,11 +33,6 @@ class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInt
             $entranceCode,
             $expected_return
         );
-
-        $this->xmlInterfaceName = "EMandateInterface";
-        // @todo make this of BluemXMLInterfaceClass type
-
-        $this->typeIdentifier = "requestStatus";
 
         $this->mandateID = $mandateID;
 

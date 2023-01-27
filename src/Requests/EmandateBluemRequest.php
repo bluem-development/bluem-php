@@ -29,7 +29,7 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
     /**
      * @var string
      */
-    private $xmlInterfaceName;
+    private $xmlInterfaceName = "EMandateInterface";
 
     /**
      * @param BluemConfiguration $config
@@ -43,18 +43,12 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
     public function __construct( BluemConfiguration $config, $customer_id, $order_id, $mandateID, string $expected_return = "none" ) {
         parent::__construct( $config, "", $expected_return );
 
-        $this->xmlInterfaceName = "EMandateInterface";
-        // $this->request_url_type = "mr";
-        $this->typeIdentifier = "createTransaction";
-
-
         $this->merchantReturnURLBase = $config->merchantReturnURLBase;
 
         // $this->request_type = $request_type;
         // if($this->request_type==="simple" && $simple_redirect_url!=="") {
         // 	$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}";
         // }
-
 
         $this->localInstrumentCode = $config->localInstrumentCode;
         // @todo create localInstrumentCode datatype with these options // CORE | B2B ,  conform gegeven standaard
