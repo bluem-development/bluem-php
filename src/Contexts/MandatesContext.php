@@ -14,7 +14,7 @@ use Exception;
 class MandatesContext extends BluemContext {
     public $debtorWalletElementName = "INCASSOMACHTIGEN";
 
-    private $_possibleMandateTypes = [ 'CORE', 'B2B' ];
+    private array $_possibleMandateTypes = [ 'CORE', 'B2B' ];
 
     /**
      * MandatesContext constructor.

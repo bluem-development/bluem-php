@@ -13,10 +13,7 @@ class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInt
     public $typeIdentifier = "requestStatus";
     public $request_url_type = "mr";
     public $transaction_code = "SRX";
-    /**
-     * @var string
-     */
-    private $xmlInterfaceName = "EMandateInterface";
+    private string $xmlInterfaceName = "EMandateInterface";
 
 
     /**
@@ -38,7 +35,7 @@ class EmandateStatusBluemRequest extends BluemRequest implements BluemRequestInt
 
         try {
             $this->context = new MandatesContext( $config->localInstrumentCode );
-        } catch ( Exception $e ) {
+        } catch ( Exception ) {
             // @todo: deal with improper instrument code set
         }
     }

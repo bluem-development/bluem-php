@@ -4,7 +4,7 @@ namespace Bluem\BluemPHP\Helpers;
 
 class IdentityCategoryList {
     
-    private $cats = [];
+    private array $cats = [];
 
     public function getCats(): array {
         return $this->cats;
@@ -12,8 +12,6 @@ class IdentityCategoryList {
 
     /**
      * @param $cat
-     *
-     * @return IdentityCategoryList
      */
     public function addCat( $cat ): IdentityCategoryList {
         if ( ! in_array( $cat, $this->cats ) ) {

@@ -15,8 +15,7 @@ define( "BLUEM_EXPECTED_RETURN_PENDING", "pending" );
 
 
 class BluemConfigurationValidator {
-    /** @var array */
-    private $errors;
+    private ?array $errors = null;
 
 
     function validate( $config ) {
@@ -78,7 +77,7 @@ class BluemConfigurationValidator {
                 please add this to your configuration when instantiating the Bluem integration"
             );
         }
-        if ( substr( $config->senderID, 0, 1 ) !== "S" ) {
+        if ( !str_starts_with($config->senderID, "S") ) {
             throw new Exception(
                 "senderID always starts with an S followed by digits. 
                 Please correct this in your configuration when instantiating the Bluem integration"

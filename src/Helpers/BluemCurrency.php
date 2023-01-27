@@ -4,7 +4,7 @@ namespace Bluem\BluemPHP\Helpers;
 
 use Exception;
 
-class BluemCurrency {
+class BluemCurrency implements \Stringable {
 
     /**
      * @var string
@@ -15,11 +15,9 @@ class BluemCurrency {
     /**
      * @var string[]
      */
-    private $allowed_currencies = [ 'EUR', 'USD' ];
+    private array $allowed_currencies = [ 'EUR', 'USD' ];
 
     /**
-     * @param string $code
-     *
      * @throws Exception
      */
     public function __construct( string $code ) {
@@ -31,7 +29,7 @@ class BluemCurrency {
         $this->code = $code;
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return $this->code;
     }
 

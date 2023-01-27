@@ -9,14 +9,12 @@ use SimpleXMLElement;
 
 class WebhookXmlValidation extends WebhookValidator
 {
-    private string $senderID;
-    
     private const ALLOWED_SERVICE_INTERFACES = [
         'EPaymentInterface', 'IdentityInterface', 'EMandateInterface'
     ];
     
-    public function __construct(string $senderID) {
-        $this->senderID = $senderID;
+    public function __construct(private string $senderID)
+    {
     }
     
     public function validate(SimpleXMLElement $xmlObject): self
@@ -38,11 +36,11 @@ class WebhookXmlValidation extends WebhookValidator
             $this->addError("Invalid service interface messageCount attribute");
         }
         
-        if ( ! $xmlObject->Signature->SignatureValue ) {
+        if ( $xmlObject->Signature->SignatureValue === null ) {
             $this->addError("Invalid Signature Value");
         }
         
-        if ( ! $xmlObject->Signature->KeyInfo->KeyName ) {
+        if ( $xmlObject->Signature->KeyInfo->KeyName === null ) {
             $this->addError("Invalid KeyName");
         }
         

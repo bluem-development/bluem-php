@@ -19,8 +19,6 @@ class Context implements ContextInterface {
 
     /**
      * BluemContext constructor.
-     *
-     * @param array $issuers
      */
     public function __construct( array $issuers = [] ) {
         $this->issuers = $issuers;

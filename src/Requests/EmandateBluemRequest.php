@@ -15,21 +15,14 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
     public $transaction_code = "TRX";
     protected $merchantID;
     protected $merchantSubID;
-    private $localInstrumentCode;
+    private string $localInstrumentCode;
     private $merchantReturnURLBase;
     private $merchantReturnURL;
     private $sequenceType;
-    private $eMandateReason;
-    private $debtorReference;
-    private $purchaseID;
-    /**
-     * @var string
-     */
-    private $automatically_redirect;
-    /**
-     * @var string
-     */
-    private $xmlInterfaceName = "EMandateInterface";
+    private ?string $eMandateReason = null;
+    private string $purchaseID;
+    private string $automatically_redirect;
+    private string $xmlInterfaceName = "EMandateInterface";
 
     /**
      * @param BluemConfiguration $config
@@ -40,7 +33,7 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
      *
      * @throws Exception
      */
-    public function __construct( BluemConfiguration $config, $customer_id, $order_id, $mandateID, string $expected_return = "none" ) {
+    public function __construct( BluemConfiguration $config, private $debtorReference, $order_id, $mandateID, string $expected_return = "none" ) {
         parent::__construct( $config, "", $expected_return );
 
         $this->merchantReturnURLBase = $config->merchantReturnURLBase;
@@ -56,22 +49,9 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
 
         // https - unique return URL for customer
         $this->merchantReturnURL = "$this->merchantReturnURLBase?mandateID=$this->mandateID";
-        if ( isset( $config->sequenceType ) ) {
-            $this->sequenceType = $config->sequenceType;
-        } else {
-            $this->sequenceType = "RCUR";
-        }
-
+        $this->sequenceType = $config->sequenceType ?? "RCUR";
         // reason for the mandate; configurable per client
-        if ( isset( $config->eMandateReason ) ) {
-            $this->eMandateReason = $config->eMandateReason;
-        } else {
-            $this->eMandateReason = "Incasso machtiging";
-        }
-        // $this->eMandateReason = ; // TODO: uit config halen
-
-        // Klantreferentie bijv naam of nummer
-        $this->debtorReference = $customer_id;
+        $this->eMandateReason = $config->eMandateReason ?? "Incasso machtiging";
 
         // inkoop/contract/order/klantnummer
         /* PurchaseID is a mandatory field of the banks.
@@ -79,7 +59,7 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
         We do not present it on the checkout, because we see that many parties
         really do not know what to put there. We always advise customer number.
         And that is what many parties do. */
-        if ( isset( $config->purchaseIDPrefix ) && $config->purchaseIDPrefix !== "" ) {
+        if ( property_exists($config, 'purchaseIDPrefix') && $config->purchaseIDPrefix !== null && $config->purchaseIDPrefix !== "" ) {
             $purchaseIDPrefix = $config->purchaseIDPrefix . "-";
         } else {
             $purchaseIDPrefix = "";
@@ -88,22 +68,14 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
 
 
         // @todo: move to mandate-specifics; as it is only necessary there
-        if ( isset( $config->merchantID ) ) {
-            $this->merchantID = $config->merchantID;
-        } else {
-            $this->merchantID = "";
-        }
+        $this->merchantID = $config->merchantID ?? "";
 
         // override with hardcoded merchantID when in test environment, according to documentation
         if ( $this->environment === BLUEM_ENVIRONMENT_TESTING ) {
             $this->merchantID = "0020000387";
         }
 
-        if ( isset( $config->merchantSubID ) ) {
-            $this->merchantSubID = $config->merchantSubID;
-        } else {
-            $this->merchantSubID = "0";
-        }
+        $this->merchantSubID = $config->merchantSubID ?? "0";
 
 
         $this->automatically_redirect = "1";
