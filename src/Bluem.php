@@ -231,10 +231,7 @@ class Bluem {
 
         $request_url = $transaction_request->HttpRequestUrl();
 
-        $req = new HTTP_Request2();
-
-        $req->setUrl( $request_url );
-        $req->setMethod( HTTP_Request2::METHOD_POST );
+        $req = new HTTP_Request2($request_url, HTTP_Request2::METHOD_POST);
 
         $req->setHeader( 'Access-Control-Allow-Origin', '*' );
         $req->setHeader( "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8" );
@@ -264,7 +261,7 @@ class Bluem {
             switch ( $http_response->getStatus() ) {
                 case 200:
                 {
-                    if ( $http_response->getBody() === "" ) {
+                    if ( empty($http_response->getBody()) ) {
                         return new ErrorBluemResponse( "Error: Empty response returned" );
                     }
 

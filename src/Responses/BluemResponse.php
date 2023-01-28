@@ -44,7 +44,7 @@ class BluemResponse extends SimpleXMLElement {
      */
     public function Status(): bool
     {
-        return $this->{static::$error_response_type} === null;
+        return self::$error_response_type === null;
     }
 
     /**
@@ -80,6 +80,6 @@ class BluemResponse extends SimpleXMLElement {
     }
 
     protected function getChildXmlElement(): string {
-        return static::$response_primary_key;
+        return self::$response_primary_key;
     }
 }
