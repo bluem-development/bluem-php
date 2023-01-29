@@ -231,81 +231,96 @@ class Bluem {
 
         $request_url = $transaction_request->HttpRequestUrl();
 
-        $req = new HTTP_Request2($request_url, HTTP_Request2::METHOD_POST);
+        $curl = curl_init();
+        $curl_options = array(
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query($params),
+            CURLOPT_URL => $request_url,
+            CURLOPT_HTTPHEADER => array("Content-type: application/json", "User-Agent: PHPPlivo"),
+            CURLOPT_RETURNTRANSFER => 1, 
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_FOLLOWLOCATION => 1,
+            CURLOPT_TIMEOUT => 30
+        );
+        curl_setopt_array($curl, $curl_options);
+        $response = curl_exec($curl);
+        curl_close($curl);
 
-        $req->setHeader( 'Access-Control-Allow-Origin', '*' );
-        $req->setHeader( "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8" );
-        $req->setHeader( "x-ttrs-date", $xttrs_date );
-        $req->setHeader( "x-ttrs-files-count", "1" );
-        $req->setHeader( "x-ttrs-filename", $xttrs_filename );
+        // $req = new HTTP_Request2($request_url, HTTP_Request2::METHOD_POST);
 
-        if ( self::$verbose ) {
-            echo PHP_EOL . "<BR>URL// " . $request_url;
+        // $req->setHeader( 'Access-Control-Allow-Origin', '*' );
+        // $req->setHeader( "Content-Type", "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8" );
+        // $req->setHeader( "x-ttrs-date", $xttrs_date );
+        // $req->setHeader( "x-ttrs-files-count", "1" );
+        // $req->setHeader( "x-ttrs-filename", $xttrs_filename );
 
-            echo PHP_EOL . "<BR>HEADER// " . "Content-Type: " . "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
-            echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-date: ' . $xttrs_date;
-            echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-files-count: ' . '1';
-            echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-filename: ' . $xttrs_filename;
-            echo "<HR>";
-            echo PHP_EOL . "BODY: " . $transaction_request->XmlString();
-        }
+        // if ( self::$verbose ) {
+        //     echo PHP_EOL . "<BR>URL// " . $request_url;
 
-        $req->setBody( $transaction_request->XmlString() );
-        try {
-            $http_response = $req->send();
-            if ( self::$verbose ) {
-                echo PHP_EOL . "<BR>RESPONSE// ";
-                echo( $http_response->getBody() );
-            }
+        //     echo PHP_EOL . "<BR>HEADER// " . "Content-Type: " . "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
+        //     echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-date: ' . $xttrs_date;
+        //     echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-files-count: ' . '1';
+        //     echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-filename: ' . $xttrs_filename;
+        //     echo "<HR>";
+        //     echo PHP_EOL . "BODY: " . $transaction_request->XmlString();
+        // }
 
-            switch ( $http_response->getStatus() ) {
-                case 200:
-                {
-                    if ( empty($http_response->getBody()) ) {
-                        return new ErrorBluemResponse( "Error: Empty response returned" );
-                    }
+        // $req->setBody( $transaction_request->XmlString() );
+        // try {
+        //     $http_response = $req->send();
+        //     if ( self::$verbose ) {
+        //         echo PHP_EOL . "<BR>RESPONSE// ";
+        //         echo( $http_response->getBody() );
+        //     }
 
-                    try {
-                        $response = $this->fabricateResponseObject( $transaction_request->transaction_code, $http_response->getBody() );
-                    } catch ( Throwable $th ) {
-                        return new ErrorBluemResponse( "Error: Could not create Bluem Response object. More details: " . $th->getMessage() );
-                    }
+        //     switch ( $http_response->getStatus() ) {
+        //         case 200:
+        //         {
+        //             if ( empty($http_response->getBody()) ) {
+        //                 return new ErrorBluemResponse( "Error: Empty response returned" );
+        //             }
 
-                    if ( $response->attributes()['type'] . '' === "ErrorResponse" ) {
-                        $errorMessage = match ((string) $transaction_request->transaction_code) {
-                            'SRX', 'SUD', 'TRX', 'TRS' => (string) $response->EMandateErrorResponse->Error->ErrorMessage,
-                            'PSU', 'PSX', 'PTS', 'PTX' => (string) $response->PaymentErrorResponse->Error->ErrorMessage,
-                            'ITS', 'ITX', 'ISU', 'ISX' => (string) $response->IdentityErrorResponse->Error->ErrorMessage,
-                            'INS', 'INX' => (string) $response->IBANCheckErrorResponse->Error->ErrorMessage,
-                            default => throw new RuntimeException( "Invalid transaction type requested" ),
-                        };
+        //             try {
+        //                 $response = $this->fabricateResponseObject( $transaction_request->transaction_code, $http_response->getBody() );
+        //             } catch ( Throwable $th ) {
+        //                 return new ErrorBluemResponse( "Error: Could not create Bluem Response object. More details: " . $th->getMessage() );
+        //             }
 
-                        // @todo: move into a separate function
+        //             if ( $response->attributes()['type'] . '' === "ErrorResponse" ) {
+        //                 $errorMessage = match ((string) $transaction_request->transaction_code) {
+        //                     'SRX', 'SUD', 'TRX', 'TRS' => (string) $response->EMandateErrorResponse->Error->ErrorMessage,
+        //                     'PSU', 'PSX', 'PTS', 'PTX' => (string) $response->PaymentErrorResponse->Error->ErrorMessage,
+        //                     'ITS', 'ITX', 'ISU', 'ISX' => (string) $response->IdentityErrorResponse->Error->ErrorMessage,
+        //                     'INS', 'INX' => (string) $response->IBANCheckErrorResponse->Error->ErrorMessage,
+        //                     default => throw new RuntimeException( "Invalid transaction type requested" ),
+        //                 };
 
-                        return new ErrorBluemResponse( "Error: " . ( $errorMessage ) );
-                    }
+        //                 // @todo: move into a separate function
 
-                    if ( ! $response->Status() ) {
-                        return new ErrorBluemResponse( "Error: " . ( $response->Error->ErrorMessage ) );
-                    }
+        //                 return new ErrorBluemResponse( "Error: " . ( $errorMessage ) );
+        //             }
 
-                    return $response;
+        //             if ( ! $response->Status() ) {
+        //                 return new ErrorBluemResponse( "Error: " . ( $response->Error->ErrorMessage ) );
+        //             }
 
-                }
-                case 400:
-                    return new ErrorBluemResponse( 'Your request was not formed correctly.' );
-                case 401:
-                    return new ErrorBluemResponse( 'Unauthorized: check your access credentials.' );
-                case 500:
-                    return new ErrorBluemResponse( 'An unrecoverable error at the server side occurred while processing the request' );
-                default:
-                    return new ErrorBluemResponse( 'Unexpected / erroneous response (code ' . $http_response->getStatus() . ')' );
-            }
-        } catch ( Throwable ) {
-            return new ErrorBluemResponse( 'HTTP Request Error' );
-            // @todo improve request return exceptions; add our own exception type
+        //             return $response;
 
-        }
+        //         }
+        //         case 400:
+        //             return new ErrorBluemResponse( 'Your request was not formed correctly.' );
+        //         case 401:
+        //             return new ErrorBluemResponse( 'Unauthorized: check your access credentials.' );
+        //         case 500:
+        //             return new ErrorBluemResponse( 'An unrecoverable error at the server side occurred while processing the request' );
+        //         default:
+        //             return new ErrorBluemResponse( 'Unexpected / erroneous response (code ' . $http_response->getStatus() . ')' );
+        //     }
+        // } catch ( Throwable ) {
+        //     return new ErrorBluemResponse( 'HTTP Request Error' );
+        //     // @todo improve request return exceptions; add our own exception type
+
+        // }
     }
 
     /**
