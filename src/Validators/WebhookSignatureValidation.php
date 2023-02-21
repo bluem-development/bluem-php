@@ -16,9 +16,6 @@ class WebhookSignatureValidation extends WebhookValidator
     /**
      * Validate webhook signature based on a key file
      * available in the `keys` folder.
-     *
-     * @param string $postData
-     * @return WebhookSignatureValidation
      */
     public function validate(string $postData): self {
         
@@ -31,7 +28,7 @@ class WebhookSignatureValidation extends WebhookValidator
 
         try {
             $signatureValidator->loadPublicKeyFile( $public_key_file_path );
-        } catch ( Throwable $ex) {
+        } catch ( Throwable) {
             $this->addError("Couldn't load public key file");
         }
 

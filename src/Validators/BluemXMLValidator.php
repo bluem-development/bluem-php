@@ -28,10 +28,7 @@ class BluemXMLValidator {
      * @var string
      */
     protected $feedSchema = "";
-    /**
-     * @var DOMDocument
-     */
-    private $handler;
+    private \DOMDocument $handler;
 
     /**
      * Validation Class constructor Instantiating DOMDocument
@@ -46,10 +43,8 @@ class BluemXMLValidator {
     /**
      * Validate Incoming Feeds against Listing Schema
      *
-     * @param BluemContext $context
      * @param              $contents
      *
-     * @return bool
      * @throws DOMException
      * @throws Exception
      */
@@ -86,9 +81,6 @@ class BluemXMLValidator {
         }
     }
 
-    /**
-     * @return array
-     */
     private function libxmlDisplayErrors(): array {
         $errors = libxml_get_errors();
         $result = [];
@@ -102,20 +94,15 @@ class BluemXMLValidator {
 
     /**
      * @param libXMLError object $error
-     *
-     * @return string
      */
     private function libxmlDisplayError( $error ): string {
         $errorString = "Error $error->code in $error->file (Line: $error->line):";
-        $errorString .= trim( $error->message );
 
-        return $errorString;
+        return $errorString . trim( $error->message );
     }
 
     /**
      * Display Error if Resource is not validated
-     *
-     * @return array
      */
     public function displayErrors(): array {
         return $this->errorDetails;

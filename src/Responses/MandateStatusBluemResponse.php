@@ -6,11 +6,11 @@ use Bluem\BluemPHP\Helpers\BluemMaxAmount;
 
 class MandateStatusBluemResponse extends StatusBluemResponse {
     public static $transaction_type = "EMandate";
-    public static $response_primary_key = "EMandate" . "Status";
-    public static $error_response_type = "EMandate" . "ErrorResponse";
+    public static $response_primary_key = 'EMandateStatus';
+    public static $error_response_type = 'EMandateErrorResponse';
 
     public function GetDebtorIBAN(): string {
-        if ( isset( $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN ) ) {
+        if ( $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN !== null ) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN . "";
         }
 
@@ -18,7 +18,7 @@ class MandateStatusBluemResponse extends StatusBluemResponse {
     }
 
     public function GetDebtorBankID(): string {
-        if ( isset( $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID ) ) {
+        if ( $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID !== null ) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID . "";
         }
 
@@ -26,7 +26,6 @@ class MandateStatusBluemResponse extends StatusBluemResponse {
     }
 
     /**
-     * @return BluemMaxAmount
      * @throws Exception
      */
     public function GetMaximumAmount(): BluemMaxAmount {
@@ -60,7 +59,7 @@ class MandateStatusBluemResponse extends StatusBluemResponse {
 
     public function GetDebtorAccountName()
     {
-        if (isset($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorAccountName)) {
+        if ($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorAccountName !== null) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorAccountName . "";
         }
 

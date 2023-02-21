@@ -6,10 +6,8 @@ namespace Bluem\BluemPHP\Responses;
  * EMandateErrorResponse
  */
 class ErrorBluemResponse {
-    private $error;
-
-    public function __construct( string $error ) {
-        $this->error = $error;
+    public function __construct(private string $error)
+    {
     }
 
     public function Status(): bool {

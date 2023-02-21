@@ -58,7 +58,7 @@ class PaymentsContext extends BluemContext
     public function addPaymentMethodDetails(array $details = [])
     {
         $validationErrors = $this->validateDetails($details);
-        if (count($validationErrors) > 0 ) {
+        if ($validationErrors !== [] ) {
             throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
         }
 
@@ -67,8 +67,6 @@ class PaymentsContext extends BluemContext
 
     private function validateDetails(array $details = []): array
     {
-        $errors = [];
-
         if ($this->isIDEAL()) {
             // no validation yet
         }
@@ -120,7 +118,7 @@ class PaymentsContext extends BluemContext
             // add upcoming validation here
         }
 
-        return $errors;
+        return [];
     }
 
     public function isIDEAL(): bool

@@ -5,7 +5,7 @@ namespace Bluem\BluemPHP\Helpers;
 use Bluem\BluemPHP\Models\Currency;
 
 
-class MaxAmount {
+class MaxAmount implements \Stringable {
 
     /**
      * @var Currency
@@ -18,7 +18,6 @@ class MaxAmount {
     public $amount;
 
     /**
-     * @param float $amount
      * @param string $currency
      */
     function __construct(
@@ -32,7 +31,7 @@ class MaxAmount {
     }
 
     public function __toString(): string {
-        return strval($this->amount);
+        return (string) $this->amount;
     }
 
 }

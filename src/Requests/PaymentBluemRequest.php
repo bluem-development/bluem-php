@@ -24,8 +24,8 @@ class PaymentBluemRequest extends BluemRequest
     /**
      * @var mixed|string
      */
-    private $currency;
-    private $debtorReference;
+    private string $currency;
+    private string $debtorReference;
     private float $amount;
 
     /**
@@ -89,9 +89,9 @@ class PaymentBluemRequest extends BluemRequest
         // Note: different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class.
 
-        $this->paymentReference = !empty($paymentReference)
-            ? $paymentReference
-            : "$this->debtorReference$this->transactionID";
+        $this->paymentReference = empty($paymentReference)
+            ? "$this->debtorReference$this->transactionID"
+            : $paymentReference;
 
         $this->context = new PaymentsContext();
     }
@@ -118,7 +118,6 @@ class PaymentBluemRequest extends BluemRequest
      *
      * @param $currency
      *
-     * @return string
      * @throws Exception
      */
     private function validateCurrency( $currency ): string {
@@ -276,9 +275,8 @@ class PaymentBluemRequest extends BluemRequest
             $res .= "<{$this->context->debtorWalletElementName}>";
             $res .= "<BIC>" . $bic . "</BIC>";
             $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
-            $res .= "</DebtorWallet>" . PHP_EOL;
 
-            return $res;
+            return $res . ("</DebtorWallet>" . PHP_EOL);
         }
 
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
@@ -311,8 +309,7 @@ class PaymentBluemRequest extends BluemRequest
         }
 
         $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
-        $res .= "</DebtorWallet>" . PHP_EOL;
-        return $res;
+        return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
     /**

@@ -4,10 +4,8 @@ namespace Bluem\BluemPHP\Contexts;
 
 abstract class BluemContext {
 
-    public array $BICs;
-
-    public function __construct( array $BICs = [] ) {
-        $this->BICs = $BICs;
+    public function __construct(public array $BICs = [])
+    {
     }
 
     public function getBICs(): array {

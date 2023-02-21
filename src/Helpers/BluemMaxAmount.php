@@ -2,7 +2,7 @@
 
 namespace Bluem\BluemPHP\Helpers;
 
-class BluemMaxAmount {
+class BluemMaxAmount implements \Stringable {
 
     /**
      * @var BluemCurrency
@@ -14,10 +14,6 @@ class BluemMaxAmount {
      */
     public $amount;
 
-    /**
-     * @param float $amount
-     * @param string $currency
-     */
     function __construct(
         float $amount,
         string $currency
@@ -29,7 +25,7 @@ class BluemMaxAmount {
     }
 
     public function __toString(): string {
-        return $this->amount;
+        return (string) $this->amount;
     }
 
 }

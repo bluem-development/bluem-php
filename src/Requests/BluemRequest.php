@@ -80,15 +80,12 @@ class BluemRequest implements BluemRequestInterface {
      */
     protected $environment;
 
-    /**
-     * @var array
-     */
-    private $_debtorAdditionalData = [];
+    private array $_debtorAdditionalData = [];
 
     /**
      * @var string[]
      */
-    private $_possibleDebtorAdditionalDataKeys = [
+    private array $_possibleDebtorAdditionalDataKeys = [
         "EmailAddress",
         "MobilePhoneNumber",
         "CustomerProvidedDebtorIBAN",
@@ -111,8 +108,6 @@ class BluemRequest implements BluemRequestInterface {
      * BluemRequest constructor.
      *
      * @param BluemConfiguration|object $config
-     * @param string $entranceCode
-     * @param string $expectedReturn
      *
      * @throws Exception
      */
@@ -143,23 +138,16 @@ class BluemRequest implements BluemRequestInterface {
          */
         // @todo Validate input entrance code if not empty string, based on XSD
 
-        if ( $entranceCode === "" ) {  // if not given, create it
-            $this->entranceCode = $this->entranceCode( $expectedReturn );
-        } else {
-            $this->entranceCode = $entranceCode;
-        }
+        $this->entranceCode = $entranceCode === "" ? $this->entranceCode( $expectedReturn ) : $entranceCode;
     }
 
     // @todo remove this?
-
     /**
      * Generate an entranceCode, including test entranceCode substrings for certain types of return responses
      *
      * @param string $expectedReturn a possible expected return value
      *                               (none,success,cancelled,expired,failure,open,pending) or empty string
      *                               "YmdHisv" standardized format, in Europe/Amsterdam timezone
-     *
-     * @return string
      */
     private function entranceCode( string $expectedReturn = 'none' ): string {
         $entranceCode = Carbon::now()
@@ -231,8 +219,6 @@ class BluemRequest implements BluemRequestInterface {
     /**
      * Returning the current XML string; as this is an abstract request, it will be overridden by classes that
      * implement this.
-     *
-     * @return String
      */
     public function XmlString(): string {
         return "";
@@ -256,47 +242,23 @@ class BluemRequest implements BluemRequestInterface {
     public function HttpRequestURL(): string {
         $request_url = "https://";
 
-        switch ( $this->environment ) {
-            case BLUEM_ENVIRONMENT_PRODUCTION:
-            {
-                $request_url .= "";
-                break;
-            }
-            case BLUEM_ENVIRONMENT_ACCEPTANCE:
-            {
-                $request_url .= "acc.";
-                break;
-            }
-            case BLUEM_ENVIRONMENT_TESTING:
-            default:
-            {
-                $request_url .= "test.";
-                break;
-            }
-        }
+        match ($this->environment) {
+            BLUEM_ENVIRONMENT_PRODUCTION => $request_url .= "",
+            BLUEM_ENVIRONMENT_ACCEPTANCE => $request_url .= "acc.",
+            default => $request_url .= "test.",
+        };
         $request_url .= "viamijnbank.net/$this->request_url_type/";
+        match ($this->typeIdentifier) {
+            'createTransaction' => $request_url .= "createTransactionWithToken",
+            'requestStatus' => $request_url .= "requestTransactionStatusWithToken",
+            default => $request_url . "?token=$this->accessToken",
+        };
 
-        switch ( $this->typeIdentifier ) {
-            case 'createTransaction':
-            {
-                $request_url .= "createTransactionWithToken";
-                break;
-            }
-            case 'requestStatus':
-            {
-                $request_url .= "requestTransactionStatusWithToken";
-                break;
-            }
-        }
-        $request_url .= "?token=$this->accessToken";
-
-        return $request_url;
+        return $request_url . "?token=$this->accessToken";
     }
 
     /**
      * Retrieve array of objects with IssuerID and IssuerName of banks from the context
-     *
-     * @return array
      */
     public function retrieveBICObjects(): array {
         return $this->context->BICs();
@@ -304,8 +266,6 @@ class BluemRequest implements BluemRequestInterface {
 
     /**
      * Retrieve array of BIC codes (IssuerIDs) of banks from context
-     *
-     * @return array
      */
     public function retrieveBICCodes(): array {
         return $this->context->getBICCodes();
@@ -331,8 +291,6 @@ class BluemRequest implements BluemRequestInterface {
 
     /**
      * Create the XML element necessary to be added to the request XML string.
-     *
-     * @return string
      */
     public function XmlWrapDebtorWallet(): string {
         if ( is_null( $this->debtorWallet ) ) {
@@ -351,14 +309,10 @@ class BluemRequest implements BluemRequestInterface {
         $res .= "<{$this->context->debtorWalletElementName}>";
         $res .= "<BIC>" . $this->debtorWallet . "</BIC>";
         $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
-        $res .= "</DebtorWallet>" . PHP_EOL;
 
-        return $res;
+        return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
-    /**
-     * @return string
-     */
     public function XmlWrapDebtorAdditionalData(): string {
         if ( count( $this->_debtorAdditionalData ) == 0 ) {
             return '';
@@ -377,9 +331,8 @@ class BluemRequest implements BluemRequestInterface {
             $res .= $value;
             $res .= "</$key>" . PHP_EOL;
         }
-        $res .= "</DebtorAdditionalData>" . PHP_EOL;
 
-        return $res;
+        return $res . ("</DebtorAdditionalData>" . PHP_EOL);
     }
 
     /**
@@ -405,9 +358,6 @@ class BluemRequest implements BluemRequestInterface {
         return $this->context;
     }
 
-    /**
-     * @return string
-     */
     public function RequestType(): string {
         return '';
     }
@@ -454,17 +404,14 @@ class BluemRequest implements BluemRequestInterface {
         foreach ( $extra_attrs as $key => $value ) {
             $res .= "$key=\"$value\" " . PHP_EOL;
         }
-        $res .= '>' . $rest . '</' . $element_name . '>';
 
-        return $res;
+        return $res . ('>' . $rest . '</' . $element_name . '>');
     }
 
     /**
      * Perform sanitization of the description element
      *
-     * @param String $description
      *
-     * @return string
      */
     protected function _sanitizeDescription( string $description ): string {
         // filter based on full list of invalid chars for description based on XSD

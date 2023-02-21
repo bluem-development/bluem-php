@@ -32,10 +32,7 @@ class BluemConfiguration
      */
     public $merchantReturnURLBase;
 
-    /**
-     * @var BluemConfigurationValidator
-     */
-    private $validator;
+    private \Bluem\BluemPHP\Validators\BluemConfigurationValidator $validator;
 
     /**
      * @var mixed
@@ -83,16 +80,9 @@ class BluemConfiguration
      */
     public $merchantSubID;
 
-    /**
-     * @var string
-     */
-    private $PaymentsBrandID;
+    private string $PaymentsBrandID;
     // @todo: consider deprecating this?
-
-    /**
-     * @var string
-     */
-    private $EmandateBrandID;
+    private string $EmandateBrandID;
     // @todo: consider deprecating this?
 
     // additional helper flags
@@ -152,9 +142,6 @@ class BluemConfiguration
         $this->webhookDebug = false;
     }
 
-    /**
-     * @return string
-     */
     public function errorsAsString(): string {
         return implode( ", ", $this->validator->errors() );
     }
@@ -163,7 +150,6 @@ class BluemConfiguration
      * Assume a brandID for a service based on another valid brandID
      *
      * @param string $prefix
-     * @param string $brandID
      *
      * @return string
      * @throws Exception
@@ -198,9 +184,6 @@ class BluemConfiguration
         $this->brandID = $selectedBrandID;
     }
 
-    /**
-     * @return array
-     */
     public function errors(): array {
         return $this->validator->errors();
     }

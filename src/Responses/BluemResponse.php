@@ -41,16 +41,10 @@ class BluemResponse extends SimpleXMLElement {
 
     /**
      * Return if the response is a successful one, in boolean
-     *
-     * @return Bool
      */
-    public function Status(): bool {
-        // $key =
-        if ( isset( $this->{static::$error_response_type} ) ) {
-            return false;
-        }
-
-        return true;
+    public function Status(): bool
+    {
+        return self::$error_response_type === null;
     }
 
     /**
@@ -58,7 +52,7 @@ class BluemResponse extends SimpleXMLElement {
      *
      */
     public function Error(): ?string {
-        if ( isset( $this->EMandateErrorResponse ) ) {
+        if ( $this->EMandateErrorResponse !== null ) {
             return $this->EMandateErrorResponse->Error . "";
         }
 
@@ -68,7 +62,6 @@ class BluemResponse extends SimpleXMLElement {
     /**
      * Retrieve the generated EntranceCode enclosed in this response
      *
-     * @return String
      * @throws Exception
      */
     public function GetEntranceCode(): string {
@@ -81,12 +74,12 @@ class BluemResponse extends SimpleXMLElement {
         return $attrs['entranceCode'] . "";
     }
 
+    // overridden in children
     protected function getParentXmlElement(): string {
-        // overridden in children
         return "";
     }
 
     protected function getChildXmlElement(): string {
-        return static::$response_primary_key;
+        return self::$response_primary_key;
     }
 }

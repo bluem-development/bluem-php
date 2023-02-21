@@ -6,7 +6,7 @@ use Exception;
 
 class InvalidContextException extends Exception
 {
-    const AVAILABLE_CONTEXTS = [ "Mandates", "Payments", "Identity" ];
+    public const AVAILABLE_CONTEXTS = [ "Mandates", "Payments", "Identity" ];
 
     /**
      * @param string $string

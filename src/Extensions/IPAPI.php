@@ -34,9 +34,7 @@ final class IPAPI {
      * Verify if a given or server IP is country coded NL (and default to true in case of error)
      * reference: https://www.javatpoint.com/how-to-get-the-ip-address-in-php
      *
-     * @param string $ip
      *
-     * @return bool
      */
     public function CheckIsNetherlands( string $ip = "" ): bool {
         $result = $this->QueryIP( $ip );
@@ -58,7 +56,6 @@ final class IPAPI {
     /**
      * Retrieve geolocation information of the given IP or if not given tries to infer the current IP.
      *
-     * @param string $ip
      *
      * @return mixed
      */
@@ -85,14 +82,14 @@ final class IPAPI {
         try {
             $api_result = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            if ( $this->_debug === true ) {
+            if ( $this->_debug ) {
                 var_dump( "Error: ". $e );
             }
             return false;
         }
 
         // verbose for debugging
-        if ( $this->_debug === true ) {
+        if ( $this->_debug ) {
             var_dump( $api_result );
         }
 
@@ -103,8 +100,6 @@ final class IPAPI {
 
     /**
      * Retrieve the current IP from the server, if possible
-     *
-     * @return string
      */
     public function GetCurrentIP(): string {
         $ip = "";

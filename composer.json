@@ -15,16 +15,17 @@
         "issues": "https://github.com/bluem-development/bluem-php"
     },
     "require": {
-        "php": ">=7.4|>=8.0",
+        "php": ">=8.0",
         "nesbot/carbon": "^2.31",
-        "pear/http_request2": "v2.4.2",
+        "pear/http_request2": "^2.5",
         "selective/xmldsig": "^2.4",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
         "ext-curl": "*",
         "ext-json": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+        "robrichards/xmlseclibs": "^3.1"
     },
     "autoload": {
         "psr-4": {
@@ -35,6 +36,7 @@
         "phpunit/phpunit": "^9.5",
         "phpspec/prophecy": "~1.0",
         "vlucas/phpdotenv": "^5.4",
-        "roave/security-advisories": "dev-latest"
+        "roave/security-advisories": "dev-latest",
+        "rector/rector": "^0.15.10"
     }
 }

@@ -12,6 +12,7 @@ define( "BLUEM_DEFAULT_MIN_AGE", 18 );
  * IdentityBluemRequest object to request an Identity Transaction from the Bluem API.
  */
 class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface {
+    public $minage;
     public $request_url_type = "ir";
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "ITX";
@@ -21,22 +22,9 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
      */
     private $minAge;
 
-    /**
-     * @var string
-     */
-    private $requestCategory;
-    /**
-     * @var string
-     */
-    private $description;
-    /**
-     * @var mixed|string
-     */
-    private $debtorReference;
-    /**
-     * @var string
-     */
-    private $debtorReturnURL;
+    private string $requestCategory;
+    private string $description;
+    private string $debtorReturnURL;
     
     /**
      * @param $config
@@ -55,26 +43,17 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
         $expectedReturn,
         array $requestCategory = [],
         string $description = "",
-        string $debtorReference = "",
+        private string $debtorReference = "",
         $debtorReturnURL = ""
     ) {
         parent::__construct( $config, $entranceCode, $expectedReturn );
         // @todo: verify return URL can no longer be set in IdentityBluemRequest construction, instead it is created in the config
 
         // override specific brand ID
-        if ( isset( $config->IDINBrandID ) && $config->IDINBrandID !== "" ) {
-            $this->brandID = $config->IDINBrandID;
-        } else {
-
-            // @todo Throw an error when config is insufficiently setup
-            $this->brandID = $config->brandID;
-        }
+        $this->brandID = isset( $config->IDINBrandID ) && $config->IDINBrandID !== "" ? $config->IDINBrandID : $config->brandID;
 
         $this->requestCategory = $this->getRequestCategoryElement( $requestCategory );
         $this->description     = $this->_sanitizeDescription( $description );
-
-
-        $this->debtorReference = $debtorReference;
         if ( $debtorReturnURL == "" ) {
             throw new Exception( "Debtor return URL is required" );
         }
@@ -89,9 +68,6 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
     }
 
     /**
-     * @param array $active_categories
-     *
-     * @return string
      * @throws Exception
      */
     private function getRequestCategoryElement( array $active_categories = [] ): string {
@@ -124,51 +100,31 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
             // @todo deal with possible exception here
         }
 
-        $result .= "</RequestCategory>";
-
-        return $result;
+        return $result . "</RequestCategory>";
     }
 
     /**
      * @param      $category
-     * @param bool $active
      *
-     * @return string
      * @throws Exception
      */
     private function getIdinRequestCategory( $category, bool $active = true ): string {
         $action = ( $active ? "request" : "skip" );
 
-        switch ( $category ) {
-            case 'CustomerIDRequest':
-                return "<CustomerIDRequest action=\"$action\"/>";
-            case 'NameRequest':
-                return "<NameRequest action=\"$action\"/>";
-            case 'AddressRequest':
-                return "<AddressRequest action=\"$action\"/>";
-            case 'BirthDateRequest':
-                return "<BirthDateRequest action=\"$action\"/>";
-            case 'GenderRequest':
-                return "<GenderRequest action=\"$action\"/>";
-            case 'TelephoneRequest':
-                return "<TelephoneRequest action=\"$action\"/>";
-            case 'EmailRequest':
-                return "<EmailRequest action=\"$action\"/>";
-
-            // exclusive categories, cannot combine!
-            case 'AgeCheckRequest':
-                return "<AgeCheckRequest ageOrOlder=\"" .
-                       $this->getMinAge() .
-                       "\" action=\"$action\"/>";
-            case 'CustomerIDLoginRequest':
-                return "<CustomerIDLoginRequest action=\"$action\"/>";
-            // @todo: Add DocumentSignatureRequest (exclusive)
-
-            // default: Throw error.
-            default:
-                throw new Exception( "No proper iDIN request category given", 1 );
-            // @todo: add our own exception class 
-        }
+        return match ($category) {
+            'CustomerIDRequest' => "<CustomerIDRequest action=\"$action\"/>",
+            'NameRequest' => "<NameRequest action=\"$action\"/>",
+            'AddressRequest' => "<AddressRequest action=\"$action\"/>",
+            'BirthDateRequest' => "<BirthDateRequest action=\"$action\"/>",
+            'GenderRequest' => "<GenderRequest action=\"$action\"/>",
+            'TelephoneRequest' => "<TelephoneRequest action=\"$action\"/>",
+            'EmailRequest' => "<EmailRequest action=\"$action\"/>",
+            'AgeCheckRequest' => "<AgeCheckRequest ageOrOlder=\"" .
+                   $this->getMinAge() .
+                   "\" action=\"$action\"/>",
+            'CustomerIDLoginRequest' => "<CustomerIDLoginRequest action=\"$action\"/>",
+            default => throw new Exception( "No proper iDIN request category given", 1 ),
+        };
     }
 
     private function getMinAge(): string {

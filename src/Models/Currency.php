@@ -4,15 +4,12 @@ namespace Bluem\BluemPHP\Models;
 
 use Exception;
 
-class Currency {
+class Currency implements \Stringable {
     
     private const CURRENCY_CODE_EURO = 'EUR';
     private const CURRENCY_CODE_USDOLLAR = 'EUR';
 
-    /**
-     * @var string
-     */
-    private $code;
+    private string $code;
     // or use regex [A-Z]{3}
     
     /**
@@ -25,8 +22,6 @@ class Currency {
     ];
 
     /**
-     * @param string $code
-     *
      * @throws Exception
      */
     public function __construct( string $code = '' ) {
@@ -41,7 +36,7 @@ class Currency {
         $this->code = $code;
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return $this->code;
     }
 

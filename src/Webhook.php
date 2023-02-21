@@ -10,9 +10,6 @@ class Webhook
     private const PAYMENTS_SERVICE = 'Payments';
     private const IDENTITY_SERVICE = 'Identity';
     private const EMANDATES_SERVICE = 'EMandates';
-    
-    private string $senderID;
-    private bool $webhookDebugging;
     public string $service;
     public ?SimpleXMLElement $xmlObject;
     
@@ -20,12 +17,9 @@ class Webhook
     private string $xmlPayloadKey;
 
     public function __construct(
-        $senderID, $webhookDebugging = false
+        private $senderID, private $webhookDebugging = false
     )
     {
-        $this->senderID = $senderID;
-        $this->webhookDebugging = $webhookDebugging;
-        
         $this->parse();
     }
     
@@ -57,7 +51,7 @@ class Webhook
         }
         
         $xmlObject = $this->parseRawXML($postData);
-        if($xmlObject === null) {
+        if(!$xmlObject instanceof \SimpleXMLElement) {
             $this->exitWithError('Could not parse XML');
         }
         
@@ -80,9 +74,6 @@ class Webhook
         $this->setServiceInterface();
     }
 
-    /**
-     * @return bool
-     */
     private function isHttpsRequest(): bool
     {
         return ((!empty($_SERVER['HTTPS'])
@@ -102,13 +93,12 @@ class Webhook
 
     /**
      * @param $postData
-     * @return ?SimpleXMLElement
      */
     private function parseRawXML($postData): ?SimpleXMLElement
     {
         try {
             $xmlObject = new SimpleXMLElement($postData);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return null;
         }
         return $xmlObject;
@@ -140,7 +130,7 @@ class Webhook
             return null;
         }
         
-        if(count($payload->children())>0) {
+        if((is_countable($payload->children()) ? count($payload->children()) : 0)>0) {
             return $payload;
         }
         
@@ -248,28 +238,28 @@ class Webhook
     public function getIDealDetails(): ?SimpleXMLElement {
         $paymentDetails = $this->getPaymentMethodDetails();
             
-        if ($paymentDetails === null) {
+        if (!$paymentDetails instanceof \SimpleXMLElement) {
             return null;
         }
         return $paymentDetails->IDealDetails;
     }
     public function getDebtorAccountName(): ?string {
         $details = $this->getIDealDetails();
-        if(!$details) {
+        if(!$details instanceof \SimpleXMLElement) {
             return "";
         }
         return $details->DebtorAccountName."" ?? "";
     }
     public function getDebtorIBAN(): ?string {
         $details = $this->getIDealDetails();
-        if(!$details) {
+        if(!$details instanceof \SimpleXMLElement) {
             return "";
         }
         return $details->DebtorIBAN."" ?? "";
     }
     public function getDebtorBankID(): ?string {
         $details = $this->getIDealDetails();
-        if(!$details) {
+        if(!$details instanceof \SimpleXMLElement) {
             return "";
         }
         return $details->DebtorBankID."" ?? "";
@@ -339,7 +329,7 @@ class Webhook
     {
         $report = $this->getPayload()->IdentityReport ?? null;
         
-        if($report === null) {
+        if(!$report instanceof \SimpleXMLElement) {
             return [];
         }
         
