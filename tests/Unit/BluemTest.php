@@ -12,7 +12,6 @@ class BluemTest extends TestCase
 {
     private Bluem $bluem;
 
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -27,12 +26,11 @@ class BluemTest extends TestCase
         }
     }
 
-
     /**
      * @dataProvider invalidConfigurationsDataProvider
      */
-    public function testThrowsExceptionWhenNoConfigurationGiven($data) {
-
+    public static function testThrowsExceptionWhenNoConfigurationGiven($data)
+    {
         $this->expectException(InvalidBluemConfigurationException::class);
         new Bluem($data);
     }
@@ -47,7 +45,7 @@ class BluemTest extends TestCase
     }
 
     /** @dataProvider mandateIdTestDataProvider */
-    public function testCanCreateMandateID($orderId, $customerId, $expectedMandateId): void
+    public static function testCanCreateMandateID($orderId, $customerId, $expectedMandateId): void
     {
         $mandateId = $this->bluem->CreateMandateID($orderId, $customerId);
         $this->assertIsString($mandateId);
