@@ -15,7 +15,8 @@ Utilized by other applications as well:
 * [Requirements](#requirements)
 * [Getting started:](#getting-started-)
 * [Notes per version](#notes-per-version)
-    + [Version 2.2 (latest)](#version-22--latest-)
+    + [Version 2.3 (latest)](#version-23--latest-)
+    + [Version 2.2](#version-22)
     + [Version 2.1](#version-21)
     + [Versions before 2.1](#versions-before-21)
 * [Testing](#testing)
@@ -66,15 +67,16 @@ Refer to the [examples](https://github.com/bluem-development/bluem-php/tree/mast
 
 Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
 
-
 ## Notes per version
-### Version 2.2 (latest)
+### Version 2.3 (latest)
+Added PHP 8+ support.
+
+### Version 2.2
 Webhooks and new payment methods
 - Added explicit webhook functionality and relevant documentation
 - Support for PayPal, Creditcards, SOFORT and Carte Bancaire
 
-### Version 2.1 
-
+### Version 2.1
 Major improvement in code style.
 - Added `$bluem->getConfig($key)` method to retrieve a configuration value.
 - Added `$bluem->setConfig($key, $value)` method to set a configuration value.
