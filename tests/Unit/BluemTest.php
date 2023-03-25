@@ -35,7 +35,7 @@ class BluemTest extends TestCase
         new Bluem($data);
     }
 
-    public function invalidConfigurationsDataProvider()
+    public static function invalidConfigurationsDataProvider()
     {
         return [
             'null config given' => [null],
@@ -52,7 +52,7 @@ class BluemTest extends TestCase
 //        $this->assertEquals( $expectedMandateId , $mandateId, );
     }
 
-    public function mandateIdTestDataProvider()
+    public static function mandateIdTestDataProvider()
     {
         return [
             [
