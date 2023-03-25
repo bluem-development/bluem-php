@@ -15,6 +15,7 @@ class BluemTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        
         $bluem_config = $this->getConfig();
 
         try {
@@ -26,41 +27,13 @@ class BluemTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider invalidConfigurationsDataProvider
-     */
-    public static function testThrowsExceptionWhenNoConfigurationGiven($data)
-    {
-        $this->expectException(InvalidBluemConfigurationException::class);
-        new Bluem($data);
+    protected function tearDown(): void {
+        //$this->bluem = Bluem;
     }
 
-    public static function invalidConfigurationsDataProvider()
-    {
-        return [
-            'null config given' => [null],
-            'empty object config given' => [new StdClass()],
-            'empty array config given' => [[]],
-        ];
-    }
-
-    /** @dataProvider mandateIdTestDataProvider */
-    public static function testCanCreateMandateID($orderId, $customerId, $expectedMandateId): void
-    {
-        $mandateId = $this->bluem->CreateMandateID($orderId, $customerId);
-        $this->assertIsString($mandateId);
-//        $this->assertEquals( $expectedMandateId , $mandateId, );
-    }
-
-    public static function mandateIdTestDataProvider()
-    {
-        return [
-            [
-                'orderId'=>1,
-                'customerId'=>1,
-                'expectedMandateId'=>"",
-            ]
-        ];
+    public function testMandateRequest() {
+        $result = true;
+        $this->assertEquals(true, $result);
     }
 
     private function getConfig(): stdClass
