@@ -30,6 +30,6 @@ jobs:
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v2
               with:
-                  php_version: 8.0
+                  php_version: 8.1
                   bootstrap: vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
