@@ -52,7 +52,7 @@ Utilized by other applications as well:
 
 ## Requirements
 
-- **PHP 7.4** is minimum required version for this library. PHP 8.0 is recommended.
+- Since our release >= 2.3, **PHP 8.0** is minimum required version for this library. Previous releases requires **PHP 7.4**.
 - Please use the [major git releases](https://github.com/bluem-development/bluem-php/releases) for the stable versions of this plugin.
 - Refer to the `composer.json` requirements for any other dependencies
 
