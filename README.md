@@ -51,8 +51,7 @@ Utilized by other applications as well:
     + [List of all supported BICs per context](#list-of-all-supported-bics-per-context)
 
 ## Requirements
-
-- Since our release >= 2.3, **PHP 8.0** is minimum required version for this library. Previous releases requires **PHP 7.4**.
+- Since our release >= 2.3, **PHP 8.0** is the minimum required version for this library. Previous releases requires **PHP 7.4**.
 - Please use the [major git releases](https://github.com/bluem-development/bluem-php/releases) for the stable versions of this plugin.
 - Refer to the `composer.json` requirements for any other dependencies
 
@@ -68,7 +67,11 @@ Refer to the [examples](https://github.com/bluem-development/bluem-php/tree/mast
 Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
 
 ## Notes per version
-### Version 2.3 (latest)
+
+### Version 2.3.1 (latest)
+Added BIC to identity request.
+
+### Version 2.3
 Added PHP 8+ support.
 
 ### Version 2.2
@@ -85,6 +88,7 @@ Major improvement in code style.
 - Separated more responsibilities for cleaner code
 
 ### Versions before 2.1
+
 #### Version 2.0.12
 Allowing the verification if the current IP is based in the Netherlands utilizing a geolocation integration *(IP-API).
 
@@ -101,7 +105,6 @@ Triodos Bank, BIC TRIONL2U no longer supported for Identity requests as of 1 jun
 - If you use the [Preselection of banks using the DebtorWallet](https://github.com/bluem-development/bluem-php#debtorwallet-preselecting-a-bank-for-mandate-payment-or-identity-request), you will have to update this library to ensure Triodos is no longer an option for iDIN. If you do not do this, customers that select Triodos will be presented with an error.
 
 - If you use the Bluem portal, you don't need to act. This change is already applied within the Bluem portal.
-
 
 #### Version 2.0.1:
 Major release with more stability, validation and features.
@@ -133,7 +136,6 @@ Testing is done given a `.env` file. Please ensure that a filled `.env` file is 
 - Testing if entrance codes can be generated
 
 ## Frequently asked questions
-
 *I get the message "Unauthorized: Check your account credentials". What should I do?*<br>
 Please ensure that your SenderID, BrandID and Tokens for Test and/or Production environments are set correctly. Usually this message retains to an invalid configuration OR an unactivated account. 
 If you have checked that the credentials are correct, but you still receive this message, please contact your Bluem account manager.
@@ -141,10 +143,7 @@ If you have checked that the credentials are correct, but you still receive this
 *Can I connect the Identity service with a payment service like E-Mandates or iDEAL so the user is only redirected once?*<br>
 - No, you cannot, as these are separate processes.
 
-
-
 ## Configuration
-
 Include the required autoload functions of Composer in your code, if you did not do so already through other dependencies.
 
 ```php
@@ -204,9 +203,7 @@ $bluem = new Bluem($config);
 ```
 If parts of the Bluem object are not instantiated correctly, the instantiation might throw an exception.
 
-
 ## General concept
-
 This library makes it easy to perform communication with Bluem for its services (ePayments, eMandates, iDIN and IBAN-Name Check). The flow for each service is similar and thus easy to understand once you understand and implement one of them.
 
 1. **TransactionRequest (from the website to Bluem)**: Your application creates a request object, sends it to Bluem servers with authentication.
@@ -248,7 +245,6 @@ Please note that the BIC list will vary when a different `localInstrumentCode` i
 This method can be used when creating iDIN and when creating iDEAL requests; you could store the selected bank (“Issuer”) on user level and use it when creating a request for your user.
 - You can inform the user WHY this is necessary and refer to the new laws and rules, in your own website/application or refer to the news/public announcements.
 - You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience: that it ensures integrity, and a valid webshop experience.
-
 
 ## Using different Payment transaction methods
 
@@ -304,7 +300,6 @@ These methods will throw an exception if required information is missing.
 Once the request executes, the link to the transaction will send you to the Bluem Portal with the corresponding interface and flow.
 
 ## Webhooks
-
 Webhooks exist for Payments, eMandates and Identity. They trigger during requests to the Bluem flow and send data to your application.
 They are vital to ensure all processes are always completed, even if the customer/user does not reach your regular callback method(s) in your flow. 
 
@@ -402,7 +397,6 @@ We can help you troubleshoot any problems you might face after creating the endp
 Please contact us if you need help in this regard.
 
 ## Payments
-
 The following attributes in the config are vital for proper eMandate functionality:
 
 - `PaymentReference`: a reference visible within the administration, which can be used to identify the customer and/or the transaction details.
@@ -414,7 +408,6 @@ The following attributes in the config are vital for proper eMandate functionali
 - A valid `brandID` set and enabled for payments.
 
 ### Creating a payment transaction
-
 The Payments service is like the eMandates service, but utilises other parameters. Here is an example:
 
 ```php
@@ -492,7 +485,6 @@ You can, in Bluem test mode, place iDEAL orders of a specific amount, to get a c
 
 
 ### Adding additional data to a request
-
 You can add additional information to a request object *before* performing it, which can be useful. The data will be stored within the ViaMijnBank Portal for further administrative purposes.
 
 ```php
@@ -537,10 +529,7 @@ More instructions follow.
 #### DynamicData
 More instructions follow.
 
-
-
 ## eMandates
-
 
 ### Mandate specific configuration fields
 The following attributes in the `bluem_config` are vital for proper eMandate functionality. Below is a short description what each configuration field means:
@@ -560,7 +549,6 @@ The following attributes in the `bluem_config` are vital for proper eMandate fun
 You need certain information to reference a transaction request: an ID (in this case the MandateID), and an entranceCode 
 (basically a timestamp when you started the request). Creating this information can be done using helper functions. 
 When creating a new transaction, the entranceCode and MandateID will be generated within the `$bluem`.
-
 
 Generating a mandate ID:
 ```php
@@ -635,12 +623,9 @@ if (!$response->Status()) {
 
 The possible statuses are `Success`, `Processing`, `Pending`, `Cancelled`, `Open` and `Expired`. Refer to the Bluem documentation for more specifics on these statuses.
 
-
-
 ## Identity (iDIN)
 
 ### Configuring iDIN
-
 Make sure a `IDINBrandID` property is set in configuration to utilize iDIN in parallel to other Bluem services.
 The BrandID of different services might differ: e.g. CompanyPayment, CompanyMandate and CompanyIdentity.
 Set it like this:
@@ -648,9 +633,7 @@ Set it like this:
 $config->IDINBrandID = "CompanyIdentity";
 ```
 
-
 ### Identity request types explained
-
 Several possible IdentityRequests exist. One or more request types can be accessed simultaneously.
 On a successful response, the details within each type will be returned by the bank for further processing on your side.
 The possibilities are:
@@ -680,10 +663,7 @@ This is used for KYC, Wwft, AML compliance and for Account Creation.
 3. A safe login with iDIN (request `CustomerIDLogin`) **and cannot be combined with the other request categories**; Here you utilize iDIN login as an alternative safe login method next to a traditional username – password login. 
 Please note that Safe login with iDIN requires the first time a Full identification.
 
-
-
 ### Creating an identity request
-
 Creating an Identity Transaction Request can be done after the Bluem object has been properly instantiated.
 Keep in mind that the BrandID has to be compatible with Identity requests. Usually the corresponding brand ID ends with “Identity” instead of for example "Mandate" or "Payment".
 
@@ -730,7 +710,6 @@ if ($response->ReceivedResponse()) {
 ```
 
 ### The Identity Response callback
-
 Processing the callback function can be done after the Bluem object has been properly instantiated.
 
 ```php
@@ -817,13 +796,10 @@ $request->enableStatusGUI();
 Advanced note: This function prepends a string to your entranceCode. This might clip your original entranceCode if it exceeds the max length.
 
 ### CustomerIDLoginRequest
-
 It is also possible to use this library for performing a login request for your application, using a customized flow.
 Detailed instructions will follow here shortly.
 
-
 ## IBAN-Name check
-
 This service allows you to verify if a name and IBAN combination are matching and valid, which can be useful when you are validating user registration, input or within a checkout procedure. A simple example of such a request and its result can be found below:
 
 ```php
@@ -853,7 +829,6 @@ case 'KNOWN':
 
 ### Use-cases for IBAN-Name checking and Edge cases
 More details on how to use IBAN-Name checking will follow shortly.
-
 
 ## Important miscellaneous notes
 
@@ -900,7 +875,6 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - SNS   <BR> BIC: `SNSBNL2A`
 
 Please note: Triodos Bank with BIC: `TRIONL2U` does not support Identity anymore as of 1st of June 2021.
-
 
 ---
 Todo:
