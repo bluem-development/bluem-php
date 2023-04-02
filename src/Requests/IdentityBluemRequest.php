@@ -145,6 +145,7 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
                 <Description>' . $this->description . '</Description>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
+                $this->XmlWrapDebtorWalletForPaymentMethod() .
                 $this->XmlWrapDebtorAdditionalData(),
                 [
                     'sendOption' => "none",
@@ -168,5 +169,50 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
     public function enableStatusGUI() {
         $this->entranceCode = "showConsumerGui" .
                               substr( $this->entranceCode, 0, 25 );
+    }
+
+    private function XmlWrapDebtorWalletForPaymentMethod(): string
+    {
+        $res = '';
+
+        if ($this->context->isIDIN()) {
+            $bic = '';
+
+            if (empty($this->context->getPaymentDetail('BIC'))) {
+                if (!empty($this->debtorWallet)) {
+                    $bic = $this->debtorWallet;
+                }
+            } else {
+                $bic = $this->context->getPaymentDetail('BIC');
+            }
+
+            if (empty($bic)) {
+                return '';
+            }
+
+            $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+            $res .= "<{$this->context->debtorWalletElementName}>";
+            $res .= "<BIC>" . $bic . "</BIC>";
+            $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+
+            return $res . ("</DebtorWallet>" . PHP_EOL);
+        }
+    }
+
+    /**
+     * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
+     *
+     * @param [type] $BIC
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function selectDebtorWallet( $BIC ) {
+
+        if ( ! in_array( $BIC, $this->context->getBICCodes() ) ) {
+            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        }
+
+        $this->debtorWallet = $BIC;
     }
 }

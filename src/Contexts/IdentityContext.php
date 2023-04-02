@@ -5,7 +5,14 @@ namespace Bluem\BluemPHP\Contexts;
 use Bluem\BluemPHP\Helpers\BIC;
 
 class IdentityContext extends BluemContext {
+    public const PAYMENT_METHOD_IDIN = 'IDIN';
+
     public $debtorWalletElementName = "IDIN";
+
+    /**
+     * @var array
+     */
+    private array $paymentMethodDetails;
 
     /**
      * IdentityContext constructor.
@@ -28,5 +35,34 @@ class IdentityContext extends BluemContext {
 
     public function getValidationSchema(): string {
         return parent::getValidationSchema() . 'EIdentity.xsd';
+    }
+
+    public function isIDIN(): bool
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_IDIN;
+    }
+
+    public function addPaymentMethodDetails(array $details = [])
+    {
+        $validationErrors = $this->validateDetails($details);
+        if ($validationErrors !== [] ) {
+            throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
+        }
+
+        $this->paymentMethodDetails = $details;
+    }
+
+    private function validateDetails(array $details = []): array
+    {
+        if ($this->isIDIN()) {
+            // no validation yet
+        }
+
+        return [];
+    }
+
+    public function getPaymentDetail(string $key)
+    {
+        return $this->paymentMethodDetails[$key] ?? null;
     }
 }
