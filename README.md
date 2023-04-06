@@ -68,7 +68,10 @@ Please contact us if you have any questions regarding the examples or the implem
 
 ## Notes per version
 
-### Version 2.3.1 (latest)
+### Version 2.3.2 (latest)
+Added BIC to mandate request.
+
+### Version 2.3.1
 Added BIC to identity request.
 
 ### Version 2.3
