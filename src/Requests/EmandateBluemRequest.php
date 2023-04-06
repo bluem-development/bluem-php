@@ -96,6 +96,7 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
                 <EMandateReason>' . $this->eMandateReason . '</EMandateReason>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <PurchaseID>' . $this->purchaseID . '</PurchaseID>' .
+                $this->XmlWrapDebtorWalletForPaymentMethod() .
                 $this->XmlWrapDebtorAdditionalData(),
                 [
                     // 'entranceCode'=>$this->entranceCode,  always sent already
@@ -134,4 +135,49 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
         return "TRX";
     }
     // @todo: deprecated, remove
+
+    private function XmlWrapDebtorWalletForPaymentMethod(): string
+    {
+        $res = '';
+
+        if ($this->context->isMandate()) {
+            $bic = '';
+
+            if (empty($this->context->getPaymentDetail('BIC'))) {
+                if (!empty($this->debtorWallet)) {
+                    $bic = $this->debtorWallet;
+                }
+            } else {
+                $bic = $this->context->getPaymentDetail('BIC');
+            }
+
+            if (empty($bic)) {
+                return '';
+            }
+
+            $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+            $res .= "<{$this->context->debtorWalletElementName}>";
+            $res .= "<BIC>" . $bic . "</BIC>";
+            $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+
+            return $res . ("</DebtorWallet>" . PHP_EOL);
+        }
+    }
+
+    /**
+     * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
+     *
+     * @param [type] $BIC
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function selectDebtorWallet( $BIC ) {
+
+        if ( ! in_array( $BIC, $this->context->getBICCodes() ) ) {
+            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        }
+
+        $this->debtorWallet = $BIC;
+    }
 }

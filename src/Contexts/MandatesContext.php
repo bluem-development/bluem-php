@@ -12,9 +12,16 @@ use Bluem\BluemPHP\Helpers\BIC;
 use Exception;
 
 class MandatesContext extends BluemContext {
+    public const PAYMENT_METHOD_MANDATE = 'INCASSOMACHTIGEN';
+
     public $debtorWalletElementName = "INCASSOMACHTIGEN";
 
     private array $_possibleMandateTypes = [ 'CORE', 'B2B' ];
+
+    /**
+     * @var array
+     */
+    private array $paymentMethodDetails;
 
     /**
      * MandatesContext constructor.
@@ -56,5 +63,34 @@ class MandatesContext extends BluemContext {
 
     public function getValidationSchema(): string {
         return parent::getValidationSchema() . 'EMandate.xsd';
+    }
+
+    public function isMandate(): bool
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_MANDATE;
+    }
+
+    public function addPaymentMethodDetails(array $details = [])
+    {
+        $validationErrors = $this->validateDetails($details);
+        if ($validationErrors !== [] ) {
+            throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
+        }
+
+        $this->paymentMethodDetails = $details;
+    }
+
+    private function validateDetails(array $details = []): array
+    {
+        if ($this->isMandate()) {
+            // no validation yet
+        }
+
+        return [];
+    }
+
+    public function getPaymentDetail(string $key)
+    {
+        return $this->paymentMethodDetails[$key] ?? null;
     }
 }
