@@ -96,8 +96,8 @@ class EmandateBluemRequest extends BluemRequest implements BluemRequestInterface
                 <EMandateReason>' . $this->eMandateReason . '</EMandateReason>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <PurchaseID>' . $this->purchaseID . '</PurchaseID>' .
-                $this->XmlWrapDebtorWalletForPaymentMethod() .
-                $this->XmlWrapDebtorAdditionalData(),
+                $this->XmlWrapDebtorAdditionalData() .
+                $this->XmlWrapDebtorWalletForPaymentMethod(),
                 [
                     // 'entranceCode'=>$this->entranceCode,  always sent already
                     'requestType'         => "Issuing",
