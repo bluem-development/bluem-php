@@ -348,6 +348,7 @@ class Webhook
             'AddressResponse' => [
                 'Street'=>$report->AddressResponse->Street. '',
                 'HouseNumber'=>$report->AddressResponse->HouseNumber. '',
+                'HouseNumberSuffix'=>$report->AddressResponse->HouseNumberSuffix. '' ?? '',
                 'PostalCode'=>$report->AddressResponse->PostalCode. '',
                 'City'=>$report->AddressResponse->City. '',
                 'CountryCode'=>$report->AddressResponse->CountryCode. '',
