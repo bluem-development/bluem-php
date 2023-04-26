@@ -132,11 +132,11 @@ class BluemConfiguration
 
         $this->sequenceType = $raw_validated->sequenceType ?? null;
 
-        $this->merchantID             = $raw_validated->merchantID;
+        $this->merchantID             = $raw_validated->merchantID ?? null;
         $this->production_accessToken = $raw_validated->production_accessToken ?? null;
         $this->expectedReturnStatus   = $raw_validated->expectedReturnStatus ?? null;
         $this->eMandateReason         = $raw_validated->eMandateReason ?? null;
-        $this->localInstrumentCode    = $raw_validated->localInstrumentCode;
+        $this->localInstrumentCode    = $raw_validated->localInstrumentCode ?? null;
         $this->merchantSubID          = "0";
 
         $this->webhookDebug = false;
