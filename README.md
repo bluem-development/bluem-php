@@ -68,7 +68,10 @@ Please contact us if you have any questions regarding the examples or the implem
 
 ## Notes per version
 
-### Version 2.3.2 (latest)
+### Version 2.3.2.2 (latest)
+Updated BIC epayments list.
+
+### Version 2.3.2
 Added BIC to mandate request.
 
 ### Version 2.3.1
@@ -844,16 +847,15 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
 - bunq  <BR> BIC: `BUNQNL2A`
-- Handelsbanken <BR> BIC: `HANDNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Knab  <BR> BIC: `KNABNL2H`
-- Moneyou   <BR> BIC: `MOYONL21`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
 - SNS   <BR> BIC: `SNSBNL2A`
 - Triodos Bank  <BR> BIC: `TRIONL2U`
 - Van Lanschot  <BR> BIC: `FVLBNL22`
 - Revolut   <BR> BIC: `REVOLT21`
+- Yoursafe   <BR> BIC: `BITSNL2A`
 #### eMandates CORE
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
