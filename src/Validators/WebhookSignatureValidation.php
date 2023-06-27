@@ -28,12 +28,12 @@ class WebhookSignatureValidation extends WebhookValidator
         
         $signatureValidator = new XmlSignatureValidator();
         
-        $public_key_file_path = dirname(dirname(__DIR__)) . self::KEY_FOLDER . $this->getKeyFileName();
+        $public_key_file_path = dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
 
         try {
             $signatureValidator->loadPublicKeyFile( $public_key_file_path );
-        } catch ( Throwable ) {
-            $this->addError("Couldn't load public key file");
+        } catch ( Exception $e ) {
+            $this->addError($e->getMessage());
         }
 
         $xmlVerified = $signatureValidator->verifyXmlFile( $temp_file_path );
