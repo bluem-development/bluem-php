@@ -69,6 +69,6 @@ class WebhookSignatureValidation extends WebhookValidator
         } elseif ( $this->env === 'prod' && ( ( $current_date == "2023-07-04" && $current_time >= "08:00" ) || $current_date > "2023-07-04") ) {
             $filename = 'webhook_bluem_nl_202306140200-202407050159';
         }
-        return $filename . '.crt';
+        return $filename . '.pem';
     }
 }
