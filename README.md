@@ -68,7 +68,10 @@ Please contact us if you have any questions regarding the examples or the implem
 
 ## Notes per version
 
-### Version 2.3.2.2 (latest)
+### Version 2.3.2.3 (latest)
+Updated certificates.
+
+### Version 2.3.2.2
 Updated BIC epayments list.
 
 ### Version 2.3.2
