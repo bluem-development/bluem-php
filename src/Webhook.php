@@ -98,8 +98,8 @@ class Webhook
     {
         try {
             $xmlObject = new SimpleXMLElement($postData);
-        } catch (Exception) {
-            return null;
+        } catch (Exception $e) {
+            return $e->getMessage();
         }
         return $xmlObject;
     }
