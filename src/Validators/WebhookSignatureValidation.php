@@ -12,6 +12,10 @@ class WebhookSignatureValidation extends WebhookValidator
 {
     private const KEY_FOLDER = "/keys/";
 
+    public function __construct(private string $env)
+    {
+    }
+
     /**
      * Validate webhook signature based on a key file
      * available in the `keys` folder.
@@ -46,16 +50,23 @@ class WebhookSignatureValidation extends WebhookValidator
      */
     private function getKeyFileName(): string
     {
-        // Define current datetime using Carbon
-        $current_datetime = Carbon::now()
+        // Define current date
+        $current_date = Carbon::now()
             ->timezone('Europe/Amsterdam')
             ->format('Y-m-d');
+
+        // Define current time
+        $current_time = Carbon::now()
+            ->timezone('Europe/Amsterdam')
+            ->format('H:i');
         
         // Define the default filename
         $filename = 'webhook_bluem_nl_202206090200-202307110159';
         
         // Check the datetime for certificates
-        if ( $current_datetime >= "2023-06-28" ) {
+        if ( $this->env === 'test' && ( ( $current_date == "2023-06-28" && $current_time >= "08:00" ) || $current_date > "2023-06-28") ) {
+            $filename = 'webhook_bluem_nl_202306140200-202407050159';
+        } elseif ( $this->env === 'prod' && ( ( $current_date == "2023-07-04" && $current_time >= "08:00" ) || $current_date > "2023-07-04") ) {
             $filename = 'webhook_bluem_nl_202306140200-202407050159';
         }
         return $filename . '.crt';

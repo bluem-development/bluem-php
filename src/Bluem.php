@@ -672,15 +672,14 @@ class Bluem {
         try {
             $webhook = new Webhook(
                 $this->configuration->senderID,
-                $this->getConfig('webhookDebug') === true
+                $this->getConfig('webhookDebug') === true,
+                $this->configuration->environment
             );
         } catch (Exception) {
-            return null;
+            return $e->getMessage();
         }
-
         return $webhook;
     }
-
 
     /**
      * Retrieve a list of all possible identity request types

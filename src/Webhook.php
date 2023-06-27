@@ -17,7 +17,7 @@ class Webhook
     private string $xmlPayloadKey;
 
     public function __construct(
-        private $senderID, private $webhookDebugging = false
+        private $senderID, private $webhookDebugging = false, private $env = 'test'
     )
     {
         $this->parse();
@@ -41,31 +41,31 @@ class Webhook
         // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK.
         $postData = file_get_contents( 'php://input' );
 
-        if ( $postData === "" ) {
+        if ( empty($postData) ) {
             $this->exitWithError('No data body given');
         }
 
         // Check: content type: XML with utf-8 encoding
-        if ($_SERVER["CONTENT_TYPE"] !== "text/xml; charset=UTF-8") {
+        if ( $_SERVER["CONTENT_TYPE"] !== "text/xml; charset=UTF-8" ) {
             $this->exitWithError('Wrong Content-Type given: should be xml with UTF-8 encoding');
         }
         
         $xmlObject = $this->parseRawXML($postData);
-        if(!$xmlObject instanceof \SimpleXMLElement) {
+        if ( ! $xmlObject instanceof \SimpleXMLElement ) {
             $this->exitWithError('Could not parse XML');
         }
         
         $xmlValidation = (new Validators\WebhookXmlValidation($this->senderID))->validate($xmlObject);
-        if(!$xmlValidation::$isValid) {
+        if ( ! $xmlValidation::$isValid ) {
             $this->exitWithError($xmlValidation->errorMessage());
         }
         
-        $signatureValidation = (new Validators\WebhookSignatureValidation())->validate($postData);
-        if (!$signatureValidation::$isValid) {
+        $signatureValidation = (new Validators\WebhookSignatureValidation($this->env))->validate($postData);
+        if ( ! $signatureValidation::$isValid ) {
             $this->exitWithError($xmlValidation->errorMessage());
         }
         
-        if ($this->webhookDebugging) {
+        if ( $this->webhookDebugging ) {
             echo "You have a valid webhook here!" . PHP_EOL;
         }
         
