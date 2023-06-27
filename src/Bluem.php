@@ -675,7 +675,7 @@ class Bluem {
                 $this->getConfig('webhookDebug') === true,
                 $this->configuration->environment
             );
-        } catch (Exception) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }
         return $webhook;
