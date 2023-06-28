@@ -1,4 +1,10 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Requests;
 
@@ -11,7 +17,8 @@ define( "BLUEM_DEFAULT_MIN_AGE", 18 );
 /**
  * IdentityBluemRequest object to request an Identity Transaction from the Bluem API.
  */
-class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface {
+class IdentityBluemRequest extends BluemRequest
+{
     public $minage;
     public $request_url_type = "ir";
     public $typeIdentifier = "createTransaction";
@@ -25,7 +32,7 @@ class IdentityBluemRequest extends BluemRequest implements BluemRequestInterface
     private string $requestCategory;
     private string $description;
     private string $debtorReturnURL;
-    
+
     /**
      * @param $config
      * @param $entranceCode

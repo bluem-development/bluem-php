@@ -8,7 +8,7 @@
  * Author: Bluem Plugin Support (pluginsupport@bluem.nl)
  */
 
-/** In your own app: install composer, require the  `daanrijpkema/bluem-php` package  
+/** In your own app: install composer, require the  `daanrijpkema/bluem-php` package
  * and require the vendor/autoload.php file to  magically load the library and any other dependencies like this:
 ```php
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -40,7 +40,7 @@ $bluem_config->merchantReturnURLBase = "https://website.com";  // URL to return 
 $bluem_config->IDINBrandID = "";
 // if not set, the default brandID will be used.
 
-// NOTE: THE FOLLOWING SETTINGS APPLY FOR EMANDATES ONLY. 
+// NOTE: THE FOLLOWING SETTINGS APPLY FOR EMANDATES ONLY.
 // If you do not use eMandates, instantiating this is NOT necessary.
 $bluem_config->merchantID = "" ;                     // the PRODUCTION merchant ID, to be  found on the contract you
 // have with the bank for receiving direct debit mandates.
@@ -49,9 +49,9 @@ $bluem_config->merchantID = "" ;                     // the PRODUCTION merchant 
 $bluem_config->eMandateReason = "eMandateReason" ;   // Brief description of the debt collection at the time of issue
 $bluem_config->localInstrumentCode = "B2B" ;         // Choose type of collection: CORE or B2B
 
-
-/** 
- * Initialize 
+global $bluem_object;
+/**
+ * Initialize
  **/
 // Do note that creating this Bluem object will generate an exception if the configuration is not valid. This applies mostly to the essential configuration variables.
 $bluem_object = new Bluem($bluem_config);

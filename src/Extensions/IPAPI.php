@@ -1,7 +1,6 @@
 <?php
-
 /*
- * (c) 2022 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -18,17 +17,17 @@ if ( ! defined( "BLUEM_STATIC_IPAPI_KEY" ) ) {
 /**
  * IPAPI Integration class:
  * goal of this integration is to allow IP Geolocation determination to filter request IPs
- * check ipstack.com for more information on the integration
+ * check https://ipstack.com for more information on the integration
  */
 final class IPAPI {
     /** @var bool */
-    private bool $_debug = false;
+    private bool $debug = false;
 
     /** @var string */
-    private string $base_url = "http://api.ipstack.com/";
+    private string $baseURL = "http://api.ipstack.com/";
 
     /** @var string */
-    private string $_access_key = BLUEM_STATIC_IPAPI_KEY;
+    private string $accessKey = BLUEM_STATIC_IPAPI_KEY;
 
     /**
      * Verify if a given or server IP is country coded NL (and default to true in case of error)
@@ -45,7 +44,7 @@ final class IPAPI {
         ) {
             return true;
         }
-        
+
         // if we can't check for IP or the response is invalid, return true for now
         if ( empty( $result['country_code'] ) ) {
             return true;
@@ -55,18 +54,16 @@ final class IPAPI {
 
     /**
      * Retrieve geolocation information of the given IP or if not given tries to infer the current IP.
-     *
-     *
-     * @return mixed
      */
-    public function QueryIP( string $ip = "" ) {
+    public function QueryIP( string $ip = "" ): mixed
+    {
         // @todo Add IP datatype with validation
         if ( $ip === "" ) {
             // @todo: move this to the ip class
             $ip = $this->GetCurrentIP();
         }
 
-        $call_url = "$this->base_url$ip?access_key=$this->_access_key";
+        $call_url = "{$this->baseURL}{$ip}?access_key=$this->accessKey";
 
         // Initialize CURL:
         $ch = curl_init(
@@ -82,14 +79,14 @@ final class IPAPI {
         try {
             $api_result = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            if ( $this->_debug ) {
+            if ( $this->debug ) {
                 var_dump( "Error: ". $e );
             }
             return false;
         }
 
         // verbose for debugging
-        if ( $this->_debug ) {
+        if ( $this->debug ) {
             var_dump( $api_result );
         }
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * (c) 2021 - Daan Rijpkema <d.rijpkema@bluem.nl>
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -10,11 +10,12 @@ namespace Bluem\BluemPHP\Contexts;
 
 use Bluem\BluemPHP\Helpers\BIC;
 use Exception;
+use RuntimeException;
 
 class MandatesContext extends BluemContext {
     public const PAYMENT_METHOD_MANDATE = 'INCASSOMACHTIGEN';
 
-    public $debtorWalletElementName = "INCASSOMACHTIGEN";
+    public string $debtorWalletElementName = "INCASSOMACHTIGEN";
 
     private array $_possibleMandateTypes = [ 'CORE', 'B2B' ];
 
@@ -39,7 +40,7 @@ class MandatesContext extends BluemContext {
                 should be either 'CORE' or 'B2B'"
             );
         }
-        if ( $type == "CORE" ) {
+        if ( $type === "CORE" ) {
             $BICs = [
                 new BIC( "ABNANL2A", "ABN AMRO" ),
                 new BIC( "ASNBNL21", "ASN Bank" ),
@@ -70,7 +71,7 @@ class MandatesContext extends BluemContext {
         return $this->debtorWalletElementName === self::PAYMENT_METHOD_MANDATE;
     }
 
-    public function addPaymentMethodDetails(array $details = [])
+    public function addPaymentMethodDetails(array $details = []): void
     {
         $validationErrors = $this->validateDetails($details);
         if ($validationErrors !== [] ) {

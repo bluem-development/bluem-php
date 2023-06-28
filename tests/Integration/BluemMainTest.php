@@ -16,7 +16,7 @@ require_once 'BluemGenericTest.php';
 class BluemMainTest extends BluemGenericTest
 {
 
-    public function testCanCreateMandateRequest()
+    public function testCanCreateMandateRequest(): void
     {
         $debtorReference = '123456789';
         $current_user_id  ="1";
@@ -35,11 +35,8 @@ class BluemMainTest extends BluemGenericTest
         } catch ( Exception $e ) {
             $this->fail("Could not create mandate request: " . $e->getMessage());
         }
-
-
-//        $this->assertTrue(true, "Can create MandateRequest");
     }
-    public function testCanMandate()
+    public function testCanMandate(): void
     {
         $customer_id = "1";
         $order_id = "1";
@@ -54,14 +51,15 @@ class BluemMainTest extends BluemGenericTest
         } catch ( Exception $e ) {
             $this->fail("Could not create mandate: " . $e->getMessage());
         }
-        // verify response is of the correct type
+
         $this->assertInstanceOf(
             MandateTransactionBluemResponse::class,
             $response
         );
 
     }
-    public function testCanMandateStatus() {
+    public function testCanMandateStatus(): void
+    {
         // params:
         //  ($mandate_id, $entranceCode)
         $mandate_id    = "12134";
@@ -87,7 +85,7 @@ class BluemMainTest extends BluemGenericTest
             );
         }
     }
-    public function testCanCreateMandateID()
+    public function testCanCreateMandateID(): void
     {
         // params:
         //  (String $order_id, String $customer_id): String
@@ -102,9 +100,8 @@ class BluemMainTest extends BluemGenericTest
 
         // assert response is string
 
-        $this->assertTrue(
-            is_string($response),
-            "Response is not a string"
+        $this->assertIsString(
+            $response, "Response is not a string"
         );
 
         // assert response is not empty
@@ -122,14 +119,14 @@ class BluemMainTest extends BluemGenericTest
         //        );
         // @todo: deal with the corresponding status if proper or improper status request
     }
-    public function testCanGetMaximumAmountFromStatusResponse()
+    public function testCanGetMaximumAmountFromStatusResponse(): void
     {
         $this->markTestSkipped('To be fixed');
 
         // params:
         $customer_id = "1";
         $order_id = "1";
-        $mandate_id = "testB2BRcurCancel";
+        $mandate_id = "testB2BRecurringCancel";
 //        $transaction_response = $this->bluem->Mandate(
 //            $customer_id,
 //            $order_id,
@@ -144,39 +141,35 @@ class BluemMainTest extends BluemGenericTest
         );
 
         $this->assertEquals(
-            $status_response->error(),
             false,
+            $status_response->error(),
             "Mandate Status has an error!"
         );
 
-// assertions
         $this->assertEquals(
-            $status_response->GetMaximumAmount()->amount,
             250.00,
+            $status_response->GetMaximumAmount()->amount,
             "Maximum amount is not equal to expected value '250.00'"
         );
 
-        $maxamount = $status_response->GetMaximumAmount();
+        $maxAmount = $status_response->GetMaximumAmount();
 
-        // assert maxamount is an object
+        // assert max amount is an object
         $this->assertInstanceOf(
             BluemMaxAmount::class,
-            $maxamount
+            $maxAmount
         );
 
-        $this->assertTrue(
-            is_numeric($maxamount->amount),
-            "Maxamount is not numeric"
-        );
+        $this->assertIsNumeric($maxAmount->amount, "Max amount is not numeric");
 
         $this->assertEquals(
             "EUR",
-            $maxamount->currency,
-            "Maxamount currency is not EUR"
+            $maxAmount->currency,
+            "Max amount currency is not EUR"
         );
 
     }
-    public function testCanCreatePaymentRequest()
+    public function testCanCreatePaymentRequest(): void
     {
         $description = "Test payment";
         $debtorReference = "12134";
@@ -184,7 +177,7 @@ class BluemMainTest extends BluemGenericTest
         $dueDateTime = strtotime("+1 day");
         $currency = "EUR";
         $entranceCode = "121341231";
-        $debtorReturnURL = "http://www.google.com";
+        $debtorReturnURL = "https://www.google.com";
 
         $request = $this->bluem->CreatePaymentRequest(
             $description,
@@ -205,7 +198,7 @@ class BluemMainTest extends BluemGenericTest
         //@todo build this test
         $this->assertTrue(true, "Can Create PaymentRequest");
     }
-    public function testCanPayment()
+    public function testCanPayment(): void
     {
         // params:
         //  @todo add parameter list from documentation
@@ -213,7 +206,7 @@ class BluemMainTest extends BluemGenericTest
         //@todo build this test
         $this->assertTrue(true, "Can Payment");
     }
-    public function testCanPaymentStatus()
+    public function testCanPaymentStatus(): void
     {
         // params:
         //  ($transactionID, $entranceCode)
@@ -221,7 +214,7 @@ class BluemMainTest extends BluemGenericTest
         //@todo build this test
         $this->assertTrue(true, "Can PaymentStatus");
     }
-    public function testCanCreatePaymentTransactionID()
+    public function testCanCreatePaymentTransactionID(): void
     {
         // params:
         //  (String $debtorReference): String
@@ -229,29 +222,29 @@ class BluemMainTest extends BluemGenericTest
         //@todo build this test
         $this->assertTrue(true, "Can CreatePaymentTransactionID");
     }
-    public function testCanCreateIdentityRequest()
+    public function testCanCreateIdentityRequest(): void
     {
         // @todo: move cats part to separate function
         // params:
 
-        $catListObject = new BluemIdentityCategoryList();
-        $catListObject->addCat("CustomerIDRequest");
-        $catListObject->addCat("BirthDateRequest");
-        $catListObject->addCat("AgeCheckRequest");
-        $catListObject->addCat("NameRequest");
-        $catListObject->addCat("AddressRequest");
-        $catListObject->addCat("AddressRequest");
-        $catListObject->addCat("BirthDateRequest");
-        $catListObject->addCat("GenderRequest");
-        $catListObject->addCat("TelephoneRequest");
-        $catListObject->addCat("EmailRequest");
-        $cats = $catListObject->getCats();
+        $categoryList = new BluemIdentityCategoryList();
+        $categoryList->Add("CustomerIDRequest");
+        $categoryList->Add("BirthDateRequest");
+        $categoryList->Add("AgeCheckRequest");
+        $categoryList->Add("NameRequest");
+        $categoryList->Add("AddressRequest");
+        $categoryList->Add("AddressRequest");
+        $categoryList->Add("BirthDateRequest");
+        $categoryList->Add("GenderRequest");
+        $categoryList->Add("TelephoneRequest");
+        $categoryList->Add("EmailRequest");
+        $cats = $categoryList->getCategories();
 
         // assert amount of cats and type of cats
-        $this->assertEquals(count($cats), 8, "Amount of categories is valid");
+        $this->assertCount(8, $cats, "Amount of categories is valid");
 
         // assert type of categories
-        $this->assertTrue(is_array($cats), "Categories is an array");
+        $this->assertIsArray($cats, "Categories is an array");
 
         $description = "Testing identity request";
         $debtorReference = "1234";
@@ -266,13 +259,13 @@ class BluemMainTest extends BluemGenericTest
             $callback
         );
         // assert request is an object
-        $this->assertTrue(is_object($request), "Request is an object");
+        $this->assertIsObject($request, "Request is an object");
         // assert request has class "IdentityRequest"
-        $this->assertEquals(get_class($request), IdentityBluemRequest::class, "Request has class IdentityBluemRequest");
+        $this->assertEquals(IdentityBluemRequest::class, get_class($request), "Request has class IdentityBluemRequest");
 
 
     }
-    public function testCanIdentityStatus()
+    public function testCanIdentityStatus(): void
     {
         // params:
         //  ($transactionID, $entranceCode)
@@ -283,7 +276,7 @@ class BluemMainTest extends BluemGenericTest
                 $transactionID,
                 $entranceCode
             );
-        } catch ( Exception $e ) {
+        } catch ( Exception ) {
             // @todo: deal with Exception here
         }
         //@todo build this test
@@ -291,7 +284,7 @@ class BluemMainTest extends BluemGenericTest
 
         $this->assertTrue(true, "Can IdentityStatus");
     }
-    public function testCanCreateIdentityTransactionID()
+    public function testCanCreateIdentityTransactionID(): void
     {
         // params:
         //  (String $debtorReference): String

@@ -1,4 +1,10 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Validators;
 
@@ -160,14 +166,12 @@ class BluemConfigurationValidator {
      *
      * @return mixed
      */
-    private function _validateExpectedReturnStatus( $config ) {
+    private function _validateExpectedReturnStatus( $config ): mixed
+    {
         if ( $config->environment === BLUEM_ENVIRONMENT_TESTING ) {
             if ( ! isset( $config->expectedReturnStatus ) ||
                  ( $config->expectedReturnStatus !== ""
-                   && ! in_array(
-                         $config->expectedReturnStatus,
-                         $this->getPossibleReturnStatuses()
-                     ) )
+                   && !in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
             ) {
                 // default back to success
                 $config->expectedReturnStatus = BLUEM_EXPECTED_RETURN_SUCCESS;

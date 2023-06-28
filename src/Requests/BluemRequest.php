@@ -1,7 +1,6 @@
 <?php
-
 /*
- * (c) 2022 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -49,7 +48,7 @@ class BluemRequest implements BluemRequestInterface {
      * @var
      */
     public $debtorWallet = null;
-    
+
     /**
      * @var
      */
@@ -64,12 +63,12 @@ class BluemRequest implements BluemRequestInterface {
      * @var
      */
     protected $senderID;
-    
+
     /**
      * @var string
      */
     protected $createDateTime;
-    
+
     /**
      * @var
      */
@@ -446,7 +445,7 @@ class BluemRequest implements BluemRequestInterface {
     <DynamicData>{0,1}</DynamicData>
     </DebtorAdditionalData>
     */
-    
+
     public function setBrandId(string $brandID): void {
         $this->brandID = $brandID;
     }

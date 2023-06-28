@@ -1,4 +1,10 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Requests;
 
@@ -8,7 +14,8 @@ use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 /**
  * IBAN Name Check Request object
  */
-class IBANBluemRequest extends BluemRequest implements BluemRequestInterface {
+class IBANBluemRequest extends BluemRequest
+{
     public $request_url_type = "icr";
     public $typeIdentifier = "createTransaction";
     public $transaction_code = "INX";

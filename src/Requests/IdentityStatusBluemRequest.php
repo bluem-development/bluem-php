@@ -1,11 +1,17 @@
-<?php
+<?php /*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
-namespace Bluem\BluemPHP\Requests;
+ Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
-class IdentityStatusBluemRequest extends BluemRequest implements BluemRequestInterface {
+class IdentityStatusBluemRequest extends BluemRequest
+{
     public $request_url_type = "ir";
     public $typeIdentifier = "requestStatus";
     public $transaction_code = "ISX";

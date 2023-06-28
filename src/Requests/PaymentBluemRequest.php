@@ -1,4 +1,10 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Requests;
 
@@ -281,7 +287,7 @@ class PaymentBluemRequest extends BluemRequest
 
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
         $res .= "<{$this->context->debtorWalletElementName}>";
-        
+
         if ($this->context->isPayPal()) {
             if (!empty($this->context->getPaymentDetail('PayPalAccount'))) {
                 $res .= "<PayPalAccount>" . $this->context->getPaymentDetail('PayPalAccount') . "</PayPalAccount>";

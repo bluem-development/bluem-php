@@ -10,6 +10,7 @@
 
 require_once __DIR__ . '/initialization.php';
 
+global $bluem_object;
 
 $iban = "NL66ABNA4097012428";
 $name = "D. Jeroen Maarten";

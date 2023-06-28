@@ -1,4 +1,10 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Validators;
 
@@ -12,14 +18,14 @@ class WebhookXmlValidation extends WebhookValidator
     private const ALLOWED_SERVICE_INTERFACES = [
         'EPaymentInterface', 'IdentityInterface', 'EMandateInterface'
     ];
-    
+
     public function __construct(private string $senderID)
     {
     }
-    
-    public function validate(SimpleXMLElement $xmlObject): self
+
+    public function validate(SimpleXMLElement $data): self
     {
-        $serviceInterface = $xmlObject->children()[0];
+        $serviceInterface = $data->children()[0];
         if (!in_array($serviceInterface->getName(), self::ALLOWED_SERVICE_INTERFACES)) {
             $this->addError("Invalid service interface name: " . $serviceInterface->getName());
         }
@@ -35,15 +41,15 @@ class WebhookXmlValidation extends WebhookValidator
         if ((int)$serviceInterface->attributes()['messageCount'] !== 1) {
             $this->addError("Invalid service interface messageCount attribute");
         }
-        
-        if ( $xmlObject->Signature->SignatureValue === null ) {
+
+        if ( $data->Signature->SignatureValue === null ) {
             $this->addError("Invalid Signature Value");
         }
-        
-        if ( $xmlObject->Signature->KeyInfo->KeyName === null ) {
+
+        if ( $data->Signature->KeyInfo->KeyName === null ) {
             $this->addError("Invalid KeyName");
         }
-        
+
         return $this;
     }
 }

@@ -10,7 +10,7 @@
 
 require_once __DIR__ . '/initialization.php';
 
-
+global $bluem_object;
 
 // if you use this same script for the callback, use a condition like this:
 
@@ -20,7 +20,7 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
     /** Callback example: */
     // parse the callback functionality here. THis is done in one file for simplicity's sake. It is recommended to do this in a separate file
 
-    // retrieve from a store, preferably more persistent than session. 
+    // retrieve from a store, preferably more persistent than session.
     // this is purely for demonstrative purposes
     // if you are to use session, make sure it is sanitized
     $transactionID = $_SESSION['transactionID'];
@@ -66,7 +66,7 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
                  *  ["BirthDateResponse"]=>
                  *  string(10) "1975-07-25"
                  */
-                // store that information and process it. 
+                // store that information and process it.
 
                 // You can for example use the BirthDateResponse to determine the age of the user and act accordingly
 
@@ -80,7 +80,7 @@ if (!isset($_GET['action']) || $_GET['action'] !== "callback") {
                 // do something when the request has been canceled by the user
                 break;
             case 'Open':
-                // do something when the request has not yet been completed by the user, redirecting to the transactionURL again 
+                // do something when the request has not yet been completed by the user, redirecting to the transactionURL again
                 break;
             case 'Expired':
                 // do something when the request has expired

@@ -1,13 +1,20 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Integration;
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Dotenv\Dotenv;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Unit\Exception;
+use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 
 /**
  * Abstract base class for all BluemPHP unit tests.
@@ -16,10 +23,8 @@ abstract class BluemGenericTest extends TestCase
 {
     /**
      * The Bluem integration object
-     *
-     * @var Bluem\BluemPHP\Bluem
      */
-    protected $bluem;
+    protected Bluem $bluem;
 
     /**
      * Set up the required config and objects necessary for proper testing
@@ -61,7 +66,7 @@ abstract class BluemGenericTest extends TestCase
 
 
     // test that we can set the configuration
-    public function testSetConfiguration()
+    public function testSetConfiguration(): void
     {
         $setting = $this->bluem->setConfig("environment",true);
 
@@ -71,7 +76,7 @@ abstract class BluemGenericTest extends TestCase
     }
 
     // test that we can get the configuration
-    public function testGetConfiguration()
+    public function testGetConfiguration(): void
     {
         $this->bluem->setConfig("environment","test");
 
@@ -102,7 +107,7 @@ abstract class BluemGenericTest extends TestCase
             );
         }
 
-        if (is_a($response, "Bluem\BluemPHP\Responses\ErrorBluemResponse", false)) {
+        if (is_a($response, ErrorBluemResponse::class, false)) {
             $this->fail(
                 "Erroneous response returned: " .
                 $response->error()
