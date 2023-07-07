@@ -14,7 +14,7 @@ use Bluem\BluemPHP\Validators\BluemConfigurationValidator;
 use Exception;
 use RuntimeException;
 
-final class BluemConfiguration
+class BluemConfiguration
 {
     private const TESTING_ENVIRONMENT = 'test';
 

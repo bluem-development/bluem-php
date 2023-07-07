@@ -19,7 +19,7 @@ if (! defined("BLUEM_STATIC_IPAPI_KEY")) {
  * goal of this integration is to allow IP Geolocation determination to filter request IPs
  * check https://ipstack.com for more information on the integration
  */
-final class IPAPI
+class IPAPI
 {
     /**
      * @var bool
