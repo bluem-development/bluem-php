@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -38,26 +38,28 @@ class PaymentsContext extends BluemContext
     /**
      * PaymentsContext constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct(
             [
-                new BIC( "ABNANL2A", "ABN AMRO" ),
-                new BIC( "ASNBNL21", "ASN Bank" ),
-                new BIC( "BUNQNL2A", "bunq" ),
-                new BIC( "INGBNL2A", "ING" ),
-                new BIC( "KNABNL2H", "Knab" ),
-                new BIC( "RABONL2U", "Rabobank" ),
-                new BIC( "RBRBNL21", "RegioBank" ),
-                new BIC( "SNSBNL2A", "SNS" ),
-                new BIC( "TRIONL2U", "Triodos Bank" ),
-                new BIC( "FVLBNL22", "Van Lanschot" ),
-                new BIC( "REVOLT21", "Revolut" ),
-                new BIC( "BITSNL2A", "Yoursafe" ),
+                new BIC("ABNANL2A", "ABN AMRO"),
+                new BIC("ASNBNL21", "ASN Bank"),
+                new BIC("BUNQNL2A", "bunq"),
+                new BIC("INGBNL2A", "ING"),
+                new BIC("KNABNL2H", "Knab"),
+                new BIC("RABONL2U", "Rabobank"),
+                new BIC("RBRBNL21", "RegioBank"),
+                new BIC("SNSBNL2A", "SNS"),
+                new BIC("TRIONL2U", "Triodos Bank"),
+                new BIC("FVLBNL22", "Van Lanschot"),
+                new BIC("REVOLT21", "Revolut"),
+                new BIC("BITSNL2A", "Yoursafe"),
             ]
         );
     }
 
-    public function getValidationSchema(): string {
+    public function getValidationSchema(): string
+    {
         return parent::getValidationSchema() . 'EPayment.xsd';
     }
 
@@ -74,59 +76,59 @@ class PaymentsContext extends BluemContext
     private function validateDetails(): array
     {
         return [];
-//
-//        if ($this->isIDEAL()) {
-//            // no validation yet
-//        }
-//        if ($this->isPayPal()) {
-//            /**
-//             * For future use.
-//             *
-//             * @todo: validate is valid emailaddress
-//             *
-//             * if(!$details['PayPalAccount']) {
-//             * $errors[] = 'PayPalAccount missing';
-//             * }
-//             *
-//             */
-//        }
-//        if($this->isCreditCard()) {
-//            /**
-//             * For future use.
-//             *
-//             * if(!$details["CardNumber"]) {
-//             * $errors[] = 'CardNumber missing';
-//             * //<xsd:restriction base="xsd:token">x</xsd:restriction>
-//             * }
-//             *
-//             * if(!$details["Name"]) {
-//             * $errors[] = 'Name missing';
-//             * // length 1-32 chars
-//             * }
-//             *
-//             * if(!$details["SecurityCode"]) {
-//             * $errors[] = 'SecurityCode missing';
-//             * //<xsd:pattern value="[0-9]{3,4}"/>  <!-- 3 or 4 digits -->
-//             * }
-//             *
-//             * if(!$details["ExpirationDateMonth"]) {
-//             * $errors[] = 'ExpirationDateMonth missing';
-//             * }
-//             *
-//             * if(!$details["ExpirationDateYear"]) {
-//             * $errors[] = 'ExpirationDateYear missing';
-//             * }
-//             *
-//             */
-//        }
-//        if ($this->isSofort()) {
-//            // add upcoming validation here
-//        }
-//        if ($this->isCarteBancaire()) {
-//            // add upcoming validation here
-//        }
-//
-//        return [];
+        //
+        //        if ($this->isIDEAL()) {
+        //            // no validation yet
+        //        }
+        //        if ($this->isPayPal()) {
+        //            /**
+        //             * For future use.
+        //             *
+        //             * @todo: validate is valid emailaddress
+        //             *
+        //             * if(!$details['PayPalAccount']) {
+        //             * $errors[] = 'PayPalAccount missing';
+        //             * }
+        //             *
+        //             */
+        //        }
+        //        if($this->isCreditCard()) {
+        //            /**
+        //             * For future use.
+        //             *
+        //             * if(!$details["CardNumber"]) {
+        //             * $errors[] = 'CardNumber missing';
+        //             * //<xsd:restriction base="xsd:token">x</xsd:restriction>
+        //             * }
+        //             *
+        //             * if(!$details["Name"]) {
+        //             * $errors[] = 'Name missing';
+        //             * // length 1-32 chars
+        //             * }
+        //             *
+        //             * if(!$details["SecurityCode"]) {
+        //             * $errors[] = 'SecurityCode missing';
+        //             * //<xsd:pattern value="[0-9]{3,4}"/>  <!-- 3 or 4 digits -->
+        //             * }
+        //             *
+        //             * if(!$details["ExpirationDateMonth"]) {
+        //             * $errors[] = 'ExpirationDateMonth missing';
+        //             * }
+        //             *
+        //             * if(!$details["ExpirationDateYear"]) {
+        //             * $errors[] = 'ExpirationDateYear missing';
+        //             * }
+        //             *
+        //             */
+        //        }
+        //        if ($this->isSofort()) {
+        //            // add upcoming validation here
+        //        }
+        //        if ($this->isCarteBancaire()) {
+        //            // add upcoming validation here
+        //        }
+        //
+        //        return [];
     }
 
     public function isIDEAL(): bool

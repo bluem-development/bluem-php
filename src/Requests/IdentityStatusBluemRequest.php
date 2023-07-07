@@ -1,14 +1,13 @@
-<?php /*
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
- *
- * This source file is subject to the license that is bundled
- * with this source code in the file LICENSE.
- */
+<?php /**
+       * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+       *
+       * This source file is subject to the license that is bundled
+       * with this source code in the file LICENSE.
+       */
 
  Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
-use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
 class IdentityStatusBluemRequest extends BluemRequest
 {
@@ -17,14 +16,15 @@ class IdentityStatusBluemRequest extends BluemRequest
     public $transaction_code = "ISX";
     protected $xmlInterfaceName = "IdentityInterface";
 
-    public function __construct( $config, $entranceCode, $expectedReturn, $transactionID ) {
-        parent::__construct( $config, $entranceCode, $expectedReturn );
+    public function __construct( $config, $entranceCode, $expectedReturn, $transactionID )
+    {
+        parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID when using IDIN
-        if ( isset( $config->IDINBrandID ) && $config->IDINBrandID !== "" ) {
-            $config->setBrandId( $config->IDINBrandID );
+        if (isset($config->IDINBrandID) && $config->IDINBrandID !== "" ) {
+            $config->setBrandId($config->IDINBrandID);
         } else {
-            $config->setBrandId( $config->brandID );
+            $config->setBrandId($config->brandID);
         }
 
         $this->transactionID = $transactionID;
@@ -34,11 +34,13 @@ class IdentityStatusBluemRequest extends BluemRequest
 
     // @todo: deprecated, remove
 
-    public function TransactionType(): string {
+    public function TransactionType(): string
+    {
         return "ISX";
     }
 
-    public function XmlString(): string {
+    public function XmlString(): string
+    {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'StatusRequest',

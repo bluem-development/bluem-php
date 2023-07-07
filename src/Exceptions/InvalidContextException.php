@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -21,6 +21,6 @@ class InvalidContextException extends Exception
 
         $this->message = "Invalid Context requested, should be
                 one of the following: " .
-            implode( ",", self::AVAILABLE_CONTEXTS );
+            implode(",", self::AVAILABLE_CONTEXTS);
     }
 }

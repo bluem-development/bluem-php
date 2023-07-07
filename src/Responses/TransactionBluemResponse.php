@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -8,21 +8,26 @@
 
 namespace Bluem\BluemPHP\Responses;
 
-class TransactionBluemResponse extends BluemResponse {
+class TransactionBluemResponse extends BluemResponse
+{
 
-    public function GetTransactionURL(): string {
+    public function GetTransactionURL(): string
+    {
         return $this->getParentStringVariable("TransactionURL");
     }
 
-    protected function getParentXmlElement(): string {
+    protected function getParentXmlElement(): string
+    {
         return static::$response_primary_key . "Response";
     }
 
-    public function GetTransactionID(): string {
+    public function GetTransactionID(): string
+    {
         return $this->getParentStringVariable("TransactionID");
     }
 
-    public function GetDebtorReference(): string {
+    public function GetDebtorReference(): string
+    {
         return $this->getParentStringVariable("DebtorReference");
     }
 }

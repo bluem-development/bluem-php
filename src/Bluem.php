@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -15,9 +15,9 @@ use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Extensions\IPAPI;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
-use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateStatusBluemRequest;
 use Bluem\BluemPHP\Requests\IBANBluemRequest;

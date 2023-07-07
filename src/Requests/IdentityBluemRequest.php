@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -9,10 +9,9 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
-use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 
-define( "BLUEM_DEFAULT_MIN_AGE", 18 );
+define("BLUEM_DEFAULT_MIN_AGE", 18);
 
 /**
  * IdentityBluemRequest object to request an Identity Transaction from the Bluem API.
@@ -37,7 +36,7 @@ class IdentityBluemRequest extends BluemRequest
      * @param $config
      * @param $entranceCode
      * @param $expectedReturn
-     * @param array $requestCategory
+     * @param array  $requestCategory
      * @param string $description
      * @param string $debtorReference
      * @param string $debtorReturnURL
@@ -53,16 +52,16 @@ class IdentityBluemRequest extends BluemRequest
         private string $debtorReference = "",
         $debtorReturnURL = ""
     ) {
-        parent::__construct( $config, $entranceCode, $expectedReturn );
+        parent::__construct($config, $entranceCode, $expectedReturn);
         // @todo: verify return URL can no longer be set in IdentityBluemRequest construction, instead it is created in the config
 
         // override specific brand ID
-        $this->brandID = isset( $config->IDINBrandID ) && $config->IDINBrandID !== "" ? $config->IDINBrandID : $config->brandID;
+        $this->brandID = isset($config->IDINBrandID) && $config->IDINBrandID !== "" ? $config->IDINBrandID : $config->brandID;
 
-        $this->requestCategory = $this->getRequestCategoryElement( $requestCategory );
-        $this->description     = $this->_sanitizeDescription( $description );
-        if ( $debtorReturnURL == "" ) {
-            throw new Exception( "Debtor return URL is required" );
+        $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
+        $this->description     = $this->_sanitizeDescription($description);
+        if ($debtorReturnURL == "" ) {
+            throw new Exception("Debtor return URL is required");
         }
         $this->debtorReturnURL = $debtorReturnURL . "?debtorReference=$this->debtorReference";
 
@@ -77,7 +76,8 @@ class IdentityBluemRequest extends BluemRequest
     /**
      * @throws Exception
      */
-    private function getRequestCategoryElement( array $active_categories = [] ): string {
+    private function getRequestCategoryElement( array $active_categories = [] ): string
+    {
         // @todo perform more validation on active categories?
 
         $all_cats = [
@@ -111,11 +111,12 @@ class IdentityBluemRequest extends BluemRequest
     }
 
     /**
-     * @param      $category
+     * @param $category
      *
      * @throws Exception
      */
-    private function getIdinRequestCategory( $category, bool $active = true ): string {
+    private function getIdinRequestCategory( $category, bool $active = true ): string
+    {
         $action = ( $active ? "request" : "skip" );
 
         return match ($category) {
@@ -130,19 +131,22 @@ class IdentityBluemRequest extends BluemRequest
                    $this->getMinAge() .
                    "\" action=\"$action\"/>",
             'CustomerIDLoginRequest' => "<CustomerIDLoginRequest action=\"$action\"/>",
-            default => throw new Exception( "No proper iDIN request category given", 1 ),
+            default => throw new Exception("No proper iDIN request category given", 1),
         };
     }
 
-    private function getMinAge(): string {
+    private function getMinAge(): string
+    {
         return "" . ( $this->minage ?? BLUEM_DEFAULT_MIN_AGE );
     }
 
-    public function TransactionType(): string {
+    public function TransactionType(): string
+    {
         return "ITX";
     }
 
-    public function XmlString(): string {
+    public function XmlString(): string
+    {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -173,9 +177,10 @@ class IdentityBluemRequest extends BluemRequest
      *
      * @return void
      */
-    public function enableStatusGUI() {
+    public function enableStatusGUI()
+    {
         $this->entranceCode = "showConsumerGui" .
-                              substr( $this->entranceCode, 0, 25 );
+                              substr($this->entranceCode, 0, 25);
     }
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
@@ -214,10 +219,11 @@ class IdentityBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
-    public function selectDebtorWallet( $BIC ) {
+    public function selectDebtorWallet( $BIC )
+    {
 
-        if ( ! in_array( $BIC, $this->context->getBICCodes() ) ) {
-            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        if (! in_array($BIC, $this->context->getBICCodes()) ) {
+            throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
 
         $this->debtorWallet = $BIC;

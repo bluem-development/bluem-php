@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -17,24 +17,28 @@ abstract class BluemContext implements BluemContextInterface
     {
     }
 
-    public function getBICs(): array {
+    public function getBICs(): array
+    {
         return $this->BICs;
     }
 
-    public function getBICCodes(): array {
+    public function getBICCodes(): array
+    {
         $codes = [];
-        foreach ( $this->BICs as $BIC ) {
+        foreach ($this->BICs as $BIC) {
             $codes[] = $BIC->issuerID;
         }
 
         return $codes;
     }
 
-    public function getValidationSchema(): string {
+    public function getValidationSchema(): string
+    {
         return __DIR__ . '/../../validation/';
     }
 
-    public function getDebtorWalletElementName(): string {
+    public function getDebtorWalletElementName(): string
+    {
         return '';
     }
 }

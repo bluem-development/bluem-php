@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -10,7 +10,6 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
-
 use Carbon\Carbon;
 use Exception;
 use SimpleXMLElement;

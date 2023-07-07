@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -42,11 +42,11 @@ class WebhookXmlValidation extends WebhookValidator
             $this->addError("Invalid service interface messageCount attribute");
         }
 
-        if ( $data->Signature->SignatureValue === null ) {
+        if ($data->Signature->SignatureValue === null ) {
             $this->addError("Invalid Signature Value");
         }
 
-        if ( $data->Signature->KeyInfo->KeyName === null ) {
+        if ($data->Signature->KeyInfo->KeyName === null ) {
             $this->addError("Invalid KeyName");
         }
 

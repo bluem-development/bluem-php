@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -12,7 +12,8 @@ namespace Bluem\BluemPHP\Contexts;
 use Bluem\BluemPHP\Helpers\BIC;
 use RuntimeException;
 
-class IdentityContext extends BluemContext {
+class IdentityContext extends BluemContext
+{
     public const PAYMENT_METHOD_IDIN = 'IDIN';
 
     public string $debtorWalletElementName = "IDIN";
@@ -25,23 +26,25 @@ class IdentityContext extends BluemContext {
     /**
      * IdentityContext constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         parent::__construct(
             [
-                new BIC( "ABNANL2A", "ABN AMRO" ),
-                new BIC( "ASNBNL21", "ASN Bank" ),
-                new BIC( "BUNQNL2A", "bunq" ),
-                new BIC( "INGBNL2A", "ING" ),
-                new BIC( "RABONL2U", "Rabobank" ),
-                new BIC( "RBRBNL21", "RegioBank" ),
-                new BIC( "SNSBNL2A", "SNS" ),
+                new BIC("ABNANL2A", "ABN AMRO"),
+                new BIC("ASNBNL21", "ASN Bank"),
+                new BIC("BUNQNL2A", "bunq"),
+                new BIC("INGBNL2A", "ING"),
+                new BIC("RABONL2U", "Rabobank"),
+                new BIC("RBRBNL21", "RegioBank"),
+                new BIC("SNSBNL2A", "SNS"),
 
                 // Triodos Bank, BIC TRIONL2U no longer supported as of 1 june 2021.
             ]
         );
     }
 
-    public function getValidationSchema(): string {
+    public function getValidationSchema(): string
+    {
         return parent::getValidationSchema() . 'EIdentity.xsd';
     }
 

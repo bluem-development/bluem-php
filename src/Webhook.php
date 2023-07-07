@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -48,38 +48,38 @@ class Webhook implements WebhookInterface
             }
         }
 
-        if ( $_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' ) {
             $this->exitWithError('Not POST');
         }
 
         // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK.
-        $postData = file_get_contents( 'php://input' );
+        $postData = file_get_contents('php://input');
 
-        if ( empty($postData) ) {
+        if (empty($postData) ) {
             $this->exitWithError('No data body given');
         }
 
         // Check: content type: XML with utf-8 encoding
-        if ( $_SERVER["CONTENT_TYPE"] !== self::XML_UTF8_CONTENT_TYPE ) {
+        if ($_SERVER["CONTENT_TYPE"] !== self::XML_UTF8_CONTENT_TYPE ) {
             $this->exitWithError('Wrong Content-Type given: should be XML with UTF-8 encoding');
         }
 
         $xmlObject = $this->parseRawXML($postData);
-        if ( ! $xmlObject instanceof \SimpleXMLElement ) {
+        if (! $xmlObject instanceof \SimpleXMLElement ) {
             $this->exitWithError('Could not parse XML');
         }
 
         $xmlValidation = (new WebhookXmlValidation($this->senderID))->validate($xmlObject);
-        if ( ! $xmlValidation::$isValid ) {
+        if (! $xmlValidation::$isValid ) {
             $this->exitWithError($xmlValidation->errorMessage());
         }
 
         $signatureValidation = (new WebhookSignatureValidation($this->environment))->validate($postData);
-        if ( ! $signatureValidation::$isValid ) {
+        if (! $signatureValidation::$isValid ) {
             $this->exitWithError($signatureValidation->errorMessage());
         }
 
-        if ( $this->webhookDebugging ) {
+        if ($this->webhookDebugging ) {
             echo "You have a valid webhook here!" . PHP_EOL;
         }
 
@@ -99,7 +99,7 @@ class Webhook implements WebhookInterface
     #[NoReturn]
     private function exitWithError(string $string): void
     {
-        http_response_code( self::STATUSCODE_BAD_REQUEST );
+        http_response_code(self::STATUSCODE_BAD_REQUEST);
         if ($this->webhookDebugging) {
             exit("Error: " . $string);
         }
@@ -121,18 +121,18 @@ class Webhook implements WebhookInterface
     {
         $this->xmlInterface = $this->xmlObject->children()[0]->getName();
         switch ($this->xmlInterface) {
-            case 'EPaymentInterface':
-                $this->xmlPayloadKey = "PaymentStatusUpdate";
-                $this->service = self::PAYMENTS_SERVICE;
-                break;
-            case 'IdentityInterface':
-                $this->xmlPayloadKey = "IdentityStatusUpdate";
-                $this->service = self::IDENTITY_SERVICE;
-                break;
-            case 'EMandateInterface':
-                $this->xmlPayloadKey = "EMandateStatusUpdate";
-                $this->service = self::EMANDATES_SERVICE;
-                break;
+        case 'EPaymentInterface':
+            $this->xmlPayloadKey = "PaymentStatusUpdate";
+            $this->service = self::PAYMENTS_SERVICE;
+            break;
+        case 'IdentityInterface':
+            $this->xmlPayloadKey = "IdentityStatusUpdate";
+            $this->service = self::IDENTITY_SERVICE;
+            break;
+        case 'EMandateInterface':
+            $this->xmlPayloadKey = "EMandateStatusUpdate";
+            $this->service = self::EMANDATES_SERVICE;
+            break;
         }
     }
 
@@ -181,7 +181,8 @@ class Webhook implements WebhookInterface
     }
 
     // Different attributes for different services
-    public function getDebtorReference(): ?string {
+    public function getDebtorReference(): ?string
+    {
         $key = "DebtorReference";
         if($this->isPayments()) {
             return $this->getPayloadValue($key);
@@ -189,7 +190,8 @@ class Webhook implements WebhookInterface
         return $this->getPayload()->$key . "";
     }
 
-    public function getPurchaseID(): ?string {
+    public function getPurchaseID(): ?string
+    {
         $key = "PurchaseID";
         if($this->isPayments()) {
             return $this->getPayloadValue($key);
@@ -201,7 +203,8 @@ class Webhook implements WebhookInterface
         return '';
     }
 
-    public function getStatus(): ?string {
+    public function getStatus(): ?string
+    {
         if($this->isPayments()) {
             return $this->getPayloadValue('Status');
         }
@@ -218,34 +221,42 @@ class Webhook implements WebhookInterface
         return $this->getPayload()->TransactionID;
     }
 
-    public function getCreationDateTime(): ?string {
+    public function getCreationDateTime(): ?string
+    {
         if($this->isPayments()) {
             return $this->getPayloadValue('CreationDateTime');
         }
         return $this->getPayload()->CreationDateTime;
     }
 
-    public function getPaymentReference(): ?string {
+    public function getPaymentReference(): ?string
+    {
         return $this->getPayloadValue('PaymentReference');
     }
 
-    public function getAmount(): ?string {
+    public function getAmount(): ?string
+    {
         return $this->getPayloadValue('Amount');
     }
-    public function getAmountPaid(): ?string {
+    public function getAmountPaid(): ?string
+    {
         return $this->getPayloadValue('AmountPaid');
     }
-    public function getCurrency(): ?string {
+    public function getCurrency(): ?string
+    {
         return $this->getPayloadValue('Currency');
     }
-    public function getPaymentMethod(): ?string {
+    public function getPaymentMethod(): ?string
+    {
         return $this->getPayloadValue('PaymentMethod');
     }
-    public function getPaymentMethodDetails(): ?SimpleXMLElement {
+    public function getPaymentMethodDetails(): ?SimpleXMLElement
+    {
         return $this->getPayloadValue('PaymentMethodDetails');
     }
 
-    public function getIDealDetails(): ?SimpleXMLElement {
+    public function getIDealDetails(): ?SimpleXMLElement
+    {
         $paymentDetails = $this->getPaymentMethodDetails();
 
         if (!$paymentDetails instanceof \SimpleXMLElement) {
@@ -253,21 +264,24 @@ class Webhook implements WebhookInterface
         }
         return $paymentDetails->IDealDetails;
     }
-    public function getDebtorAccountName(): ?string {
+    public function getDebtorAccountName(): ?string
+    {
         $details = $this->getIDealDetails();
         if(!$details instanceof \SimpleXMLElement) {
             return "";
         }
         return $details->DebtorAccountName."" ?? "";
     }
-    public function getDebtorIBAN(): ?string {
+    public function getDebtorIBAN(): ?string
+    {
         $details = $this->getIDealDetails();
         if(!$details instanceof \SimpleXMLElement) {
             return "";
         }
         return $details->DebtorIBAN."" ?? "";
     }
-    public function getDebtorBankID(): ?string {
+    public function getDebtorBankID(): ?string
+    {
         $details = $this->getIDealDetails();
         if(!$details instanceof \SimpleXMLElement) {
             return "";
@@ -278,18 +292,22 @@ class Webhook implements WebhookInterface
 
     // MANDATES specific
 
-    public function getMandateID(): ?string {
+    public function getMandateID(): ?string
+    {
         return $this->getPayload()->MandateID;
 
     }
-    public function getStatusDateTime(): ?string {
+    public function getStatusDateTime(): ?string
+    {
         return $this->getPayload()->StatusDateTime;
     }
-    public function getOriginalReport(): ?string {
+    public function getOriginalReport(): ?string
+    {
         return $this->getPayload()->OriginalReport;
     }
 
-    public function getAcceptanceReportArray(): array {
+    public function getAcceptanceReportArray(): array
+    {
         $report = $this->getPayload()->AcceptanceReport;
         return [
             'DateTime' => $report->DateTime . "",

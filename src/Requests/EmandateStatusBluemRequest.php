@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -9,7 +9,6 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\MandatesContext;
-use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 
 /**
@@ -41,19 +40,21 @@ class EmandateStatusBluemRequest extends BluemRequest
         $this->mandateID = $mandateID;
 
         try {
-            $this->context = new MandatesContext( $config->localInstrumentCode );
+            $this->context = new MandatesContext($config->localInstrumentCode);
         } catch ( Exception ) {
             // @todo: deal with improper instrument code set
         }
     }
 
-    public function TransactionType(): string {
+    public function TransactionType(): string
+    {
         return "SRX";
     }
 
     // @todo: deprecated, remove
 
-    public function XmlString(): string {
+    public function XmlString(): string
+    {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'StatusRequest',

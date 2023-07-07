@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -57,8 +57,7 @@ final class BluemConfiguration
      */
     public function __construct(object|array $raw)
     {
-        if (is_array($raw))
-        {
+        if (is_array($raw)) {
             $raw = (object) $raw;
         }
 
@@ -96,8 +95,9 @@ final class BluemConfiguration
         $this->webhookDebug = false;
     }
 
-    public function errorsAsString(): string {
-        return implode( ", ", $this->validator->errors() );
+    public function errorsAsString(): string
+    {
+        return implode(", ", $this->validator->errors());
     }
 
     /**
@@ -131,7 +131,8 @@ final class BluemConfiguration
         $this->brandID = $selectedBrandID;
     }
 
-    public function errors(): array {
+    public function errors(): array
+    {
         return $this->validator->errors();
     }
 }

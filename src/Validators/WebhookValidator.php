@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -7,8 +7,6 @@
  */
 
 namespace Bluem\BluemPHP\Validators;
-
-use phpDocumentor\Reflection\Types\Boolean;
 
 abstract class WebhookValidator implements WebhookValidatorInterface
 {

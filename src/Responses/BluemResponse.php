@@ -1,6 +1,6 @@
 <?php
 
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -17,13 +17,15 @@ use SimpleXMLElement;
 /**
  * BluemResponse
  */
-class BluemResponse extends SimpleXMLElement implements BluemResponseInterface {
+class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
+{
 
     public static string $response_primary_key;
     public static string $transaction_type;
     public static string $error_response_type;
 
-    public function ReceivedResponse(): bool {
+    public function ReceivedResponse(): bool
+    {
         return $this->Status();
     }
 
@@ -37,10 +39,10 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface {
 
     /**
      * Return the error message, if there is one. Else return null
-     *
      */
-    public function Error(): string {
-        if ( $this->EMandateErrorResponse !== null ) {
+    public function Error(): string
+    {
+        if ($this->EMandateErrorResponse !== null ) {
             return $this->EMandateErrorResponse->Error . "";
         }
 
@@ -52,30 +54,35 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface {
      *
      * @throws Exception
      */
-    public function GetEntranceCode(): string {
+    public function GetEntranceCode(): string
+    {
         $attrs = $this->{$this->getParentXmlElement()}->attributes();
 
-        if ( ! $attrs || ! isset( $attrs['entranceCode'] ) ) {
-            throw new RuntimeException( "An error occurred in reading the transaction response: no entrance code found." );
+        if (! $attrs || ! isset($attrs['entranceCode']) ) {
+            throw new RuntimeException("An error occurred in reading the transaction response: no entrance code found.");
         }
 
         return $attrs['entranceCode'] . "";
     }
 
     // overridden in children
-    protected function getParentXmlElement(): string {
+    protected function getParentXmlElement(): string
+    {
         return '';
     }
 
-    protected function getChildXmlElement(): string {
+    protected function getChildXmlElement(): string
+    {
         return self::$response_primary_key;
     }
 
-    protected function getParentStringVariable(string $variable) : string {
-        return ( isset( $this->{$this->getParentXmlElement()}->$variable ) ) ? $this->{$this->getParentXmlElement()}->$variable . '' : '';
+    protected function getParentStringVariable(string $variable) : string
+    {
+        return ( isset($this->{$this->getParentXmlElement()}->$variable) ) ? $this->{$this->getParentXmlElement()}->$variable . '' : '';
     }
 
-    protected function getParentElement(): ?SimpleXMLElement {
+    protected function getParentElement(): ?SimpleXMLElement
+    {
         return $this->{$this->getParentXmlElement()} ?? null;
     }
 }

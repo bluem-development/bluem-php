@@ -1,5 +1,5 @@
 <?php
-/*
+ /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -12,7 +12,8 @@ namespace Bluem\BluemPHP\Interfaces;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use SimpleXMLElement;
 
-interface BluemRequestInterface {
+interface BluemRequestInterface
+{
     public function HttpRequestURL(): string;
     public function Print();
     public function RequestContext();
