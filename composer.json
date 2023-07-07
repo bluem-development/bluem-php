@@ -22,8 +22,7 @@
         "ext-simplexml": "*",
         "ext-curl": "*",
         "ext-json": "*",
-        "ext-openssl": "*",
-        "robrichards/xmlseclibs": "^3.1"
+        "ext-openssl": "*"
     },
     "autoload": {
         "psr-4": {
