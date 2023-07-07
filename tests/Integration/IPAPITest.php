@@ -1,4 +1,10 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Integration;
 
@@ -17,12 +23,12 @@ class IPAPITest extends TestCase
         $result = $this->IPAPI->checkIsNetherlands();
         $this->assertTrue($result);
     }
-    
+
     /** @dataProvider NetherlandsIPTestDataProvider */
     public function testCheckIPAdressGivenDataProvider($ipAddress,$expectedNetherlands): void
     {
         $isNetherlands = $this->IPAPI->checkIsNetherlands($ipAddress);
-        var_dump($isNetherlands);
+
         $this->assertEquals($expectedNetherlands, $isNetherlands);
     }
 

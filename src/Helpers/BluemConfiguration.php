@@ -1,85 +1,42 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 
 namespace Bluem\BluemPHP\Helpers;
 
+use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Validators\BluemConfigurationValidator;
 use Exception;
+use RuntimeException;
 
-class BluemConfiguration
+final class BluemConfiguration
 {
-    /**
-     * @var mixed
-     */
-    public $environment;
+    private const TESTING_ENVIRONMENT = 'test';
 
-    /**
-     * @var mixed
-     */
-    public $senderID;
-
-    /**
-     * @var mixed
-     */
-    public $brandID;
-
-    /**
-     * @var mixed
-     */
-    public $accessToken;
-
-    /**
-     * @var mixed
-     */
-    public $merchantReturnURLBase;
-
-    private \Bluem\BluemPHP\Validators\BluemConfigurationValidator $validator;
-
-    /**
-     * @var mixed
-     */
-    public $test_accessToken;
-
-    /**
-     * @var mixed
-     */
-    public $IDINBrandID;
-
-    /**
-     * @var mixed
-     */
-    public $sequenceType;
-
-    /**
-     * @var mixed
-     */
-    public $merchantID;
-
-    /**
-     * @var string
-     */
-    public $production_accessToken;
-
-    /**
-     * @var string
-     */
-    public $expectedReturnStatus;
-
-    /**
-     * @var string
-     */
-    public $eMandateReason;
-
-    /**
-     * @var string
-     */
-    public $localInstrumentCode;
+    public mixed $environment;
+    public mixed $senderID;
+    public mixed $brandID;
+    public mixed $accessToken;
+    public mixed $merchantReturnURLBase;
+    private BluemConfigurationValidator $validator;
+    public mixed $test_accessToken;
+    public mixed $IDINBrandID;
+    public mixed $sequenceType;
+    public mixed $merchantID;
+    public string $production_accessToken;
+    public string $expectedReturnStatus;
+    public string $eMandateReason;
+    public string $localInstrumentCode;
 
     /**
      * this is given by the bank and never changed (default 0)
-     * @var string
      */
-    public $merchantSubID;
-
+    public string $merchantSubID;
     private string $PaymentsBrandID;
     // @todo: consider deprecating this?
     private string $EmandateBrandID;
@@ -88,20 +45,17 @@ class BluemConfiguration
     // additional helper flags
     /**
      * Allows for testing webhook on local environments with no HTTPS check and verbose output.
-     * @var bool
      */
     public bool $webhookDebug = false;
-
-    private const TESTING_ENVIRONMENT = 'test';
 
     /**
      * An object containing the configuration for the Bluem integration. Can be an array or object
      *
-     * @param array|object $raw
+     * @param object|array $raw
      *
      * @throws Exception
      */
-    public function __construct($raw)
+    public function __construct(object|array $raw)
     {
         if (is_array($raw))
         {
@@ -110,33 +64,33 @@ class BluemConfiguration
 
         $this->validator = new BluemConfigurationValidator();
 
-        $raw_validated = $this->validator->validate($raw);
+        $validated = $this->validator->validate($raw);
 
-        if ($raw_validated === false) {
-            throw new Exception('Bluem Configuration is not valid: ' . $this->errorsAsString());
+        if ($validated === false) {
+            throw new InvalidBluemConfigurationException('Bluem Configuration is not valid: ' . $this->errorsAsString());
         }
 
-        $this->environment           = $raw_validated->environment ?? self::TESTING_ENVIRONMENT;
-        $this->senderID              = $raw_validated->senderID;
-        $this->brandID               = $raw_validated->brandID;
-        $this->accessToken           = $raw_validated->accessToken;
+        $this->environment           = $validated->environment ?? self::TESTING_ENVIRONMENT;
+        $this->senderID              = $validated->senderID;
+        $this->brandID               = $validated->brandID;
+        $this->accessToken           = $validated->accessToken;
 
-        $this->merchantReturnURLBase = $raw_validated->merchantReturnURLBase ?? null;
+        $this->merchantReturnURLBase = $validated->merchantReturnURLBase ?? null;
         // @todo: if this is required, break. check that
 
-        $this->test_accessToken = $raw_validated->test_accessToken ?? null;
+        $this->test_accessToken = $validated->test_accessToken ?? null;
 
         $this->IDINBrandID = $this->_assumeBrandID("Identity", $this->brandID);
         $this->PaymentsBrandID = $this->_assumeBrandID("Payment", $this->brandID);
         $this->EmandateBrandID = $this->_assumeBrandID("Mandate", $this->brandID);
 
-        $this->sequenceType = $raw_validated->sequenceType ?? null;
+        $this->sequenceType = $validated->sequenceType ?? null;
 
-        $this->merchantID             = $raw_validated->merchantID ?? null;
-        $this->production_accessToken = $raw_validated->production_accessToken ?? null;
-        $this->expectedReturnStatus   = $raw_validated->expectedReturnStatus ?? null;
-        $this->eMandateReason         = $raw_validated->eMandateReason ?? null;
-        $this->localInstrumentCode    = $raw_validated->localInstrumentCode ?? null;
+        $this->merchantID             = $validated->merchantID ?? null;
+        $this->production_accessToken = $validated->production_accessToken ?? null;
+        $this->expectedReturnStatus   = $validated->expectedReturnStatus ?? null;
+        $this->eMandateReason         = $validated->eMandateReason ?? null;
+        $this->localInstrumentCode    = $validated->localInstrumentCode ?? null;
         $this->merchantSubID          = "0";
 
         $this->webhookDebug = false;
@@ -148,15 +102,11 @@ class BluemConfiguration
 
     /**
      * Assume a brandID for a service based on another valid brandID
-     *
-     * @param string $prefix
-     *
-     * @return string
-     * @throws Exception
      */
-    private function _assumeBrandID(string $service, string $brandID) {
+    private function _assumeBrandID(string $service, string $brandID): string
+    {
         if (empty($brandID)) {
-            throw new Exception("No brandID given");
+            throw new RuntimeException("No brandID given");
         }
 
         $available_services = [
@@ -166,7 +116,7 @@ class BluemConfiguration
         ];
 
         if (!in_array($service, $available_services)) {
-            throw new Exception("Invalid service requested");
+            throw new RuntimeException("Invalid service requested");
         }
 
         $prefix = str_replace($available_services, '', $brandID);
@@ -175,12 +125,9 @@ class BluemConfiguration
 
     /**
      * Override the brandID for a specific service
-     *
-     * @param $selectedBrandID
-     *
-     * @return void
      */
-    public function setBrandId( $selectedBrandID ) {
+    public function setBrandId(string $selectedBrandID): void
+    {
         $this->brandID = $selectedBrandID;
     }
 

@@ -1,28 +1,42 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP;
 
+use Bluem\BluemPHP\Interfaces\WebhookInterface;
+use Bluem\BluemPHP\Validators\WebhookSignatureValidation;
+use Bluem\BluemPHP\Validators\WebhookXmlValidation;
 use Exception;
+use JetBrains\PhpStorm\NoReturn;
 use SimpleXMLElement;
 
-class Webhook
+class Webhook implements WebhookInterface
 {
     private const PAYMENTS_SERVICE = 'Payments';
     private const IDENTITY_SERVICE = 'Identity';
     private const EMANDATES_SERVICE = 'EMandates';
+    private const XML_UTF8_CONTENT_TYPE = "text/xml; charset=UTF-8";
+    private const STATUSCODE_BAD_REQUEST = 400;
+
     public string $service;
     public ?SimpleXMLElement $xmlObject;
-    
+
     private string $xmlInterface;
     private string $xmlPayloadKey;
 
     public function __construct(
-        private $senderID, private $webhookDebugging = false, private $env = 'test'
-    )
-    {
+        private $senderID,
+        private $webhookDebugging = false,
+        private $environment = BLUEM_ENVIRONMENT_TESTING
+    ) {
         $this->parse();
     }
-    
+
     private function parse(): void
     {
         if (!$this->isHttpsRequest()) {
@@ -46,31 +60,31 @@ class Webhook
         }
 
         // Check: content type: XML with utf-8 encoding
-        if ( $_SERVER["CONTENT_TYPE"] !== "text/xml; charset=UTF-8" ) {
-            $this->exitWithError('Wrong Content-Type given: should be xml with UTF-8 encoding');
+        if ( $_SERVER["CONTENT_TYPE"] !== self::XML_UTF8_CONTENT_TYPE ) {
+            $this->exitWithError('Wrong Content-Type given: should be XML with UTF-8 encoding');
         }
-        
+
         $xmlObject = $this->parseRawXML($postData);
         if ( ! $xmlObject instanceof \SimpleXMLElement ) {
             $this->exitWithError('Could not parse XML');
         }
-        
-        $xmlValidation = (new Validators\WebhookXmlValidation($this->senderID))->validate($xmlObject);
+
+        $xmlValidation = (new WebhookXmlValidation($this->senderID))->validate($xmlObject);
         if ( ! $xmlValidation::$isValid ) {
             $this->exitWithError($xmlValidation->errorMessage());
         }
-        
-        $signatureValidation = (new Validators\WebhookSignatureValidation($this->env))->validate($postData);
+
+        $signatureValidation = (new WebhookSignatureValidation($this->environment))->validate($postData);
         if ( ! $signatureValidation::$isValid ) {
-            $this->exitWithError($xmlValidation->errorMessage());
+            $this->exitWithError($signatureValidation->errorMessage());
         }
-        
+
         if ( $this->webhookDebugging ) {
             echo "You have a valid webhook here!" . PHP_EOL;
         }
-        
+
         $this->xmlObject = $xmlObject;
-        
+
         $this->setServiceInterface();
     }
 
@@ -82,25 +96,24 @@ class Webhook
         );
     }
 
-    private function exitWithError(string $string, int $errorCode = 400): void
+    #[NoReturn]
+    private function exitWithError(string $string): void
     {
-        http_response_code( $errorCode );
+        http_response_code( self::STATUSCODE_BAD_REQUEST );
         if ($this->webhookDebugging) {
             exit("Error: " . $string);
         }
         exit;
     }
 
-    /**
-     * @param $postData
-     */
-    private function parseRawXML($postData): ?SimpleXMLElement
+    private function parseRawXML($postData): string|SimpleXMLElement
     {
         try {
             $xmlObject = new SimpleXMLElement($postData);
         } catch (Exception $e) {
             return $e->getMessage();
         }
+
         return $xmlObject;
     }
 
@@ -122,18 +135,18 @@ class Webhook
                 break;
         }
     }
-    
-    private function getPayloadValue(string $key)
+
+    private function getPayloadValue(string $key): SimpleXMLElement|string|null
     {
         $payload = $this->getPayload()->$key ?? null;
         if ($payload === null) {
             return null;
         }
-        
-        if((is_countable($payload->children()) ? count($payload->children()) : 0)>0) {
+
+        if((is_countable($payload->children()) ? count($payload->children()) : 0) > 0) {
             return $payload;
         }
-        
+
         return $payload->$key . '' ?? '';
     }
     private function getPayload(): SimpleXMLElement
@@ -143,10 +156,8 @@ class Webhook
         }
         return $this->xmlObject->{$this->xmlInterface}->{$this->xmlPayloadKey};
     }
-    
-    
+
     // @todo: move all attributes to subclasses of webhook (e.g. PaymentsWebhook)
-    // service determination
     private function isPayments(): bool
     {
         return $this->service === self::PAYMENTS_SERVICE;
@@ -161,8 +172,8 @@ class Webhook
     {
         return $this->service === self::IDENTITY_SERVICE;
     }
-    
-    
+
+
     // general, shared attributes
     public function getEntranceCode(): ?string
     {
@@ -177,7 +188,7 @@ class Webhook
         }
         return $this->getPayload()->$key . "";
     }
-    
+
     public function getPurchaseID(): ?string {
         $key = "PurchaseID";
         if($this->isPayments()) {
@@ -186,7 +197,7 @@ class Webhook
         if($this->isEmandates()) {
             return $this->getPayload()->$key . "";
         }
-        
+
         return '';
     }
 
@@ -202,23 +213,22 @@ class Webhook
     {
         if($this->isPayments()) {
             return $this->getPayloadValue('TransactionID');
-        } 
-        // else if identity        
+        }
+        // else if identity
         return $this->getPayload()->TransactionID;
     }
-    
+
     public function getCreationDateTime(): ?string {
         if($this->isPayments()) {
             return $this->getPayloadValue('CreationDateTime');
         }
         return $this->getPayload()->CreationDateTime;
     }
-    
+
     public function getPaymentReference(): ?string {
         return $this->getPayloadValue('PaymentReference');
     }
-    
-    
+
     public function getAmount(): ?string {
         return $this->getPayloadValue('Amount');
     }
@@ -237,7 +247,7 @@ class Webhook
 
     public function getIDealDetails(): ?SimpleXMLElement {
         $paymentDetails = $this->getPaymentMethodDetails();
-            
+
         if (!$paymentDetails instanceof \SimpleXMLElement) {
             return null;
         }
@@ -264,13 +274,13 @@ class Webhook
         }
         return $details->DebtorBankID."" ?? "";
     }
-    
-    
+
+
     // MANDATES specific
 
     public function getMandateID(): ?string {
         return $this->getPayload()->MandateID;
-        
+
     }
     public function getStatusDateTime(): ?string {
         return $this->getPayload()->StatusDateTime;
@@ -278,7 +288,7 @@ class Webhook
     public function getOriginalReport(): ?string {
         return $this->getPayload()->OriginalReport;
     }
-    
+
     public function getAcceptanceReportArray(): array {
         $report = $this->getPayload()->AcceptanceReport;
         return [
@@ -307,9 +317,9 @@ class Webhook
         ];
     }
 
-    
+
     // identity specific:
-    
+
     public function getRequestType(): string
     {
         return $this->getPayload()->RequestType ."";
@@ -328,11 +338,11 @@ class Webhook
     public function getIdentityReportArray(): array
     {
         $report = $this->getPayload()->IdentityReport ?? null;
-        
+
         if(!$report instanceof \SimpleXMLElement) {
             return [];
         }
-        
+
         return [
             'DateTime' => $report->DateTime.'',
             'CustomerIDResponse' => $report->CustomerIDResponse.'',

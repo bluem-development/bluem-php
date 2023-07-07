@@ -1,13 +1,21 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 
 namespace Bluem\BluemPHP\Contexts;
 
 use Bluem\BluemPHP\Helpers\BIC;
+use RuntimeException;
 
 class IdentityContext extends BluemContext {
     public const PAYMENT_METHOD_IDIN = 'IDIN';
 
-    public $debtorWalletElementName = "IDIN";
+    public string $debtorWalletElementName = "IDIN";
 
     /**
      * @var array
@@ -42,7 +50,7 @@ class IdentityContext extends BluemContext {
         return $this->debtorWalletElementName === self::PAYMENT_METHOD_IDIN;
     }
 
-    public function addPaymentMethodDetails(array $details = [])
+    public function addPaymentMethodDetails(array $details = []): void
     {
         $validationErrors = $this->validateDetails($details);
         if ($validationErrors !== [] ) {

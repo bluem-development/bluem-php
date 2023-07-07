@@ -1,14 +1,16 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Responses;
 
 class StatusBluemResponse extends BluemResponse {
-    public function GetStatusCode(): ?string {
-        if ( isset( $this->{$this->getParentXmlElement()}->Status ) ) {
-            return $this->{$this->getParentXmlElement()}->Status . "";
-        }
-
-        return null;
+    public function GetStatusCode(): string {
+        return $this->getParentStringVariable("Status");
     }
 
     protected function getParentXmlElement(): string {

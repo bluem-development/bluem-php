@@ -8,23 +8,23 @@
  * Author: Bluem Plugin Support (pluginsupport@bluem.nl)
  */
 require_once __DIR__.'/initialization.php';
-
+global $bluem_object;
 /*
  * Creating a payment
  */
 // description: a concise description with possible references to order name and such
-$description = "Test payment"; 
+$description = "Test payment";
 // amount: as a float
-$amount = 100.00;	 
+$amount = 100.00;
 // currency: if set to null, will default to EUR as string
-$currency = "EUR"; 
+$currency = "EUR";
 // any additional reference you want to make to the customer, user or order
-$debtorReference = "1234023"; 
+$debtorReference = "1234023";
 // dueDateTime: set it automatically a day in advance. if you want to set it, use a datetime string in "YYYY-MM-DD H:i:s" format
-$dueDateTime = null; 
+$dueDateTime = null;
 
 // returnUrl: set this if you want to override the return URL in your own callback function location specific for payments. If empty string or not given, the config defined return URL will be used.
-$returnUrl = "";  
+$returnUrl = "";
 
 $entranceCode = $bluem_object->CreateEntranceCode();
 
@@ -45,16 +45,16 @@ $response = $bluem_object->PerformRequest($request);
 if ($response->ReceivedResponse()) {
 
     $transactionURL = $response->GetTransactionURL();
-    
+
     // The EntranceCode is set by the response; it is required for following status requests.
     $entranceCode = $response->GetEntranceCode();
-    
+
     // Suggestion: save the initiated transaction details; for example
     $_SESSION['entranceCode'] = $entranceCode;
-    
-    // Suggestion: redirect to the above transaction URL  
+
+    // Suggestion: redirect to the above transaction URL
     header("Location: ".$transactionURL);
-} else { 
+} else {
     $error = $response->Error();
 	// To implement yourself: no proper status given, show an error.
     echo "Error: ".$error;
@@ -78,7 +78,7 @@ $response = $bluem_object->PaymentStatus($transactionID, $entranceCode);
 
 
 if (!$response->Status()) {
-    echo "Error when retrieving status: " . $response->Error() . 
+    echo "Error when retrieving status: " . $response->Error() .
         "<br>Please contact the webshop and mention this status";
     exit;
 }
@@ -87,13 +87,13 @@ $statusUpdateObject = $response->PaymentStatusUpdate;
 $statusCode = $statusUpdateObject->PaymentStatus->Status . "";
 
 if ($statusCode === "Success") {
-    
+
     // deal with a proper payment
 } elseif ($statusCode === "Cancelled") {
 
     // Implement: do what you need to when the transaction has been cancelled
 
-} elseif ($statusCode === "Open" || $statusCode == "Pending") {
+} elseif ($statusCode === "Open" || $statusCode === "Pending") {
 
     // the transaction is still open. it might take some time to process
     // Implement: show a message that reflects this

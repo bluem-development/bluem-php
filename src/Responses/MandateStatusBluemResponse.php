@@ -1,13 +1,24 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Responses;
 
+use Bluem\BluemPHP\Helpers\BluemCurrencies;
+use Bluem\BluemPHP\Helpers\BluemCurrency;
 use Bluem\BluemPHP\Helpers\BluemMaxAmount;
+use Exception;
+use SebastianBergmann\Template\RuntimeException;
+use SimpleXMLElement;
 
 class MandateStatusBluemResponse extends StatusBluemResponse {
-    public static $transaction_type = "EMandate";
-    public static $response_primary_key = 'EMandateStatus';
-    public static $error_response_type = 'EMandateErrorResponse';
+    public static string $transaction_type = "EMandate";
+    public static string $response_primary_key = 'EMandateStatus';
+    public static string $error_response_type = 'EMandateErrorResponse';
 
     public function GetDebtorIBAN(): string {
         if ( $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN !== null ) {
@@ -31,38 +42,35 @@ class MandateStatusBluemResponse extends StatusBluemResponse {
     public function GetMaximumAmount(): BluemMaxAmount {
         $acceptance_report = $this->getAcceptanceReport();
         if ( ! $acceptance_report ) {
-            throw new Exception( "No acceptance report delivered" );
+            throw new RuntimeException( "No acceptance report delivered" );
         }
 
-        if ( isset( $acceptance_report->MaxAmount ) ) {
+        // @todo: get currency from report
+        $currency = new BluemCurrency();
+
+        if ( $acceptance_report->MaxAmount !== null ) {
+            $maxAmount = (float) ( $acceptance_report->MaxAmount . "" );
+
             return new BluemMaxAmount(
-                (float) ( $acceptance_report->MaxAmount . "" ),
-                'EUR'
+                $maxAmount,
+                $currency
             );
         }
 
-        return new BluemMaxAmount(
-            0.0,
-            'EUR'
-        );
+        return new BluemMaxAmount(0.0, $currency);
     }
 
-    private function getAcceptanceReport() {
-
-        if ( isset( $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport ) ) {
-            return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport;
-        }
-
-        return false;
-
+    private function getAcceptanceReport(): ?SimpleXMLElement
+    {
+        return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport ?? null;
     }
 
-    public function GetDebtorAccountName()
+    public function GetDebtorAccountName(): ?string
     {
         if ($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorAccountName !== null) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorAccountName . "";
         }
 
-        return null;
+        return '';
     }
 }

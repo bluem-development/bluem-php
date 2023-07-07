@@ -10,23 +10,23 @@
  */
 
 require_once __DIR__.'/initialization.php';
-
+global $bluem_object;
 /*
  * Creating a webhook
- * 
+ *
  * when running this in a webserver, this allows you to expose the webhook to the url like this:
- * 
+ *
  * http://example.com/payments-webhook.php?action=webhook
- * 
+ *
  * change this URL to match your web server.
  */
 
 // This GET parameter is an example. This is not required.
 if ($_GET['action'] === "webhook") {
-    
+
     // if you want debug information and verbose results when testing the webhook, set this to true
     $bluem_object->setConfig("webhookDebug", false);
-    
+
     // this call will exit with a 200 or 400 HTTP status code, and parse the incoming data
     // Returns null if the webhook didn't parse successfully.
     $webhook = $bluem_object->Webhook();
@@ -35,7 +35,7 @@ if ($_GET['action'] === "webhook") {
     if ($webhook !== null) {
 
         $status = $webhook->getStatus();
-        
+
         if ($status === "Success") {
 
             $transactionID = $webhook->getTransactionID();
@@ -43,13 +43,14 @@ if ($_GET['action'] === "webhook") {
             $amountPaid = $webhook->getAmountPaid();
             $currency = $webhook->getCurrency();
             $paymentMethod = $webhook->getPaymentMethod();
-            
+
             // note: these are currently iDEAL specific
             $debtorAccountName = $webhook->getDebtorAccountName();
             $debtorIBAN = $webhook->getDebtorIBAN();
             $debtorBankID = $webhook->getDebtorBankID();
-            
+
             // deal with the successful callback
+
         } elseif($status ==="Cancelled") {
             // deal with the cancelled callback
         } elseif($status ==="Open") {
@@ -61,7 +62,5 @@ if ($_GET['action'] === "webhook") {
         }
 
         // refer to the readme on webhooks for example methods to use for retrieving data from the callback object.
-        
     }
-    
 }

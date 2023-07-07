@@ -1,11 +1,18 @@
 <?php
+/*
+ * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
-class PaymentStatusBluemRequest extends BluemRequest implements BluemRequestInterface {
+class PaymentStatusBluemRequest extends BluemRequest
+{
     public $request_url_type = "pr";
     public $typeIdentifier = "requestStatus";
     public $transaction_code = "PSX";
