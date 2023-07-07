@@ -25,7 +25,7 @@ class BluemMaxAmount implements \Stringable
         try {
 
             $this->currency = new BluemCurrency($currencyCode);
-        } catch ( \Exception $e ) {
+        } catch (\Exception $e) {
             $this->currency = new BluemCurrency();
         }
     }

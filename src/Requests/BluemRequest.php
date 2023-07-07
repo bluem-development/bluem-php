@@ -17,7 +17,8 @@ use SimpleXMLElement;
 /**
  * BluemRequest general class
  */
-class BluemRequest implements BluemRequestInterface {
+class BluemRequest implements BluemRequestInterface
+{
     /**
      * @var
      */
@@ -115,8 +116,8 @@ class BluemRequest implements BluemRequestInterface {
         string $expectedReturn = ""
     ) {
         $possibleTypeIdentifiers = [ 'createTransaction', 'requestStatus' ];
-        if ( ! in_array( $this->typeIdentifier, $possibleTypeIdentifiers ) ) {
-            throw new Exception( "Invalid transaction type called for", 1 );
+        if (! in_array($this->typeIdentifier, $possibleTypeIdentifiers)) {
+            throw new Exception("Invalid transaction type called for", 1);
         }
         // @todo: move to request validation class?
 
@@ -127,7 +128,7 @@ class BluemRequest implements BluemRequestInterface {
         $this->accessToken = $config->accessToken;
         // @todo just use the config directly instead of copying all configuration elements
 
-        $this->createDateTime = Carbon::now()->timezone( 'Europe/Amsterdam' )->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
+        $this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
 
         /**
          *  unique identifier of payee for this transaction
@@ -136,7 +137,7 @@ class BluemRequest implements BluemRequestInterface {
          */
         // @todo Validate input entrance code if not empty string, based on XSD
 
-        $this->entranceCode = $entranceCode === "" ? $this->entranceCode( $expectedReturn ) : $entranceCode;
+        $this->entranceCode = $entranceCode === "" ? $this->entranceCode($expectedReturn) : $entranceCode;
     }
 
     // @todo remove this?
@@ -147,14 +148,15 @@ class BluemRequest implements BluemRequestInterface {
      *                               (none,success,cancelled,expired,failure,open,pending) or empty string
      *                               "YmdHisv" standardized format, in Europe/Amsterdam timezone
      */
-    private function entranceCode( string $expectedReturn = 'none' ): string {
+    private function entranceCode(string $expectedReturn = 'none'): string
+    {
         $entranceCode = Carbon::now()
-                              ->timezone( 'Europe/Amsterdam' )
-                              ->format( "YmdHisv" );
+                              ->timezone('Europe/Amsterdam')
+                              ->format("YmdHisv");
 
         $prefix = "";
-        if ( $this->environment === BLUEM_ENVIRONMENT_TESTING ) {
-            switch ( $expectedReturn ) {
+        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+            switch ($expectedReturn) {
                 case 'success':
                 {
                     $prefix = "HIO100OIH";
@@ -200,7 +202,8 @@ class BluemRequest implements BluemRequestInterface {
     /**
      * @return mixed
      */
-    public function getContext() {
+    public function getContext()
+    {
         return $this->context;
     }
 
@@ -210,15 +213,17 @@ class BluemRequest implements BluemRequestInterface {
      * @return SimpleXMLElement final XML object
      * @throws Exception
      */
-    public function Xml(): SimpleXMLElement {
-        return new SimpleXMLElement( $this->XmlString() );
+    public function Xml(): SimpleXMLElement
+    {
+        return new SimpleXMLElement($this->XmlString());
     }
 
     /**
      * Returning the current XML string; as this is an abstract request, it will be overridden by classes that
      * implement this.
      */
-    public function XmlString(): string {
+    public function XmlString(): string
+    {
         return "";
     }
 
@@ -227,8 +232,9 @@ class BluemRequest implements BluemRequestInterface {
      * mostly for testing purposes
      *
      */
-    public function Print() {
-        header( 'Content-Type: text/xml; charset=UTF-8' );
+    public function Print()
+    {
+        header('Content-Type: text/xml; charset=UTF-8');
         print( $this->XmlString() );
     }
 
@@ -237,7 +243,8 @@ class BluemRequest implements BluemRequestInterface {
      *
      * @retum string The http request url.
      */
-    public function HttpRequestURL(): string {
+    public function HttpRequestURL(): string
+    {
         $request_url = "https://";
 
         match ($this->environment) {
@@ -258,14 +265,16 @@ class BluemRequest implements BluemRequestInterface {
     /**
      * Retrieve array of objects with IssuerID and IssuerName of banks from the context
      */
-    public function retrieveBICObjects(): array {
+    public function retrieveBICObjects(): array
+    {
         return $this->context->BICs();
     }
 
     /**
      * Retrieve array of BIC codes (IssuerIDs) of banks from context
      */
-    public function retrieveBICCodes(): array {
+    public function retrieveBICCodes(): array
+    {
         return $this->context->getBICCodes();
     }
 
@@ -277,11 +286,12 @@ class BluemRequest implements BluemRequestInterface {
      * @return void
      * @throws Exception
      */
-    public function selectDebtorWallet( $BIC ) {
+    public function selectDebtorWallet($BIC)
+    {
         $possibleBICs = $this->context->getBICCodes();
 
-        if ( ! in_array( $BIC, $possibleBICs ) ) {
-            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        if (! in_array($BIC, $possibleBICs)) {
+            throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
         $this->debtorWallet = $BIC;
     }
@@ -290,16 +300,17 @@ class BluemRequest implements BluemRequestInterface {
     /**
      * Create the XML element necessary to be added to the request XML string.
      */
-    public function XmlWrapDebtorWallet(): string {
-        if ( is_null( $this->debtorWallet ) ) {
+    public function XmlWrapDebtorWallet(): string
+    {
+        if (is_null($this->debtorWallet)) {
             return "";
         }
 
-        if ( $this->debtorWallet === "" ) {
+        if ($this->debtorWallet === "") {
             return "";
         }
 
-        if ( ! isset( $this->context->debtorWalletElementName ) || $this->context->debtorWalletElementName === "" ) {
+        if (! isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName === "") {
             return '';
         }
 
@@ -311,15 +322,16 @@ class BluemRequest implements BluemRequestInterface {
         return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
-    public function XmlWrapDebtorAdditionalData(): string {
-        if ( count( $this->_debtorAdditionalData ) == 0 ) {
+    public function XmlWrapDebtorAdditionalData(): string
+    {
+        if (count($this->_debtorAdditionalData) == 0) {
             return '';
         }
 
         $res = PHP_EOL . "<DebtorAdditionalData>" . PHP_EOL;
 
-        foreach ( $this->_debtorAdditionalData as $key => $value ) {
-            if ( ! in_array( $key, $this->_possibleDebtorAdditionalDataKeys ) ) {
+        foreach ($this->_debtorAdditionalData as $key => $value) {
+            if (! in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
                 continue;
             }
 
@@ -336,8 +348,9 @@ class BluemRequest implements BluemRequestInterface {
     /**
      * @throws Exception
      */
-    public function addAdditionalData( $key, $value ): BluemRequest {
-        if ( ! in_array( $key, $this->_possibleDebtorAdditionalDataKeys ) ) {
+    public function addAdditionalData($key, $value): BluemRequest
+    {
+        if (! in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
             throw new Exception(
                 "Incorrect key added as DebtorAdditionalData
                 to request."
@@ -352,11 +365,13 @@ class BluemRequest implements BluemRequestInterface {
     /**
      * @return mixed
      */
-    public function RequestContext() {
+    public function RequestContext()
+    {
         return $this->context;
     }
 
-    public function RequestType(): string {
+    public function RequestType(): string
+    {
         return '';
     }
 
@@ -396,10 +411,11 @@ class BluemRequest implements BluemRequestInterface {
      *
      * @return String Constructed XML as string
      */
-    protected function XmlRequestObjectWrap( string $element_name, string $rest, array $extra_attrs = [] ): string {
+    protected function XmlRequestObjectWrap(string $element_name, string $rest, array $extra_attrs = []): string
+    {
         $res = "<$element_name
            entranceCode=\"$this->entranceCode\" ";
-        foreach ( $extra_attrs as $key => $value ) {
+        foreach ($extra_attrs as $key => $value) {
             $res .= "$key=\"$value\" " . PHP_EOL;
         }
 
@@ -411,7 +427,8 @@ class BluemRequest implements BluemRequestInterface {
      *
      *
      */
-    protected function _sanitizeDescription( string $description ): string {
+    protected function _sanitizeDescription(string $description): string
+    {
         // filter based on full list of invalid chars for description based on XSD
         // Wel toegestaan: -0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%"'/:;?$
         $description = preg_replace(
@@ -420,13 +437,12 @@ class BluemRequest implements BluemRequestInterface {
             $description
         );
         // max 128 characters
-        $result = substr( $description, 0, 128 );
-        if ( $result !== false ) {
+        $result = substr($description, 0, 128);
+        if ($result !== false) {
             return $result;
         }
 
         return $description;
-
     }
 
     /*
@@ -445,7 +461,8 @@ class BluemRequest implements BluemRequestInterface {
     </DebtorAdditionalData>
     */
 
-    public function setBrandId(string $brandID): void {
+    public function setBrandId(string $brandID): void
+    {
         $this->brandID = $brandID;
     }
 }

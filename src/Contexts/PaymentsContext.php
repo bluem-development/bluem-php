@@ -66,7 +66,7 @@ class PaymentsContext extends BluemContext
     public function addPaymentMethodDetails(array $details = []): void
     {
         $validationErrors = $this->validateDetails();
-        if ($validationErrors !== [] ) {
+        if ($validationErrors !== []) {
             throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
         }
 

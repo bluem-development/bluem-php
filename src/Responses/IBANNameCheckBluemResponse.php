@@ -31,7 +31,7 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
     {
         $result = $this->getIBANCheckResultObject($parentObjectKey);
 
-        if ($result && !empty($result->$key) ) {
+        if ($result && !empty($result->$key)) {
             return $result->$key . "";
         }
 

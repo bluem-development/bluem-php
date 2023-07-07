@@ -19,11 +19,10 @@ class MandateTransactionBluemResponse extends TransactionBluemResponse
      */
     public function GetMandateID(): string
     {
-        if ($this->EMandateTransactionResponse->MandateID === null ) {
+        if ($this->EMandateTransactionResponse->MandateID === null) {
             return false;
         }
 
         return $this->EMandateTransactionResponse->MandateID . "";
     }
-
 }

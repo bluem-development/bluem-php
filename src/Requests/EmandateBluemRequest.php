@@ -40,7 +40,7 @@ class EmandateBluemRequest extends BluemRequest
      *
      * @throws Exception
      */
-    public function __construct( BluemConfiguration $config, private $debtorReference, $order_id, $mandateID, string $expected_return = "none" )
+    public function __construct(BluemConfiguration $config, private $debtorReference, $order_id, $mandateID, string $expected_return = "none")
     {
         parent::__construct($config, "", $expected_return);
 
@@ -67,7 +67,7 @@ class EmandateBluemRequest extends BluemRequest
         We do not present it on the checkout, because we see that many parties
         really do not know what to put there. We always advise customer number.
         And that is what many parties do. */
-        if (property_exists($config, 'purchaseIDPrefix') && $config->purchaseIDPrefix !== null && $config->purchaseIDPrefix !== "" ) {
+        if (property_exists($config, 'purchaseIDPrefix') && $config->purchaseIDPrefix !== null && $config->purchaseIDPrefix !== "") {
             $purchaseIDPrefix = $config->purchaseIDPrefix . "-";
         } else {
             $purchaseIDPrefix = "";
@@ -79,7 +79,7 @@ class EmandateBluemRequest extends BluemRequest
         $this->merchantID = $config->merchantID ?? "";
 
         // override with hardcoded merchantID when in test environment, according to documentation
-        if ($this->environment === BLUEM_ENVIRONMENT_TESTING ) {
+        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
             $this->merchantID = "0020000387";
         }
 
@@ -182,10 +182,10 @@ class EmandateBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
-    public function selectDebtorWallet( $BIC )
+    public function selectDebtorWallet($BIC)
     {
 
-        if (! in_array($BIC, $this->context->getBICCodes()) ) {
+        if (! in_array($BIC, $this->context->getBICCodes())) {
             throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
 

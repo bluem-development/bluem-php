@@ -21,7 +21,7 @@ interface BluemRequestInterface
     public function Xml(): SimpleXMLElement;
     public function XmlString(): string;
     public function XmlWrapDebtorAdditionalData(): string;
-    public function addAdditionalData( $key, $value ): BluemRequest;
+    public function addAdditionalData($key, $value): BluemRequest;
     public function getContext();
     public function retrieveBICCodes(): array;
     public function retrieveBICObjects(): array;

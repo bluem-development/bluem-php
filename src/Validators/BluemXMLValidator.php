@@ -36,7 +36,7 @@ class BluemXMLValidator
      *
      * @param string|null $feedSchema
      */
-    public function __construct( string $feedSchema = null )
+    public function __construct(string $feedSchema = null)
     {
         $this->handler    = new DOMDocument('1.0', 'utf-8');
         $this->feedSchema = $feedSchema;
@@ -50,16 +50,16 @@ class BluemXMLValidator
      * @throws DOMException
      * @throws Exception
      */
-    public function validate( BluemContext $context, $contents ): bool
+    public function validate(BluemContext $context, $contents): bool
     {
         $this->feedSchema = $context->getValidationSchema();
 
-        if (! class_exists('DOMDocument') ) {
+        if (! class_exists('DOMDocument')) {
             throw new DOMException(
                 "'DOMDocument' class not found!"
             );
         }
-        if (! file_exists($this->feedSchema) ) {
+        if (! file_exists($this->feedSchema)) {
             throw new Exception(
                 "Schema is Missing, Please add schema to feedSchema property"
             );
@@ -73,7 +73,7 @@ class BluemXMLValidator
         // fclose($fp);
 
         $this->handler->loadXML($contents, LIBXML_NOBLANKS);
-        if (! $this->handler->schemaValidate($this->feedSchema) ) {
+        if (! $this->handler->schemaValidate($this->feedSchema)) {
             $this->errorDetails = $this->libxmlDisplayErrors();
             $this->feedErrors   = 1;
 
@@ -88,7 +88,7 @@ class BluemXMLValidator
     {
         $errors = libxml_get_errors();
         $result = [];
-        foreach ( $errors as $error ) {
+        foreach ($errors as $error) {
             $result[] = $this->libxmlDisplayError($error);
         }
         libxml_clear_errors();
@@ -99,7 +99,7 @@ class BluemXMLValidator
     /**
      * @param libXMLError object $error
      */
-    private function libxmlDisplayError( $error ): string
+    private function libxmlDisplayError($error): string
     {
         $errorString = "Error $error->code in $error->file (Line: $error->line):";
 

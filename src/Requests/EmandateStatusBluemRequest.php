@@ -41,7 +41,7 @@ class EmandateStatusBluemRequest extends BluemRequest
 
         try {
             $this->context = new MandatesContext($config->localInstrumentCode);
-        } catch ( Exception ) {
+        } catch (Exception) {
             // @todo: deal with improper instrument code set
         }
     }

@@ -51,7 +51,7 @@ class IBANBluemRequest extends BluemRequest
      *
      * @param string $iban Given IBAN to sanitize
      */
-    private function _sanitizeIban( string $iban ): string
+    private function _sanitizeIban(string $iban): string
     {
         return trim(
             str_replace(' ', '', $iban)
@@ -63,7 +63,7 @@ class IBANBluemRequest extends BluemRequest
      *
      * @param string $name Given name to check
      */
-    private function _sanitizeName( string $name ): string
+    private function _sanitizeName(string $name): string
     {
         return trim($name);
     }
@@ -100,5 +100,4 @@ class IBANBluemRequest extends BluemRequest
             )
         );
     }
-
 }

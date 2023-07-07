@@ -16,12 +16,12 @@ class IdentityStatusBluemRequest extends BluemRequest
     public $transaction_code = "ISX";
     protected $xmlInterfaceName = "IdentityInterface";
 
-    public function __construct( $config, $entranceCode, $expectedReturn, $transactionID )
+    public function __construct($config, $entranceCode, $expectedReturn, $transactionID)
     {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID when using IDIN
-        if (isset($config->IDINBrandID) && $config->IDINBrandID !== "" ) {
+        if (isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
             $config->setBrandId($config->IDINBrandID);
         } else {
             $config->setBrandId($config->brandID);

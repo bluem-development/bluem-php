@@ -24,7 +24,7 @@ class BluemCurrency implements Stringable
      */
     private array $allowed_currencies = [ self::EURO_CURRENCY, self::US_DOLLAR_CURRENCY ];
 
-    public function __construct( string $code = self::EURO_CURRENCY )
+    public function __construct(string $code = self::EURO_CURRENCY)
     {
 
         if (!in_array($code, $this->allowed_currencies, true)) {

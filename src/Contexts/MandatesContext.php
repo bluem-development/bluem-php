@@ -34,15 +34,15 @@ class MandatesContext extends BluemContext
      *
      * @throws Exception
      */
-    public function __construct( $type = "CORE" )
+    public function __construct($type = "CORE")
     {
-        if (! in_array($type, $this->_possibleMandateTypes) ) {
+        if (! in_array($type, $this->_possibleMandateTypes)) {
             throw new Exception(
                 "Unknown instrument code set as mandate type;
                 should be either 'CORE' or 'B2B'"
             );
         }
-        if ($type === "CORE" ) {
+        if ($type === "CORE") {
             $BICs = [
                 new BIC("ABNANL2A", "ABN AMRO"),
                 new BIC("ASNBNL21", "ASN Bank"),
@@ -77,7 +77,7 @@ class MandatesContext extends BluemContext
     public function addPaymentMethodDetails(array $details = []): void
     {
         $validationErrors = $this->validateDetails($details);
-        if ($validationErrors !== [] ) {
+        if ($validationErrors !== []) {
             throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
         }
 

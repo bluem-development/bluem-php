@@ -13,7 +13,7 @@ class BluemIdentityCategoryList
 {
 
     /**
-     * @var string[] $categories 
+     * @var string[] $categories
      */
     public array $categories = [];
 

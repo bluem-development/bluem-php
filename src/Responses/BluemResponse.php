@@ -42,7 +42,7 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
      */
     public function Error(): string
     {
-        if ($this->EMandateErrorResponse !== null ) {
+        if ($this->EMandateErrorResponse !== null) {
             return $this->EMandateErrorResponse->Error . "";
         }
 
@@ -58,7 +58,7 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
     {
         $attrs = $this->{$this->getParentXmlElement()}->attributes();
 
-        if (! $attrs || ! isset($attrs['entranceCode']) ) {
+        if (! $attrs || ! isset($attrs['entranceCode'])) {
             throw new RuntimeException("An error occurred in reading the transaction response: no entrance code found.");
         }
 

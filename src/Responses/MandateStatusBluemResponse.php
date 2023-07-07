@@ -22,7 +22,7 @@ class MandateStatusBluemResponse extends StatusBluemResponse
 
     public function GetDebtorIBAN(): string
     {
-        if ($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN !== null ) {
+        if ($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN !== null) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorIBAN . "";
         }
 
@@ -31,7 +31,7 @@ class MandateStatusBluemResponse extends StatusBluemResponse
 
     public function GetDebtorBankID(): string
     {
-        if ($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID !== null ) {
+        if ($this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID !== null) {
             return $this->EMandateStatusUpdate->EMandateStatus->AcceptanceReport->DebtorBankID . "";
         }
 
@@ -44,14 +44,14 @@ class MandateStatusBluemResponse extends StatusBluemResponse
     public function GetMaximumAmount(): BluemMaxAmount
     {
         $acceptance_report = $this->getAcceptanceReport();
-        if (! $acceptance_report ) {
+        if (! $acceptance_report) {
             throw new RuntimeException("No acceptance report delivered");
         }
 
         // @todo: get currency from report
         $currency = new BluemCurrency();
 
-        if ($acceptance_report->MaxAmount !== null ) {
+        if ($acceptance_report->MaxAmount !== null) {
             $maxAmount = (float) ( $acceptance_report->MaxAmount . "" );
 
             return new BluemMaxAmount(

@@ -24,8 +24,7 @@ class BluemConfigurationValidator
 {
     private ?array $errors = null;
 
-
-    function validate( $config )
+    function validate($config)
     {
 
         // essential validation
@@ -46,24 +45,25 @@ class BluemConfigurationValidator
             $config = $this->_validateLocalInstrumentCode($config);
             $config = $this->_validateMerchantReturnURLBase($config);
 
-        } catch ( Throwable $th ) {
+        } catch (Throwable $th) {
             $this->errors[] = $th->getMessage();
 
             return false;
         }
 
         return $config;
-
     }
 
-    private function _validateEnvironment( $config )
+    private function _validateEnvironment($config)
     {
         if (!in_array(
-            $config->environment, [
+            $config->environment,
+            [
             BLUEM_ENVIRONMENT_TESTING,
             BLUEM_ENVIRONMENT_ACCEPTANCE,
             BLUEM_ENVIRONMENT_PRODUCTION
-            ], true
+            ],
+            true
         )
         ) {
             throw new Exception(
@@ -75,21 +75,21 @@ class BluemConfigurationValidator
         return $config;
     }
 
-    private function _validateSenderID( $config )
+    private function _validateSenderID($config)
     {
-        if (! isset($config->senderID) ) {
+        if (! isset($config->senderID)) {
             throw new Exception(
                 "senderID not set; 
                 please add this to your configuration when instantiating the Bluem integration"
             );
         }
-        if ($config->senderID === "" ) {
+        if ($config->senderID === "") {
             throw new Exception(
                 "senderID cannot be empty; 
                 please add this to your configuration when instantiating the Bluem integration"
             );
         }
-        if (!str_starts_with($config->senderID, "S") ) {
+        if (!str_starts_with($config->senderID, "S")) {
             throw new Exception(
                 "senderID always starts with an S followed by digits. 
                 Please correct this in your configuration when instantiating the Bluem integration"
@@ -99,7 +99,7 @@ class BluemConfigurationValidator
         return $config;
     }
 
-    private function _validateTest_accessToken( $config )
+    private function _validateTest_accessToken($config)
     {
         if ($config->environment === BLUEM_ENVIRONMENT_TESTING
             && ( ! isset($config->test_accessToken)
@@ -114,7 +114,7 @@ class BluemConfigurationValidator
         return $config;
     }
 
-    private function _validateProduction_accessToken( $config )
+    private function _validateProduction_accessToken($config)
     {
         // only required if mode is set to PROD
         // production_accessToken
@@ -132,25 +132,25 @@ class BluemConfigurationValidator
         return $config;
     }
 
-    private function _validateBrandID( $config )
+    private function _validateBrandID($config)
     {
-        if (! isset($config->brandID) ) {
+        if (! isset($config->brandID)) {
             throw new Exception("brandID not set; please add this to your configuration when instantiating the Bluem integration");
         }
 
         return $config;
     }
 
-    private function _validateMerchantIDAndSelectAccessToken( $config )
+    private function _validateMerchantIDAndSelectAccessToken($config)
     {
-        if (! isset($config->merchantId) ) {
+        if (! isset($config->merchantId)) {
             $config->merchantId = "";
         }
 
-        if ($config->environment === BLUEM_ENVIRONMENT_PRODUCTION ) {
+        if ($config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
             $config->accessToken = $config->production_accessToken;
             // @todo consider throwing an exception if these tokens are missing.
-        } elseif ($config->environment === BLUEM_ENVIRONMENT_TESTING ) {
+        } elseif ($config->environment === BLUEM_ENVIRONMENT_TESTING) {
             $config->accessToken = $config->test_accessToken;
             // @todo consider throwing an exception if these tokens are missing.
 
@@ -163,7 +163,7 @@ class BluemConfigurationValidator
     }
 
 
-    private function _validateThanksPage( $config )
+    private function _validateThanksPage($config)
     {
         // @todo consider throwing an exception if this url is missing.
         return $config;
@@ -177,10 +177,10 @@ class BluemConfigurationValidator
      *
      * @return mixed
      */
-    private function _validateExpectedReturnStatus( $config ): mixed
+    private function _validateExpectedReturnStatus($config): mixed
     {
-        if ($config->environment === BLUEM_ENVIRONMENT_TESTING ) {
-            if (! isset($config->expectedReturnStatus) 
+        if ($config->environment === BLUEM_ENVIRONMENT_TESTING) {
+            if (! isset($config->expectedReturnStatus)
                 || ( $config->expectedReturnStatus !== ""
                 && !in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
             ) {
@@ -211,13 +211,13 @@ class BluemConfigurationValidator
         ];
     }
 
-    private function _validateEMandateReason( $config )
+    private function _validateEMandateReason($config)
     {
         // @todo Validate the reason for the mandate
         return $config;
     }
 
-    private function _validateLocalInstrumentCode( $config )
+    private function _validateLocalInstrumentCode($config)
     {
         if (! isset($config->localInstrumentCode)
             || ! in_array(
@@ -232,7 +232,7 @@ class BluemConfigurationValidator
         return $config;
     }
 
-    private function _validateMerchantReturnURLBase( $config )
+    private function _validateMerchantReturnURLBase($config)
     {
         // @todo Validate Merchant Return URL Base
         return $config;

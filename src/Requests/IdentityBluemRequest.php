@@ -60,7 +60,7 @@ class IdentityBluemRequest extends BluemRequest
 
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         $this->description     = $this->_sanitizeDescription($description);
-        if ($debtorReturnURL == "" ) {
+        if ($debtorReturnURL == "") {
             throw new Exception("Debtor return URL is required");
         }
         $this->debtorReturnURL = $debtorReturnURL . "?debtorReference=$this->debtorReference";
@@ -76,7 +76,7 @@ class IdentityBluemRequest extends BluemRequest
     /**
      * @throws Exception
      */
-    private function getRequestCategoryElement( array $active_categories = [] ): string
+    private function getRequestCategoryElement(array $active_categories = []): string
     {
         // @todo perform more validation on active categories?
 
@@ -96,7 +96,7 @@ class IdentityBluemRequest extends BluemRequest
 
         $result = "<RequestCategory>";
 
-        foreach ( $all_cats as $cat ) {
+        foreach ($all_cats as $cat) {
             $result .= $this->getIdinRequestCategory(
                 $cat,
                 in_array(
@@ -115,7 +115,7 @@ class IdentityBluemRequest extends BluemRequest
      *
      * @throws Exception
      */
-    private function getIdinRequestCategory( $category, bool $active = true ): string
+    private function getIdinRequestCategory($category, bool $active = true): string
     {
         $action = ( $active ? "request" : "skip" );
 
@@ -219,10 +219,10 @@ class IdentityBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
-    public function selectDebtorWallet( $BIC )
+    public function selectDebtorWallet($BIC)
     {
 
-        if (! in_array($BIC, $this->context->getBICCodes()) ) {
+        if (! in_array($BIC, $this->context->getBICCodes())) {
             throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
 

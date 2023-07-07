@@ -37,12 +37,12 @@ class WebhookSignatureValidation extends WebhookValidator
 
         try {
             $signatureValidator->loadPublicKeyFile($public_key_file_path);
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             $this->addError($e->getMessage());
         }
 
         $xmlVerified = $signatureValidator->verifyXmlFile($temp_file_path);
-        if (! $xmlVerified ) {
+        if (! $xmlVerified) {
             $this->addError("Invalid signature");
         }
 
@@ -65,9 +65,9 @@ class WebhookSignatureValidation extends WebhookValidator
         $prefix = 'webhook_bluem_nl_';
 
         // Check the datetime for certificates
-        if ($this->env === BLUEM_ENVIRONMENT_TESTING && ( ( $current_date === "2023-06-28" && $current_time >= "08:00" ) || $current_date > "2023-06-28") ) {
+        if ($this->env === BLUEM_ENVIRONMENT_TESTING && ( ( $current_date === "2023-06-28" && $current_time >= "08:00" ) || $current_date > "2023-06-28")) {
             $timestamp = '202306140200-202407050159';
-        } elseif ($this->env === BLUEM_ENVIRONMENT_PRODUCTION && ( ( $current_date === "2023-07-04" && $current_time >= "08:00" ) || $current_date > "2023-07-04") ) {
+        } elseif ($this->env === BLUEM_ENVIRONMENT_PRODUCTION && ( ( $current_date === "2023-07-04" && $current_time >= "08:00" ) || $current_date > "2023-07-04")) {
             $timestamp = '202306140200-202407050159';
         } else {
             $timestamp = '202206090200-202307110159';
