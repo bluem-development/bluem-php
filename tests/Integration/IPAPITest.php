@@ -25,7 +25,7 @@ class IPAPITest extends TestCase
     }
 
     /** @dataProvider NetherlandsIPTestDataProvider */
-    public function testCheckIPAdressGivenDataProvider($ipAddress,$expectedNetherlands): void
+    public function testCheckIPAdressGivenDataProvider($ipAddress, $expectedNetherlands): void
     {
         $isNetherlands = $this->IPAPI->checkIsNetherlands($ipAddress);
 
