@@ -28,10 +28,10 @@ final class BluemConfiguration
     public mixed $IDINBrandID;
     public mixed $sequenceType;
     public mixed $merchantID;
-    public string $production_accessToken;
-    public string $expectedReturnStatus;
-    public string $eMandateReason;
-    public string $localInstrumentCode;
+    public ?string $production_accessToken;
+    public ?string $expectedReturnStatus;
+    public ?string $eMandateReason;
+    public ?string $localInstrumentCode;
 
     /**
      * this is given by the bank and never changed (default 0)
