@@ -280,7 +280,7 @@ class Bluem {
 
             // Convert the XML result into array
             $array_data = json_decode(json_encode(simplexml_load_string($response)), true);
-
+var_dump($array_data);
             curl_close($curl);
 
             switch ( $response_status ) {
@@ -325,8 +325,8 @@ class Bluem {
                 default:
                     return new ErrorBluemResponse( 'Unexpected / erroneous response (code ' . $response_status . ')' );
             }
-        } catch ( Throwable ) {
-            return new ErrorBluemResponse( 'HTTP Request Error' );
+        } catch ( Throwable $th ) {
+            return new ErrorBluemResponse( 'HTTP Request Error'. $th->getMessage() );
             // @todo improve request return exceptions; add our own exception type
         }
     }

@@ -12,7 +12,7 @@ class MandateTransactionBluemResponse extends TransactionBluemResponse
 {
     public static string $transaction_type = "EMandate";
     public static string $response_primary_key = 'EMandateTransaction';
-    public static string $error_response_type = 'EMandateErrorResponse';
+    public static ?string $error_response_type = 'EMandateErrorResponse';
 
     /**
      * Get the mandate ID from the Transaction Response

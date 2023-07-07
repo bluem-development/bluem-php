@@ -22,7 +22,7 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
 
     public static string $response_primary_key;
     public static string $transaction_type;
-    public static string $error_response_type;
+    public static ?string $error_response_type = null;
 
     public function ReceivedResponse(): bool
     {

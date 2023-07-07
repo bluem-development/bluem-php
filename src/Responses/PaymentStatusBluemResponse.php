@@ -12,5 +12,6 @@ class PaymentStatusBluemResponse extends StatusBluemResponse
 {
     public static string $transaction_type = "Payment";
     public static string $response_primary_key = 'PaymentStatus';
-    public static string $error_response_type = 'PaymentErrorResponse';
+    public static ?
+    string $error_response_type = 'PaymentErrorResponse';
 }

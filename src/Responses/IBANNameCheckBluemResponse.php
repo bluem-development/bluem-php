@@ -14,7 +14,7 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
 {
     public static string $transaction_type = "IBANCheckTransactionResponse";
     public static string $response_primary_key = "IBANCheckTransaction";
-    public static string $error_response_type = "IBANCheckResult";
+    public static ?string $error_response_type = "IBANCheckResult";
 
     private function getIBANCheckResultObject($parentObjectKey = "IBANCheckResult"): ?SimpleXMLElement
     {
