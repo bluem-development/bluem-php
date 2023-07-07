@@ -4,6 +4,7 @@ namespace Bluem\BluemPHP\Helpers;
 
 use DateInterval;
 use DateTimeImmutable;
+use DateTimeZone;
 use Exception;
 
 class Now
@@ -16,9 +17,9 @@ class Now
     public function __construct($timezoneString = self::DEFAULT_TIMEZONE)
     {
         try {
-            $timezone = new \DateTimeZone($timezoneString);
+            $timezone = new DateTimeZone($timezoneString);
         } catch (\Exception $e) {
-            $timezone = self::DEFAULT_TIMEZONE;
+            $timezone = new DateTimeZone(self::DEFAULT_TIMEZONE);
         }
 
         try {
@@ -54,10 +55,13 @@ class Now
         return $this;
     }
 
-    public function fromDate(string $dueDateTime): static
+    public function fromDate(string $dateTimeString): static
     {
         try {
-            $this->dateTime = new DateTimeImmutable(datetime: $dueDateTime, timezone: self::DEFAULT_TIMEZONE);
+            $this->dateTime = new DateTimeImmutable(
+                datetime: $dateTimeString,
+                timezone: new DateTimeZone(self::DEFAULT_TIMEZONE)
+            );
         } catch (Exception $e) {
             throw $e;
         }
