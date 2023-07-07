@@ -12,7 +12,6 @@ use Bluem\BluemPHP\Interfaces\WebhookInterface;
 use Bluem\BluemPHP\Validators\WebhookSignatureValidation;
 use Bluem\BluemPHP\Validators\WebhookXmlValidation;
 use Exception;
-use JetBrains\PhpStorm\NoReturn;
 use SimpleXMLElement;
 
 class Webhook implements WebhookInterface
@@ -40,10 +39,12 @@ class Webhook implements WebhookInterface
     {
         if (!$this->isHttpsRequest()) {
             $this->exitWithError('Not HTTPS');
+            return;
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' ) {
             $this->exitWithError('Not POST');
+            return;
         }
 
         // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK.
@@ -51,26 +52,31 @@ class Webhook implements WebhookInterface
 
         if (empty($postData) ) {
             $this->exitWithError('No data body given');
+            return;
         }
 
         // Check: content type: XML with utf-8 encoding
         if ($_SERVER["CONTENT_TYPE"] !== self::XML_UTF8_CONTENT_TYPE ) {
             $this->exitWithError('Wrong Content-Type given: should be XML with UTF-8 encoding');
+            return;
         }
 
         $xmlObject = $this->parseRawXML($postData);
         if (! $xmlObject instanceof \SimpleXMLElement ) {
             $this->exitWithError('Could not parse XML');
+            return;
         }
 
         $xmlValidation = (new WebhookXmlValidation($this->senderID))->validate($xmlObject);
         if (! $xmlValidation::$isValid ) {
             $this->exitWithError($xmlValidation->errorMessage());
+            return;
         }
 
         $signatureValidation = (new WebhookSignatureValidation($this->environment))->validate($postData);
         if (! $signatureValidation::$isValid ) {
             $this->exitWithError($signatureValidation->errorMessage());
+            return;
         }
 
         $this->xmlObject = $xmlObject;
@@ -86,12 +92,9 @@ class Webhook implements WebhookInterface
         );
     }
 
-    #[NoReturn]
     private function exitWithError(string $string): void
     {
         http_response_code(self::STATUSCODE_BAD_REQUEST);
-
-        exit;
     }
 
     private function parseRawXML($postData): string|SimpleXMLElement
