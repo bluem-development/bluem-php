@@ -252,7 +252,7 @@ class Bluem {
             CURLOPT_URL => $request_url,
             CURLOPT_HTTPHEADER => $curl_headers,
             CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_SSL_VERIFYPEER => false, // @todo: check if we can set this to true
+            CURLOPT_SSL_VERIFYPEER => true, // @todo: check if we can set this to true
             CURLOPT_FOLLOWLOCATION => 1,
             CURLOPT_TIMEOUT => 30
         );
