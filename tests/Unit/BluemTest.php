@@ -33,11 +33,13 @@ class BluemTest extends TestCase
         }
     }
 
-    protected function tearDown(): void {
+    protected function tearDown(): void
+    {
         //$this->bluem = Bluem;
     }
 
-    public function testMandateRequest() {
+    public function testMandateRequest()
+    {
         $result = true;
         $this->assertEquals(true, $result);
     }
