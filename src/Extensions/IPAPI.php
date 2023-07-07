@@ -85,15 +85,7 @@ final class IPAPI
         try {
             $api_result = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            if ($this->debug) {
-                var_dump("Error: ". $e);
-            }
             return false;
-        }
-
-        // verbose for debugging
-        if ($this->debug) {
-            var_dump($api_result);
         }
 
         // @todo: make request error handling prettier in the future
