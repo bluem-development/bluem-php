@@ -1,19 +1,6 @@
-<?php
-/**
- * Bluem-PHP examples: initialisation
- * This file contains examples and annotations for using the `bluem-php` package.
- * All to-dos are for your reference where action on your part is still required.
- *
- * Code is courtesy of and property of Bluem Payment Services
- * Author: Bluem Plugin Support (pluginsupport@bluem.nl)
- */
+To create a Bluem object, do the following
 
-/** In your own app: install composer, require the  `daanrijpkema/bluem-php` package
- * and require the vendor/autoload.php file to  magically load the library and any other dependencies like this:
 ```php
-require_once __DIR__ . '/../vendor/autoload.php';
- ```
- *  */
 
 use Bluem\BluemPHP\Bluem;
 
