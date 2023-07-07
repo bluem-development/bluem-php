@@ -257,17 +257,6 @@ class Bluem {
             CURLOPT_TIMEOUT => 30
         );
 
-        if ( self::$verbose ) {
-            echo PHP_EOL . "<BR>URL// " . $request_url;
-
-            echo PHP_EOL . "<BR>HEADER// " . "Content-Type: " . "application/xml; type=" . $transaction_request->transaction_code . "; charset=UTF-8";
-            echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-date: ' . $xttrs_date;
-            echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-files-count: ' . '1';
-            echo PHP_EOL . "<BR>HEADER// " . 'x-ttrs-filename: ' . $xttrs_filename;
-            echo "<HR>";
-            echo PHP_EOL . "BODY: " . $transaction_request->XmlString();
-        }
-
         // Set options to cURL request
         curl_setopt_array($curl, $curl_options);
 
@@ -280,7 +269,7 @@ class Bluem {
 
             // Convert the XML result into array
             $array_data = json_decode(json_encode(simplexml_load_string($response)), true);
-var_dump($array_data);
+
             curl_close($curl);
 
             switch ( $response_status ) {
@@ -604,7 +593,6 @@ var_dump($array_data);
         try {
             $webhook = new Webhook(
                 $this->configuration->senderID,
-                $this->getConfig('webhookDebug') === true,
                 $this->configuration->environment
             );
         } catch (Exception $e) {

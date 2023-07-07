@@ -31,7 +31,6 @@ class Webhook implements WebhookInterface
 
     public function __construct(
         private $senderID,
-        private $webhookDebugging = false,
         private $environment = BLUEM_ENVIRONMENT_TESTING
     ) {
         $this->parse();
@@ -40,12 +39,7 @@ class Webhook implements WebhookInterface
     private function parse(): void
     {
         if (!$this->isHttpsRequest()) {
-            // if in debug mode, then only display a warning
-            if ($this->webhookDebugging) {
-                echo "Warning: not HTTPS" . PHP_EOL;
-            } else {
-                $this->exitWithError('Not HTTPS');
-            }
+            $this->exitWithError('Not HTTPS');
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' ) {
@@ -79,10 +73,6 @@ class Webhook implements WebhookInterface
             $this->exitWithError($signatureValidation->errorMessage());
         }
 
-        if ($this->webhookDebugging ) {
-            echo "You have a valid webhook here!" . PHP_EOL;
-        }
-
         $this->xmlObject = $xmlObject;
 
         $this->setServiceInterface();
@@ -100,9 +90,7 @@ class Webhook implements WebhookInterface
     private function exitWithError(string $string): void
     {
         http_response_code(self::STATUSCODE_BAD_REQUEST);
-        if ($this->webhookDebugging) {
-            exit("Error: " . $string);
-        }
+
         exit;
     }
 
