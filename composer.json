@@ -17,7 +17,6 @@
     "require": {
         "php": ">=8.0",
         "nesbot/carbon": "^2.31",
-        "pear/http_request2": "^2.5",
         "selective/xmldsig": "^2.4",
         "ext-dom": "*",
         "ext-libxml": "*",

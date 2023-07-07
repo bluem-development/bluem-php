@@ -36,7 +36,6 @@ use Bluem\BluemPHP\Validators\BluemXMLValidator;
 use Carbon\Carbon;
 use DOMException;
 use Exception;
-use HTTP_Request2_LogicException;
 use RuntimeException;
 use Throwable;
 
@@ -204,7 +203,7 @@ class Bluem
      * object and return its response
      *
      *
-     * @throws DOMException|HTTP_Request2_LogicException
+     * @throws DOMException
      * @throws Exception
      */
     public function PerformRequest(BluemRequestInterface $transaction_request): BluemResponseInterface
@@ -356,7 +355,6 @@ class Bluem
      *
      * @return BluemResponseInterface
      * @throws DOMException
-     * @throws HTTP_Request2_LogicException
      */
     public function MandateStatus($mandateID, $entranceCode): BluemResponseInterface
     {
