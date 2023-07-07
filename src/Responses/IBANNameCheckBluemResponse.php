@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -10,25 +10,28 @@ namespace Bluem\BluemPHP\Responses;
 
 use SimpleXMLElement;
 
-class IBANNameCheckBluemResponse extends TransactionBluemResponse {
+class IBANNameCheckBluemResponse extends TransactionBluemResponse
+{
     public static string $transaction_type = "IBANCheckTransactionResponse";
     public static string $response_primary_key = "IBANCheckTransaction";
-    public static string $error_response_type = "IBANCheckResult";
+    public static ?string $error_response_type = "IBANCheckResult";
 
-    private function getIBANCheckResultObject($parentObjectKey = "IBANCheckResult"): ?SimpleXMLElement {
+    private function getIBANCheckResultObject($parentObjectKey = "IBANCheckResult"): ?SimpleXMLElement
+    {
         $parent = $this->getParentElement();
 
-        if ( $parent && !empty( $parent->{$parentObjectKey})) {
+        if ($parent && !empty($parent->{$parentObjectKey})) {
             return $parent->{$parentObjectKey};
         }
 
         return null;
     }
 
-    private function getKeyFromIBANCheckResult(string $key, string $parentObjectKey = null): string {
+    private function getKeyFromIBANCheckResult(string $key, string $parentObjectKey = null): string
+    {
         $result = $this->getIBANCheckResultObject($parentObjectKey);
 
-        if ( $result && !empty( $result->$key ) ) {
+        if ($result && !empty($result->$key)) {
             return $result->$key . "";
         }
 
@@ -46,27 +49,33 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse {
         return $this->getKeyFromIBANCheckResult("NameResult");
     }
 
-    public function GetSuggestedName(): string {
+    public function GetSuggestedName(): string
+    {
         return $this->getKeyFromIBANCheckResult("SuggestedName");
     }
 
-    public function GetAccountStatus(): string {
+    public function GetAccountStatus(): string
+    {
         return $this->getKeyFromIBANCheckResult("AccountStatus");
     }
 
-    public function GetAccountType(): string {
+    public function GetAccountType(): string
+    {
         return $this->getKeyFromIBANCheckResult("AccountStatus", "AccountDetails");
     }
 
-    public function GetIsJointAccount(): string {
+    public function GetIsJointAccount(): string
+    {
         return $this->getKeyFromIBANCheckResult("IsJointAccount", "AccountDetails");
     }
 
-    public function GetNumberOfAccountHolders(): string {
+    public function GetNumberOfAccountHolders(): string
+    {
         return $this->getKeyFromIBANCheckResult("NumberOfAccountHolders", "AccountDetails");
     }
 
-    public function GetCountryName(): string {
+    public function GetCountryName(): string
+    {
         return $this->getKeyFromIBANCheckResult("CountryName", "AccountDetails");
     }
 }

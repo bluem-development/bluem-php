@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -13,20 +13,24 @@ use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
 /**
  * EMandateErrorResponse
  */
-class ErrorBluemResponse implements BluemResponseInterface {
+class ErrorBluemResponse implements BluemResponseInterface
+{
     public function __construct(private string $error)
     {
     }
 
-    public function Status(): bool {
+    public function Status(): bool
+    {
         return false;
     }
 
-    public function ReceivedResponse(): bool {
+    public function ReceivedResponse(): bool
+    {
         return false;
     }
 
-    public function Error(): string {
+    public function Error(): string
+    {
         return $this->error;
     }
 }

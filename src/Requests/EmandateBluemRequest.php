@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -11,7 +11,6 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\MandatesContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
-use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
 /**
  * TransactionRequest
@@ -37,18 +36,19 @@ class EmandateBluemRequest extends BluemRequest
      * @param $customer_id
      * @param $order_id
      * @param $mandateID
-     * @param string $expected_return
+     * @param string             $expected_return
      *
      * @throws Exception
      */
-    public function __construct( BluemConfiguration $config, private $debtorReference, $order_id, $mandateID, string $expected_return = "none" ) {
-        parent::__construct( $config, "", $expected_return );
+    public function __construct(BluemConfiguration $config, private $debtorReference, $order_id, $mandateID, string $expected_return = "none")
+    {
+        parent::__construct($config, "", $expected_return);
 
         $this->merchantReturnURLBase = $config->merchantReturnURLBase;
 
         // $this->request_type = $request_type;
         // if($this->request_type==="simple" && $simple_redirect_url!=="") {
-        // 	$this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}";
+        //     $this->merchantReturnURL = $simple_redirect_url."?mandateID={$this->mandateID}";
         // }
 
         $this->localInstrumentCode = $config->localInstrumentCode;
@@ -67,19 +67,19 @@ class EmandateBluemRequest extends BluemRequest
         We do not present it on the checkout, because we see that many parties
         really do not know what to put there. We always advise customer number.
         And that is what many parties do. */
-        if ( property_exists($config, 'purchaseIDPrefix') && $config->purchaseIDPrefix !== null && $config->purchaseIDPrefix !== "" ) {
+        if (property_exists($config, 'purchaseIDPrefix') && $config->purchaseIDPrefix !== null && $config->purchaseIDPrefix !== "") {
             $purchaseIDPrefix = $config->purchaseIDPrefix . "-";
         } else {
             $purchaseIDPrefix = "";
         }
-        $this->purchaseID = substr( "$purchaseIDPrefix$this->debtorReference-$order_id", 0, 34 );  // INKOOPNUMMER
+        $this->purchaseID = substr("$purchaseIDPrefix$this->debtorReference-$order_id", 0, 34);  // INKOOPNUMMER
 
 
         // @todo: move to mandate-specifics; as it is only necessary there
         $this->merchantID = $config->merchantID ?? "";
 
         // override with hardcoded merchantID when in test environment, according to documentation
-        if ( $this->environment === BLUEM_ENVIRONMENT_TESTING ) {
+        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
             $this->merchantID = "0020000387";
         }
 
@@ -89,10 +89,11 @@ class EmandateBluemRequest extends BluemRequest
         $this->automatically_redirect = "1";
 
 
-        $this->context = new MandatesContext( $config->localInstrumentCode );
+        $this->context = new MandatesContext($config->localInstrumentCode);
     }
 
-    public function XmlString(): string {
+    public function XmlString(): string
+    {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -139,7 +140,8 @@ class EmandateBluemRequest extends BluemRequest
                 */
     }
 
-    public function TransactionType(): string {
+    public function TransactionType(): string
+    {
         return "TRX";
     }
     // @todo: deprecated, remove
@@ -180,10 +182,11 @@ class EmandateBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
-    public function selectDebtorWallet( $BIC ) {
+    public function selectDebtorWallet($BIC)
+    {
 
-        if ( ! in_array( $BIC, $this->context->getBICCodes() ) ) {
-            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        if (! in_array($BIC, $this->context->getBICCodes())) {
+            throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
 
         $this->debtorWallet = $BIC;

@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -10,7 +10,6 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
-
 use Carbon\Carbon;
 use Exception;
 
@@ -48,34 +47,34 @@ class PaymentBluemRequest extends BluemRequest
         $entranceCode = "",
         string $expected_return = "none",
         $debtorReturnURL = "",
-        $paymentReference =""
+        $paymentReference = ""
     ) {
-        parent::__construct( $config, $entranceCode, $expected_return );
+        parent::__construct($config, $entranceCode, $expected_return);
 
-        $this->description = $this->_sanitizeDescription( $description );
+        $this->description = $this->_sanitizeDescription($description);
 
         //  Default Currency EUR
-        $this->currency = $this->validateCurrency( $currency );
+        $this->currency = $this->validateCurrency($currency);
 
-        if ( is_null( $dueDateTime ) ) {
-            $this->dueDateTime = Carbon::now()->addDay()->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
+        if (is_null($dueDateTime)) {
+            $this->dueDateTime = Carbon::now()->addDay()->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         } else {
-            $this->dueDateTime = Carbon::parse( $dueDateTime )->format( BLUEM_LOCAL_DATE_FORMAT ) . ".000Z";
+            $this->dueDateTime = Carbon::parse($dueDateTime)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
         }
 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
-//         $sanitizedDebtorReferenceParts = [];
-//         $sanitizedDebtorReferenceCount = preg_match_all(
-//             "/[\da-zA-Z]{1,35}/i",
-//             $debtorReference,
-//             $sanitizedDebtorReferenceParts
-//         );
-//         if ( $sanitizedDebtorReferenceCount !== false && $sanitizedDebtorReferenceCount > 0 ) {
-//             $debtorReference = implode(
-//                 "",
-//                 $sanitizedDebtorReferenceParts[0]
-//             );
-//         }
+        //         $sanitizedDebtorReferenceParts = [];
+        //         $sanitizedDebtorReferenceCount = preg_match_all(
+        //             "/[\da-zA-Z]{1,35}/i",
+        //             $debtorReference,
+        //             $sanitizedDebtorReferenceParts
+        //         );
+        //         if ( $sanitizedDebtorReferenceCount !== false && $sanitizedDebtorReferenceCount > 0 ) {
+        //             $debtorReference = implode(
+        //                 "",
+        //                 $sanitizedDebtorReferenceParts[0]
+        //             );
+        //         }
         $this->debtorReference = substr($debtorReference, 0, 35);
 
 
@@ -83,14 +82,14 @@ class PaymentBluemRequest extends BluemRequest
 
         $this->transactionID = $this->sanitizeTransactionID($transactionID);
 
-        if ( isset( $debtorReturnURL ) && $debtorReturnURL !== "" ) {
+        if (isset($debtorReturnURL) && $debtorReturnURL !== "") {
             $this->debtorReturnURL = $debtorReturnURL;
         } else {
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
         $this->debtorReturnURL .= "?entranceCode=$this->entranceCode&transactionID=$this->transactionID";
 
-        $this->debtorReturnURL = str_replace( '&', '&amp;', $this->debtorReturnURL );
+        $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
 
         // Note: different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class.
@@ -102,19 +101,20 @@ class PaymentBluemRequest extends BluemRequest
         $this->context = new PaymentsContext();
     }
 
-    private function sanitizeTransactionID(string $transactionID): string {
+    private function sanitizeTransactionID(string $transactionID): string
+    {
          $sanitizedTransactionIDParts = [];
-         $sanitizedTransactionIDCount = preg_match_all(
-             "/[\da-zA-Z]{1,64}/i",
-             $transactionID,
-             $sanitizedTransactionIDParts
-         );
-         if ( $sanitizedTransactionIDCount !== false && $sanitizedTransactionIDCount > 0 ) {
-             $transactionID = implode(
-                 "",
-                 $sanitizedTransactionIDParts[0]
-             );
-         }
+        $sanitizedTransactionIDCount = preg_match_all(
+            "/[\da-zA-Z]{1,64}/i",
+            $transactionID,
+            $sanitizedTransactionIDParts
+        );
+        if ($sanitizedTransactionIDCount !== false && $sanitizedTransactionIDCount > 0) {
+            $transactionID = implode(
+                "",
+                $sanitizedTransactionIDParts[0]
+            );
+        }
 
         return $transactionID;
     }
@@ -126,31 +126,34 @@ class PaymentBluemRequest extends BluemRequest
      *
      * @throws Exception
      */
-    private function validateCurrency( $currency ): string {
+    private function validateCurrency($currency): string
+    {
         $availableCurrencies = [ "EUR" ]; // @todo: add list of currencies based on
-        if ( !in_array($currency, $availableCurrencies, true)) {
-            throw new Exception( "Currency not recognized,
+        if (!in_array($currency, $availableCurrencies, true)) {
+            throw new Exception(
+                "Currency not recognized,
                     should be one of the following available currencies: " .
-                                 implode( ",", $availableCurrencies )
+                                 implode(",", $availableCurrencies)
             );
         }
 
         return $currency;
     }
 
-    public function TransactionType(): string {
+    public function TransactionType(): string
+    {
         return $this->transaction_code;
     }
 
-    public function XmlString(): string {
+    public function XmlString(): string
+    {
         $extraOptions = [
             'documentType' => "PayRequest",
             'sendOption'   => "none",
             'language'     => "nl",
         ];
 
-        if (!empty($this->brandID))
-        {
+        if (!empty($this->brandID)) {
             $extraOptions['brandID'] = $this->brandID;
         }
 
@@ -163,7 +166,7 @@ class PaymentBluemRequest extends BluemRequest
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <Description>' . $this->description . '</Description>
                 <Currency>' . $this->currency . '</Currency>
-                <Amount>' . number_format( $this->amount, 2, '.', '' ) . '</Amount>
+                <Amount>' . number_format($this->amount, 2, '.', '') . '</Amount>
                 <DueDateTime>' . $this->dueDateTime . '</DueDateTime>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
                 $this->XmlWrapDebtorWalletForPaymentMethod() .
@@ -175,39 +178,44 @@ class PaymentBluemRequest extends BluemRequest
         // @todo make documentType, sendOption and language a setting here?
     }
 
-    private function setPaymentMethod(string $method): void {
-        if(in_array($method, $this->context::PAYMENT_METHODS, true)) {
+    private function setPaymentMethod(string $method): void
+    {
+        if (in_array($method, $this->context::PAYMENT_METHODS, true)) {
             $this->context->debtorWalletElementName = $method;
         }
     }
 
-    public function setPaymentMethodToIDEAL($BIC = ""): self {
+    public function setPaymentMethodToIDEAL($BIC = ""): self
+    {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_IDEAL);
 
         /**
          * Add BIC to transaction if given
          */
-        if (!empty($BIC))
-        {
-            $this->context->addPaymentMethodDetails([
+        if (!empty($BIC)) {
+            $this->context->addPaymentMethodDetails(
+                [
                 'BIC'=>$BIC
-            ]);
+                ]
+            );
         }
 
         return $this;
     }
 
-    public function setPaymentMethodToPayPal($payPalAccount = ""): self {
+    public function setPaymentMethodToPayPal($payPalAccount = ""): self
+    {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_PAYPAL);
 
         /**
          * Prepared for future use.
          */
-        if (!empty($payPalAccount))
-        {
-            $this->context->addPaymentMethodDetails([
+        if (!empty($payPalAccount)) {
+            $this->context->addPaymentMethodDetails(
+                [
                 'PayPalAccount'=>$payPalAccount
-            ]);
+                ]
+            );
         }
 
         return $this;
@@ -226,15 +234,17 @@ class PaymentBluemRequest extends BluemRequest
          * Prepared for future use.
          */
         if (!empty($cardNumber) || !empty($name) || !empty($securityCode)
-            || !empty($expirationDateMonth) || !empty($expirationDateYear))
-        {
-            $this->context->addPaymentMethodDetails([
+            || !empty($expirationDateMonth) || !empty($expirationDateYear)
+        ) {
+            $this->context->addPaymentMethodDetails(
+                [
                 'CardNumber'=>$cardNumber,
                 'Name'=>$name,
                 'SecurityCode'=>$securityCode,
                 'ExpirationDateMonth'=>$expirationDateMonth,
                 'ExpirationDateYear'=>$expirationDateYear,
-            ]);
+                ]
+            );
         }
 
         return $this;
@@ -252,8 +262,9 @@ class PaymentBluemRequest extends BluemRequest
         return $this;
     }
 
-    private function addZeroPrefix($number) {
-        if(strlen($number.'') === 1) {
+    private function addZeroPrefix($number)
+    {
+        if (strlen($number.'') === 1) {
             return (int) '0'.$number;
         }
     }
@@ -326,13 +337,13 @@ class PaymentBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
-    public function selectDebtorWallet( $BIC ) {
+    public function selectDebtorWallet($BIC)
+    {
 
-        if ( ! in_array( $BIC, $this->context->getBICCodes() ) ) {
-            throw new Exception( "Invalid BIC code given, should be a valid BIC of a supported bank." );
+        if (! in_array($BIC, $this->context->getBICCodes())) {
+            throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
 
         $this->debtorWallet = $BIC;
     }
-
 }

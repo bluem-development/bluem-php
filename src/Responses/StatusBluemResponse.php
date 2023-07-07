@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -8,12 +8,15 @@
 
 namespace Bluem\BluemPHP\Responses;
 
-class StatusBluemResponse extends BluemResponse {
-    public function GetStatusCode(): string {
+class StatusBluemResponse extends BluemResponse
+{
+    public function GetStatusCode(): string
+    {
         return $this->getParentStringVariable("Status");
     }
 
-    protected function getParentXmlElement(): string {
+    protected function getParentXmlElement(): string
+    {
         return static::$response_primary_key . "Update";
     }
 }

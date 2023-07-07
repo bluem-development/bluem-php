@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -8,7 +8,8 @@
 
 namespace Bluem\BluemPHP\Helpers;
 
-class BIC {
+class BIC
+{
     public function __construct(
         public string $issuerID,
         public string $issuerName

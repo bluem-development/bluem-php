@@ -7,11 +7,11 @@
  */
 
 
-namespace Bluem\BluemPHP\Exceptions;
+namespace Bluem\BluemPHP\Interfaces;
 
-use Exception;
-
-class InvalidBluemConfigurationException extends Exception
+interface BluemResponseInterface
 {
-
+    public function Error(): string;
+    public function ReceivedResponse(): bool;
+    public function Status(): bool;
 }

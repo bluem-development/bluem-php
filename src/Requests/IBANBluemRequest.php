@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -9,7 +9,6 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IBANCheckContext;
-use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 
 /**
  * IBAN Name Check Request object
@@ -39,10 +38,10 @@ class IBANBluemRequest extends BluemRequest
         string $_inputName,
         private string $_debtorReference = ""
     ) {
-        parent::__construct( $config, $entranceCode );
+        parent::__construct($config, $entranceCode);
 
-        $this->_inputIban = $this->_sanitizeIban( $_inputIban );
-        $this->_inputName = $this->_sanitizeName( $_inputName );
+        $this->_inputIban = $this->_sanitizeIban($_inputIban);
+        $this->_inputName = $this->_sanitizeName($_inputName);
 
         $this->context = new IBANCheckContext();
     }
@@ -52,9 +51,10 @@ class IBANBluemRequest extends BluemRequest
      *
      * @param string $iban Given IBAN to sanitize
      */
-    private function _sanitizeIban( string $iban ): string {
+    private function _sanitizeIban(string $iban): string
+    {
         return trim(
-            str_replace( ' ', '', $iban )
+            str_replace(' ', '', $iban)
         );
     }
 
@@ -63,21 +63,24 @@ class IBANBluemRequest extends BluemRequest
      *
      * @param string $name Given name to check
      */
-    private function _sanitizeName( string $name ): string {
-        return trim( $name );
+    private function _sanitizeName(string $name): string
+    {
+        return trim($name);
     }
 
     /**
      * Retrieve the Bluem Transaction Type Code for this request
      */
-    public function TransactionType(): string {
+    public function TransactionType(): string
+    {
         return "INX";
     }
 
     /**
      * Generate XML string that is used in the request
      */
-    public function XmlString(): string {
+    public function XmlString(): string
+    {
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -97,5 +100,4 @@ class IBANBluemRequest extends BluemRequest
             )
         );
     }
-
 }

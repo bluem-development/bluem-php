@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
@@ -9,7 +9,8 @@
 
 namespace Bluem\BluemPHP\Helpers;
 
-class BluemMaxAmount implements \Stringable {
+class BluemMaxAmount implements \Stringable
+{
 
     public BluemCurrency $currency;
     public float $amount;
@@ -23,13 +24,14 @@ class BluemMaxAmount implements \Stringable {
 
         try {
 
-        $this->currency = new BluemCurrency( $currencyCode );
-        } catch ( \Exception $e ) {
+            $this->currency = new BluemCurrency($currencyCode);
+        } catch (\Exception $e) {
             $this->currency = new BluemCurrency();
         }
     }
 
-    public function __toString(): string {
+    public function __toString(): string
+    {
         return (string) $this->amount;
     }
 }
