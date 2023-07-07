@@ -1,14 +1,6 @@
-<?php
-/**
- * Bluem-PHP examples: eMandates
- * This file contains examples and annotations for using the `bluem-php` package.
- * All to-dos are for your reference where action on your part is still required.
- *
- * Code is courtesy of and property of Bluem Payment Services
- * Author: Bluem Plugin Support (pluginsupport@bluem.nl)
- */
-require_once __DIR__.'/initialization.php';
-global $bluem_object;
+```php
+$bluem_object = new Bluem(...);
+
 /**
  * Creating a Mandate
  * */
@@ -87,8 +79,8 @@ if ($statusCode === "Success") {
 
 	// unknown status occurred
 
-	echo "Error: Unknown or incorrect status retrieved: {$statusCode}
-		<br>Contact the administrator and communicate this status";
-    exit;
+//	echo "Error: Unknown or incorrect status retrieved: {$statusCode}
+//		<br>Contact the administrator and communicate this status";
+//    exit;
 }
-
+```

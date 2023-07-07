@@ -15,7 +15,6 @@ use SimpleXMLElement;
 interface BluemRequestInterface
 {
     public function HttpRequestURL(): string;
-    public function Print();
     public function RequestContext();
     public function RequestType(): string;
     public function Xml(): SimpleXMLElement;

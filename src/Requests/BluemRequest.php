@@ -9,8 +9,8 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
-use Carbon\Carbon;
 use Exception;
 use SimpleXMLElement;
 
@@ -128,7 +128,7 @@ class BluemRequest implements BluemRequestInterface
         $this->accessToken = $config->accessToken;
         // @todo just use the config directly instead of copying all configuration elements
 
-        $this->createDateTime = Carbon::now()->timezone('Europe/Amsterdam')->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
+        $this->createDateTime = (new Now())->getCreateDateTimeForRequest();
 
         /**
          *  unique identifier of payee for this transaction
@@ -150,9 +150,7 @@ class BluemRequest implements BluemRequestInterface
      */
     private function entranceCode(string $expectedReturn = 'none'): string
     {
-        $entranceCode = Carbon::now()
-                              ->timezone('Europe/Amsterdam')
-                              ->format("YmdHisv");
+        $entranceCode = (new Now())->format("YmdHisv");
 
         $prefix = "";
         if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
@@ -225,17 +223,6 @@ class BluemRequest implements BluemRequestInterface
     public function XmlString(): string
     {
         return "";
-    }
-
-    /**
-     * Prints a request as XML object with corresponding headers, in your browser,
-     * mostly for testing purposes
-     *
-     */
-    public function Print()
-    {
-        header('Content-Type: text/xml; charset=UTF-8');
-        print( $this->XmlString() );
     }
 
     /**
