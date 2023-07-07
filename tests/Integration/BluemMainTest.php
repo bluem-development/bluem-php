@@ -32,7 +32,7 @@ class BluemMainTest extends BluemGenericTest
                 EmandateBluemRequest::class,
                 $request
             );
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             $this->fail("Could not create mandate request: " . $e->getMessage());
         }
     }
@@ -48,7 +48,7 @@ class BluemMainTest extends BluemGenericTest
                 $order_id,
                 $mandate_id
             );
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             $this->fail("Could not create mandate: " . $e->getMessage());
         }
 
@@ -56,7 +56,6 @@ class BluemMainTest extends BluemGenericTest
             MandateTransactionBluemResponse::class,
             $response
         );
-
     }
     public function testCanMandateStatus(): void
     {
@@ -66,13 +65,13 @@ class BluemMainTest extends BluemGenericTest
         $entranceCode = "121341231";
 
         try {
-            $response = $this->bluem->MandateStatus( $mandate_id, $entranceCode );
-        } catch ( Exception $e ) {
+            $response = $this->bluem->MandateStatus($mandate_id, $entranceCode);
+        } catch (Exception $e) {
             $this->fail("Could not get mandate status: " . $e->getMessage());
         }
 
         // @todo: deal with the corresponding status if proper or improper status request
-        if($response->Status()) {
+        if ($response->Status()) {
 
             $this->assertInstanceOf(
                 MandateStatusBluemResponse::class,
@@ -93,15 +92,16 @@ class BluemMainTest extends BluemGenericTest
             $customer_id = "1";
 
         try {
-            $response = $this->bluem->CreateMandateID( $order_id, $customer_id );
-        } catch ( Exception $e ) {
+            $response = $this->bluem->CreateMandateID($order_id, $customer_id);
+        } catch (Exception $e) {
             $this->fail("Could not create mandate ID: " . $e->getMessage());
         }
 
         // assert response is string
 
         $this->assertIsString(
-            $response, "Response is not a string"
+            $response,
+            "Response is not a string"
         );
 
         // assert response is not empty
@@ -167,7 +167,6 @@ class BluemMainTest extends BluemGenericTest
             $maxAmount->currency,
             "Max amount currency is not EUR"
         );
-
     }
     public function testCanCreatePaymentRequest(): void
     {
@@ -262,8 +261,6 @@ class BluemMainTest extends BluemGenericTest
         $this->assertIsObject($request, "Request is an object");
         // assert request has class "IdentityRequest"
         $this->assertEquals(IdentityBluemRequest::class, get_class($request), "Request has class IdentityBluemRequest");
-
-
     }
     public function testCanIdentityStatus(): void
     {
@@ -276,7 +273,7 @@ class BluemMainTest extends BluemGenericTest
                 $transactionID,
                 $entranceCode
             );
-        } catch ( Exception ) {
+        } catch (Exception) {
             // @todo: deal with Exception here
         }
         //@todo build this test

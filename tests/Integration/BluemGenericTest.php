@@ -61,30 +61,28 @@ abstract class BluemGenericTest extends TestCase
         } catch (\Exception $e) {
             $this->fail("While initializing Bluem, ".$e->getMessage()." occurred");
         }
-
     }
 
 
     // test that we can set the configuration
     public function testSetConfiguration(): void
     {
-        $setting = $this->bluem->setConfig("environment",true);
+        $setting = $this->bluem->setConfig("environment", true);
 
         // assert result is true
         $this->assertTrue($setting);
-
     }
 
     // test that we can get the configuration
     public function testGetConfiguration(): void
     {
-        $this->bluem->setConfig("environment","test");
+        $this->bluem->setConfig("environment", "test");
 
         $result = $this->bluem->getConfig("environment");
 
         // assert result is string
         $this->assertIsString($result);
-        $this->assertEquals("test",$result);
+        $this->assertEquals("test", $result);
     }
 
 
@@ -117,5 +115,4 @@ abstract class BluemGenericTest extends TestCase
             $this->assertTrue(true, "Can utilize {$cname} request and perform it");
         }
     }
-
 }

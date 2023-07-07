@@ -12,13 +12,14 @@ require_once __DIR__ . '/BluemGenericTest.php';
 
 class IdentityRequestTest extends BluemGenericTest
 {
-    public function testCanCreateIdentityRequestWithWeirdCharacters() {
+    public function testCanCreateIdentityRequestWithWeirdCharacters()
+    {
 
         $request = $this->bluem->CreateIdentityRequest(
             ["CustomerIDRequest","NameRequest"],
             "Identificatie EsmeÃ© Timmerman",
             "nope",
-            random_int(0,12353),
+            random_int(0, 12353),
             "https://google.com"
         );
 
@@ -26,7 +27,7 @@ class IdentityRequestTest extends BluemGenericTest
 
         $response = $this->bluem->performRequest($request);
 
-        $this->assertEquals(false,$response->Error());
+        $this->assertEquals(false, $response->Error());
 
 //        $transactionId = $response->GetTransactionID();
 //        $entranceCode = $response->GetEntranceCode();
@@ -36,6 +37,5 @@ class IdentityRequestTest extends BluemGenericTest
 //        );
 //
         $this->assertEquals(false, $response->Error());
-
     }
 }
