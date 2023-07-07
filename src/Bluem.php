@@ -219,7 +219,7 @@ class Bluem
             );
         }
 
-        $now = new Now();
+        $now = new Now('UTC');
         // set timezone to UTC to let the transaction xttrs timestamp work; 8-9-2021
 
         $xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";

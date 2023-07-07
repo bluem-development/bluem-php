@@ -10,12 +10,22 @@ class Now
 {
     private const DEFAULT_TIMEZONE = "Europe/Amsterdam";
     private const LOCAL_DATE_FORMAT = "Y-m-d\TH:i:s";
-    
+
     private DateTimeImmutable $dateTime;
 
-    public function __construct()
+    public function __construct($timezoneString = self::DEFAULT_TIMEZONE)
     {
-        $this->dateTime = new DateTimeImmutable(datetime: "now", timezone: self::DEFAULT_TIMEZONE);
+        try {
+            $timezone = new \DateTimeZone($timezoneString);
+        } catch (\Exception $e) {
+            $timezone = self::DEFAULT_TIMEZONE;
+        }
+
+        try {
+            $this->dateTime = new DateTimeImmutable(datetime: "now", timezone: $timezone);
+        } catch (Exception $e) {
+            $this->dateTime = new DateTimeImmutable("now", self::DEFAULT_TIMEZONE);
+        }
     }
 
     public function format(string $format): string
