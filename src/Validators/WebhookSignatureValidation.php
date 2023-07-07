@@ -8,7 +8,7 @@
 
 namespace Bluem\BluemPHP\Validators;
 
-use Carbon\Carbon;
+use Bluem\BluemPHP\Helpers\Now;
 use Exception;
 use Selective\XmlDSig\XmlSignatureValidator;
 
@@ -57,7 +57,7 @@ class WebhookSignatureValidation extends WebhookValidator
     private function getKeyFileName(): string
     {
         // Define current date & time
-        $now = Carbon::now()->timezone('Europe/Amsterdam');
+        $now = new Now();
         $current_date = $now->format('Y-m-d');
         $current_time = $now->format('H:i');
 

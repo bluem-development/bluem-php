@@ -16,7 +16,6 @@
     },
     "require": {
         "php": ">=8.0",
-        "nesbot/carbon": "^2.31",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",

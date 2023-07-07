@@ -34,7 +34,6 @@ use Bluem\BluemPHP\Responses\MandateTransactionBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentStatusBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentTransactionBluemResponse;
 use Bluem\BluemPHP\Validators\BluemXMLValidator;
-use Carbon\Carbon;
 use DOMException;
 use Exception;
 use RuntimeException;
@@ -52,11 +51,6 @@ if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
     define("BLUEM_STATIC_MERCHANT_ID", "0020000387");
 }
-if (!defined("BLUEM_LOCAL_DATE_FORMAT")) {
-    define("BLUEM_LOCAL_DATE_FORMAT", "Y-m-d\TH:i:s");
-}
-
-define("BLUEM_DATE_FORMAT_RFC1123", "D, d M Y H:i:s \G\M\T");
 
 /**
  * Bluem Integration main class
@@ -225,7 +219,7 @@ class Bluem
             );
         }
 
-        $now = Carbon::now('UTC');
+        $now = new Now();
         // set timezone to UTC to let the transaction xttrs timestamp work; 8-9-2021
 
         $xttrs_filename = $transaction_request->transaction_code . "-{$this->configuration->senderID}-BSP1-" . $now->format('YmdHis') . "000.xml";
@@ -233,7 +227,7 @@ class Bluem
         // conform Rfc1123 standard in GMT time
         // Since v2.0.5 : use preset format instead of
         // function to allow for Carbon 1.21 legacy compatibility
-        $xttrs_date = $now->format(BLUEM_DATE_FORMAT_RFC1123);
+        $xttrs_date = $now->rfc1123();
 
         $request_url = $transaction_request->HttpRequestUrl();
 
@@ -426,7 +420,7 @@ class Bluem
      */
     public function CreateEntranceCode(): string
     {
-        return Carbon::now()->format("YmdHisv"); // . "000";
+        return (new Now())->format("YmdHisv"); // . "000";
     }
     // @todo: fix issue [RFC4](https://github.com/DaanRijpkema/bluem-php/issues/4)
     // When you create a PaymentBluemRequest, a $transactionID is generated (CreatePaymentTransactionID).
@@ -488,7 +482,7 @@ class Bluem
      */
     public function CreatePaymentTransactionID(string $debtorReference): string
     {
-        return substr($debtorReference, 0, 28) . Carbon::now()->format('Ymd');
+        return substr($debtorReference, 0, 28) . (new Now())->format('Ymd');
     }
 
 
@@ -585,7 +579,7 @@ class Bluem
      */
     public function CreateIdentityTransactionID(string $debtorReference): string
     {
-        return substr($debtorReference, 0, 28) . Carbon::now()->format('Ymd');
+        return substr($debtorReference, 0, 28) . (new Now())->format('Ymd');
     }
 
     /**
