@@ -16,14 +16,12 @@
     },
     "require": {
         "php": ">=8.0",
-        "nesbot/carbon": "^2.31",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
         "ext-curl": "*",
         "ext-json": "*",
-        "ext-openssl": "*",
-        "robrichards/xmlseclibs": "^3.1"
+        "ext-openssl": "*"
     },
     "autoload": {
         "psr-4": {

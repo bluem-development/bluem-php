@@ -10,7 +10,7 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
-use Carbon\Carbon;
+use Bluem\BluemPHP\Helpers\Now;
 use Exception;
 
 class PaymentBluemRequest extends BluemRequest
@@ -56,10 +56,17 @@ class PaymentBluemRequest extends BluemRequest
         //  Default Currency EUR
         $this->currency = $this->validateCurrency($currency);
 
-        if (is_null($dueDateTime)) {
-            $this->dueDateTime = Carbon::now()->addDay()->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
+        $now = new Now();
+
+        if ($dueDateTime === null) {
+            $this->dueDateTime = $now->tomorrow()->getCreateDateTimeForRequest();
         } else {
-            $this->dueDateTime = Carbon::parse($dueDateTime)->format(BLUEM_LOCAL_DATE_FORMAT) . ".000Z";
+            try {
+                $then = ($now->fromDate($dueDateTime));
+            } catch (Exception $e) {
+                throw $e;
+            }
+            $this->dueDateTime = $then->getCreateDateTimeForRequest();
         }
 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
