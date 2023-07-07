@@ -15,6 +15,7 @@ use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Extensions\IPAPI;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
@@ -189,13 +190,14 @@ class Bluem
      */
     public function CreateMandateID(string $order_id, string $customer_id): string
     {
+        $now = new Now();
         // veteranen search team, specific
         if ($this->configuration->senderID === "S1300") {
-            return "M" . Carbon::now()->timezone('Europe/Amsterdam')->format('YmdHis');
+            return "M" . $now->format('YmdHis');
         }
 
         // For customer NextDeli et al
-        return substr($customer_id . Carbon::now()->timezone('Europe/Amsterdam')->format('Ymd') . $order_id, 0, 35);
+        return substr($customer_id . $now->format('Ymd') . $order_id, 0, 35);
     }
 
     /**
