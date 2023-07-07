@@ -5,7 +5,7 @@
        * with this source code in the file LICENSE.
        */
 
- Bluem\BluemPHP\Requests;
+namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
 
