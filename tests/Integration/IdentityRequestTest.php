@@ -8,9 +8,9 @@
 
 namespace Integration;
 
-require_once __DIR__ . '/BluemGenericTest.php';
+require_once __DIR__ . '/BluemGenericTestCase.php';
 
-class IdentityRequestTest extends BluemGenericTest
+class IdentityRequestTest extends BluemGenericTestCase
 {
     public function testCanCreateIdentityRequestWithWeirdCharacters()
     {

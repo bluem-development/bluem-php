@@ -11,9 +11,9 @@ use Bluem\BluemPHP\Responses\MandateStatusBluemResponse;
 use Bluem\BluemPHP\Responses\MandateTransactionBluemResponse;
 use Exception;
 
-require_once 'BluemGenericTest.php';
+require_once 'BluemGenericTestCase.php';
 
-class BluemMainTest extends BluemGenericTest
+class BluemMainTest extends BluemGenericTestCase
 {
 
     public function testCanCreateMandateRequest(): void

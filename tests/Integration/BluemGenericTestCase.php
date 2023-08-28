@@ -19,7 +19,7 @@ use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 /**
  * Abstract base class for all BluemPHP unit tests.
  */
-abstract class BluemGenericTest extends TestCase
+abstract class BluemGenericTestCase extends TestCase
 {
     /**
      * The Bluem integration object
