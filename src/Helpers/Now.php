@@ -67,4 +67,16 @@ class Now
         }
         return $this;
     }
+
+    public function fromTimestamp(string $timestamp): static
+    {
+        try {
+            $this->dateTime = (new DateTimeImmutable())
+                ->setTimestamp($timestamp)
+                ->setTimezone(new DateTimeZone(self::DEFAULT_TIMEZONE));
+        } catch (Exception $e) {
+            throw $e;
+        }
+        return $this;
+    }
 }

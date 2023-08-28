@@ -62,7 +62,11 @@ class PaymentBluemRequest extends BluemRequest
             $this->dueDateTime = $now->tomorrow()->getCreateDateTimeForRequest();
         } else {
             try {
-                $then = ($now->fromDate($dueDateTime));
+                if (is_int($dueDateTime)) {
+                    $then = ($now->fromTimestamp($dueDateTime));
+                } else {
+                    $then = ($now->fromDate($dueDateTime));
+                }
             } catch (Exception $e) {
                 throw $e;
             }
