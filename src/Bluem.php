@@ -23,6 +23,7 @@ use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateStatusBluemRequest;
 use Bluem\BluemPHP\Requests\IBANBluemRequest;
 use Bluem\BluemPHP\Requests\IdentityBluemRequest;
+use Bluem\BluemPHP\Requests\IdentityStatusBluemRequest;
 use Bluem\BluemPHP\Requests\PaymentBluemRequest;
 use Bluem\BluemPHP\Requests\PaymentStatusBluemRequest;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
