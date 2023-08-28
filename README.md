@@ -863,6 +863,7 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - Van Lanschot  <BR> BIC: `FVLBNL22`
 - Revolut   <BR> BIC: `REVOLT21`
 - Yoursafe   <BR> BIC: `BITSNL2A`
+- N26   <BR> BIC: `NTSBDEB1`
 #### eMandates CORE
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
@@ -886,7 +887,7 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - RegioBank <BR> BIC: `RBRBNL21`
 - SNS   <BR> BIC: `SNSBNL2A`
 
-Please note: Triodos Bank with BIC: `TRIONL2U` does not support Identity anymore as of 1st of June 2021.
+Please note: Knab with BIC: `KNABNL2H` does not support eMandates CORE anymore as of 4th of October 2023.
 
 ---
 Todo:
