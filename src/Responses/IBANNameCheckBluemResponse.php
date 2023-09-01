@@ -38,30 +38,29 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
         return '';
     }
 
-
     public function GetIBANResult(): string
     {
-        return $this->getKeyFromIBANCheckResult("IBANResult");
+        return $this->getKeyFromIBANCheckResult("IBANResult", "IBANCheckResult");
     }
 
     public function GetNameResult(): string
     {
-        return $this->getKeyFromIBANCheckResult("NameResult");
+        return $this->getKeyFromIBANCheckResult("NameResult", "IBANCheckResult");
     }
 
     public function GetSuggestedName(): string
     {
-        return $this->getKeyFromIBANCheckResult("SuggestedName");
+        return $this->getKeyFromIBANCheckResult("SuggestedName", "IBANCheckResult");
     }
 
     public function GetAccountStatus(): string
     {
-        return $this->getKeyFromIBANCheckResult("AccountStatus");
+        return $this->getKeyFromIBANCheckResult("AccountStatus", "IBANCheckResult");
     }
 
     public function GetAccountType(): string
     {
-        return $this->getKeyFromIBANCheckResult("AccountStatus", "AccountDetails");
+        return $this->getKeyFromIBANCheckResult("AccountType", "AccountDetails");
     }
 
     public function GetIsJointAccount(): string
@@ -79,28 +78,3 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
         return $this->getKeyFromIBANCheckResult("CountryName", "AccountDetails");
     }
 }
-
-/* Response:
- *
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<IBANCheckInterface mode="direct" senderID="S1018" version="1.0" createDateTime="2019-09-09T08:43:58.022Z" messageCount="1" type="TransactionResponse">
-    <IBANCheckTransactionResponse entranceCode="S101820190909084357980">
-        <IBAN>NL59INGB0748545824</IBAN>
-        <AssumedName>Zeeland</AssumedName>
-        <DebtorReference>12345678</DebtorReference>
-        <IBANCheckResult>
-            <IBANResult>KNOWN</IBANResult>
-            <NameResult>MISTYPED</NameResult>
-            <SuggestedName>Naar Zeeland</SuggestedName>
-            <AccountStatus>ACTIVE</AccountStatus>
-        </IBANCheckResult>
-        <AccountDetails>
-            <AccountType>NATURAL_PERSON</AccountType>
-            <IsJointAccount>true</IsJointAccount>
-            <NumberOfAccountHolders>2</NumberOfAccountHolders>
-            <CountryName>Netherlands</CountryName>
-        </AccountDetails>
-    </IBANCheckTransactionResponse>
-</IBANCheckInterface>
- *
- */
