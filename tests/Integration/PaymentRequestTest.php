@@ -1,9 +1,9 @@
 <?php
 namespace Integration;
 
-require_once __DIR__ . '/BluemGenericTest.php';
+require_once __DIR__ . '/BluemGenericTestCase.php';
 
-class PaymentRequestTest extends BluemGenericTest
+class PaymentRequestTest extends BluemGenericTestCase
 {
     public function testCanCreatePaymentRequest()
     {

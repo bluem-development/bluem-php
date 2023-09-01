@@ -54,6 +54,7 @@ class PaymentsContext extends BluemContext
                 new BIC("FVLBNL22", "Van Lanschot"),
                 new BIC("REVOLT21", "Revolut"),
                 new BIC("BITSNL2A", "Yoursafe"),
+                new BIC("NTSBDEB1", "N26"),
             ]
         );
     }

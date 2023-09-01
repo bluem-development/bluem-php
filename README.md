@@ -13,14 +13,14 @@ Utilized by other applications as well:
 
 ## Table of Contents
 * [Requirements](#requirements)
-* [Getting started:](#getting-started-)
+* [Getting started:](#getting-started)
 * [Notes per version](#notes-per-version)
-    + [Version 2.3 (latest)](#version-23--latest-)
+    + [Version 2.3 (latest)](#version-2324-latest)
     + [Version 2.2](#version-22)
     + [Version 2.1](#version-21)
     + [Versions before 2.1](#versions-before-21)
 * [Testing](#testing)
-    + [Description of the base tests:](#description-of-the-base-tests-)
+    + [Description of the base tests:](#description-of-the-base-tests)
 * [Frequently asked questions](#frequently-asked-questions)
 * [Configuration](#configuration)
 * [General concept](#general-concept)
@@ -32,11 +32,11 @@ Utilized by other applications as well:
     + [Adding additional data to a request](#adding-additional-data-to-a-request)
 * [eMandates](#emandates)
     + [Mandate specific configuration fields](#mandate-specific-configuration-fields)
-    + [Creating an eMandate Transaction: helper functions](#creating-an-emandate-transaction--helper-functions)
+    + [Creating an eMandate Transaction: helper functions](#creating-an-emandate-transaction-helper-functions)
         - [Creating an eMandate transaction](#creating-an-emandate-transaction)
         - [Redirection after eMandate transaction creation](#redirection-after-emandate-transaction-creation)
     + [Requesting an eMandate Transaction status](#requesting-an-emandate-transaction-status)
-* [Identity (iDIN)](#identity--idin-)
+* [Identity (iDIN)](#identity-idin)
     + [Configuring iDIN](#configuring-idin)
     + [Identity request types explained](#identity-request-types-explained)
     + [Creating an identity request](#creating-an-identity-request)
@@ -55,7 +55,7 @@ Utilized by other applications as well:
 - Please use the [major git releases](https://github.com/bluem-development/bluem-php/releases) for the stable versions of this plugin.
 - Refer to the `composer.json` requirements for any other dependencies
 
-## Getting started:
+## Getting started
 Install the library through [Composer](https://getcomposer.org). Run Composer to install this library and dependencies from your project folder.
 
 ```bash
@@ -68,7 +68,11 @@ Please contact us if you have any questions regarding the examples or the implem
 
 ## Notes per version
 
-### Version 2.3.2.3 (latest)
+### Version 2.3.2.4 (latest)
+- Added bank 'N26' to ePayments BIC list.
+- Restructured code for Magento compatibility.
+
+### Version 2.3.2.3
 Updated certificates.
 
 ### Version 2.3.2.2
@@ -138,7 +142,7 @@ To run tests:
 ```
 ./vendor/bin/phpunit 
 ```
-Testing is done given a `.env` file. Please ensure that a filled `.env` file is available. A `.env.sample` file is provided to help you configure it.
+Testing is done given a `.env` file. Please ensure that a filled `.env` file is available. A `.env.example` file is provided to help you configure it.
 
 ### Description of the base tests:
 - Testing if requests can be created 
@@ -859,6 +863,7 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - Van Lanschot  <BR> BIC: `FVLBNL22`
 - Revolut   <BR> BIC: `REVOLT21`
 - Yoursafe   <BR> BIC: `BITSNL2A`
+- N26   <BR> BIC: `NTSBDEB1`
 #### eMandates CORE
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
@@ -882,7 +887,7 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - RegioBank <BR> BIC: `RBRBNL21`
 - SNS   <BR> BIC: `SNSBNL2A`
 
-Please note: Triodos Bank with BIC: `TRIONL2U` does not support Identity anymore as of 1st of June 2021.
+Please note: Knab with BIC: `KNABNL2H` does not support eMandates CORE anymore as of 4th of October 2023.
 
 ---
 Todo:

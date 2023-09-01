@@ -10,9 +10,9 @@ namespace Integration;
 
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 
-require_once __DIR__ . '/BluemGenericTest.php';
+require_once __DIR__ . '/BluemGenericTestCase.php';
 
-class WebhookTest extends BluemGenericTest
+class WebhookTest extends BluemGenericTestCase
 {
     public function testCanPerformWebhook()
     {
