@@ -13,6 +13,8 @@ use PHPUnit\Framework\TestCase;
 
 class IPAPITest extends TestCase
 {
+    private IPAPI $IPAPI;
+
     protected function setUp(): void
     {
         $this->IPAPI = new IPAPI();
