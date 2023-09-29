@@ -44,7 +44,7 @@ class PaymentsContext extends BluemContext
             [
                 new BIC("ABNANL2A", "ABN AMRO"),
                 new BIC("ASNBNL21", "ASN Bank"),
-                new BIC("BUNQNL2A", "bunq"),
+                new BIC("BUNQNL2A", "Bunq"),
                 new BIC("INGBNL2A", "ING"),
                 new BIC("KNABNL2H", "Knab"),
                 new BIC("RABONL2U", "Rabobank"),
@@ -55,6 +55,7 @@ class PaymentsContext extends BluemContext
                 new BIC("REVOLT21", "Revolut"),
                 new BIC("BITSNL2A", "Yoursafe"),
                 new BIC("NTSBDEB1", "N26"),
+                new BIC("NNBANL2G", "Nationale-Nederlanden"),
             ]
         );
     }
