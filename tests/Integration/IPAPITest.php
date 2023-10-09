@@ -34,7 +34,7 @@ class IPAPITest extends TestCase
         $this->assertEquals($expectedNetherlands, $isNetherlands);
     }
 
-    public function NetherlandsIPTestDataProvider(): array
+    public static function NetherlandsIPTestDataProvider(): array
     {
         return [
             [
