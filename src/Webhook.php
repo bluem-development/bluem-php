@@ -22,46 +22,53 @@ class Webhook implements WebhookInterface
     private const XML_UTF8_CONTENT_TYPE = "text/xml; charset=UTF-8";
     private const STATUSCODE_BAD_REQUEST = 400;
 
-    public string $service;
-    public ?SimpleXMLElement $xmlObject;
+    public string $service = '';
 
-    private string $xmlInterface;
-    private string $xmlPayloadKey;
+    public ?SimpleXMLElement $xmlObject = null;
+
+    private string $xmlInterface = '';
+
+    private string $xmlPayloadKey = '';
 
     public function __construct(
         private $senderID,
-        private $environment = BLUEM_ENVIRONMENT_TESTING
+        private $environment = BLUEM_ENVIRONMENT_TESTING,
+        private $webhookData = ''
     ) {
-        $this->parse();
+        $this->parse($this->webhookData);
     }
 
-    private function parse(): void
+    private function parse($xmlData = ''): void
     {
-        if (!$this->isHttpsRequest()) {
-            $this->exitWithError('Not HTTPS');
-            return;
+        if (empty($xmlData))
+        {
+            if (!$this->isHttpsRequest()) {
+                $this->exitWithError('Not HTTPS');
+                return;
+            }
+
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                $this->exitWithError('Not POST');
+                return;
+            }
+
+            // Check: content type: XML with utf-8 encoding
+            if ($_SERVER["CONTENT_TYPE"] !== self::XML_UTF8_CONTENT_TYPE) {
+                $this->exitWithError('Wrong Content-Type given: should be XML with UTF-8 encoding');
+                return;
+            }
+
+            // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK.
+            $xmlData = file_get_contents('php://input');
+
+            if (empty($xmlData)) {
+                $this->exitWithError('No data body given');
+                return;
+            }
         }
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->exitWithError('Not POST');
-            return;
-        }
+        $xmlObject = $this->parseRawXML($xmlData);
 
-        // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK.
-        $postData = file_get_contents('php://input');
-
-        if (empty($postData)) {
-            $this->exitWithError('No data body given');
-            return;
-        }
-
-        // Check: content type: XML with utf-8 encoding
-        if ($_SERVER["CONTENT_TYPE"] !== self::XML_UTF8_CONTENT_TYPE) {
-            $this->exitWithError('Wrong Content-Type given: should be XML with UTF-8 encoding');
-            return;
-        }
-
-        $xmlObject = $this->parseRawXML($postData);
         if (! $xmlObject instanceof \SimpleXMLElement) {
             $this->exitWithError('Could not parse XML');
             return;
@@ -73,7 +80,7 @@ class Webhook implements WebhookInterface
             return;
         }
 
-        $signatureValidation = (new WebhookSignatureValidation($this->environment))->validate($postData);
+        $signatureValidation = (new WebhookSignatureValidation($this->environment))->validate($xmlData);
         if (! $signatureValidation::$isValid) {
             $this->exitWithError($signatureValidation->errorMessage());
             return;
@@ -137,9 +144,9 @@ class Webhook implements WebhookInterface
         if ((is_countable($payload->children()) ? count($payload->children()) : 0) > 0) {
             return $payload;
         }
-
-        return $payload->$key . '' ?? '';
+        return $payload->$key ?? '';
     }
+
     private function getPayload(): SimpleXMLElement
     {
         if ($this->isEmandates()) {
@@ -197,7 +204,11 @@ class Webhook implements WebhookInterface
     public function getStatus(): ?string
     {
         if ($this->isPayments()) {
-            return $this->getPayloadValue('Status');
+            $value = $this->getPayloadValue('Status');
+
+            if (!empty($value)) {
+                return $value;
+            }
         }
         return $this->getPayload()->Status . "";
     }

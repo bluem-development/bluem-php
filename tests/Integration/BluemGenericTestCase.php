@@ -63,7 +63,6 @@ abstract class BluemGenericTestCase extends TestCase
         }
     }
 
-
     // test that we can set the configuration
     public function testSetConfiguration(): void
     {
@@ -94,7 +93,6 @@ abstract class BluemGenericTestCase extends TestCase
      */
     protected function _finalizeBluemRequestAssertion(BluemRequestInterface $request) :void
     {
-
         try {
             // $this->assertEquals($request->getStatus(), "success");
             $response = $this->bluem->PerformRequest($request);

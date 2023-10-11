@@ -588,12 +588,13 @@ class Bluem
      * Returns null if the webhook failed to be parsed
      * @returns null|PaymentStatusBluemResponse|MandateStatusBluemResponse|IdentityStatusBluemResponse
      */
-    public function Webhook()
+    public function Webhook($data = '')
     {
         try {
             $webhook = new Webhook(
                 $this->configuration->senderID,
-                $this->configuration->environment
+                $this->configuration->environment,
+                $data
             );
         } catch (Exception $e) {
             return $e->getMessage();
