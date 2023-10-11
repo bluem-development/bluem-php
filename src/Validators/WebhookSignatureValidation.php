@@ -72,7 +72,6 @@ class WebhookSignatureValidation extends WebhookValidator
         } else {
             $timestamp = '202206090200-202307110159';
         }
-
         return $prefix . $timestamp . '.pem';
     }
 }

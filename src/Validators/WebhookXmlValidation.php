@@ -13,7 +13,7 @@ use SimpleXMLElement;
 // @todo: add XML validator tests
 // @todo: use XSD validation with given XSDs
 
-class WebhookXmlValidation extends WebhookValidator
+class WebhookXmlValidation extends WebhookXMLValidator
 {
     private const ALLOWED_SERVICE_INTERFACES = [
         'EPaymentInterface', 'IdentityInterface', 'EMandateInterface'

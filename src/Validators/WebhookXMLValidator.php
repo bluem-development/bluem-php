@@ -8,7 +8,9 @@
 
 namespace Bluem\BluemPHP\Validators;
 
-abstract class WebhookValidator implements WebhookValidatorInterface
+use SimpleXMLElement;
+
+abstract class WebhookXMLValidator implements WebhookValidatorInterface
 {
     public static bool $isValid = true;
 
@@ -27,5 +29,5 @@ abstract class WebhookValidator implements WebhookValidatorInterface
             . implode(', ', self::$errors);
     }
 
-    abstract public function validate(string $data): self;
+    abstract public function validate(SimpleXMLElement $data): self;
 }
