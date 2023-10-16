@@ -21,7 +21,8 @@
         "ext-simplexml": "*",
         "ext-curl": "*",
         "ext-json": "*",
-        "ext-openssl": "*"
+        "ext-openssl": "*",
+        "selective/xmldsig": "^2.4"
     },
     "autoload": {
         "psr-4": {
