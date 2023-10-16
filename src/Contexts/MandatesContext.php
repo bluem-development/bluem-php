@@ -47,7 +47,6 @@ class MandatesContext extends BluemContext
                 new BIC("ABNANL2A", "ABN AMRO"),
                 new BIC("ASNBNL21", "ASN Bank"),
                 new BIC("INGBNL2A", "ING"),
-                new BIC("KNABNL2H", "Knab"),
                 new BIC("RABONL2U", "Rabobank"),
                 new BIC("RBRBNL21", "RegioBank"),
                 new BIC("SNSBNL2A", "SNS"),
