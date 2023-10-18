@@ -15,20 +15,27 @@ class BluemXMLValidator
 {
     /**
      * @var int
+     *
      */
     public $feedErrors = 0;
+
     /**
      * Formatted libxml Error details
      *
      * @var array
      */
     public $errorDetails;
+
     /**
      * XSD Schema definition location, to be set by context
      *
      * @var string
      */
     protected $feedSchema = "";
+
+    /**
+     * @var DOMDocument
+     */
     private \DOMDocument $handler;
 
     /**
@@ -38,7 +45,7 @@ class BluemXMLValidator
      */
     public function __construct(string $feedSchema = null)
     {
-        $this->handler    = new DOMDocument('1.0', 'utf-8');
+        $this->handler = new DOMDocument('1.0', 'utf-8');
         $this->feedSchema = $feedSchema;
     }
 
@@ -66,11 +73,6 @@ class BluemXMLValidator
         }
 
         libxml_use_internal_errors(true);
-        // if (!($fp = fopen($feeds, "r"))) {
-        //    die("could not open XML input");
-        // }
-        // $contents = fread($fp, filesize($feeds));
-        // fclose($fp);
 
         $this->handler->loadXML($contents, LIBXML_NOBLANKS);
         if (! $this->handler->schemaValidate($this->feedSchema)) {
@@ -79,7 +81,6 @@ class BluemXMLValidator
 
             return false;
         } else {
-            //The file is valid
             return true;
         }
     }
