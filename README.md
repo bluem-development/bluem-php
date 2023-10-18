@@ -864,11 +864,11 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - Revolut   <BR> BIC: `REVOLT21`
 - Yoursafe   <BR> BIC: `BITSNL2A`
 - N26   <BR> BIC: `NTSBDEB1`
+- Nationale-Nederlanden   <BR> BIC: `NNBANL2G`
 #### eMandates CORE
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
 - ING   <BR> BIC: `INGBNL2A`
-- Knab  <BR> BIC: `KNABNL2H`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
 - SNS   <BR> BIC: `SNSBNL2A`
