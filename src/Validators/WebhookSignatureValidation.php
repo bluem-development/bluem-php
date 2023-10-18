@@ -9,8 +9,11 @@
 namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Helpers\Now;
+use Selective\XmlDSig\PublicKeyStore;
+use Selective\XmlDSig\CryptoVerifier;
+use Selective\XmlDSig\XmlSignatureVerifier;
+
 use Exception;
-use Selective\XmlDSig\XmlSignatureValidator;
 
 class WebhookSignatureValidation extends WebhookValidator
 {
@@ -31,19 +34,24 @@ class WebhookSignatureValidation extends WebhookValidator
         fwrite($temp_file, $data);
         $temp_file_path = stream_get_meta_data($temp_file)['uri'];
 
-        $signatureValidator = new XmlSignatureValidator();
+        $publicKeyStore = new PublicKeyStore();
 
         $public_key_file_path = dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
 
         try {
-            $signatureValidator->loadPublicKeyFile($public_key_file_path);
+            $publicKeyStore->loadFromPem(file_get_contents($public_key_file_path));
+            $cryptoVerifier = new CryptoVerifier($publicKeyStore);
+
+            // Create a verifier instance and pass the crypto decoder
+            $xmlSignatureVerifier = new XmlSignatureVerifier($cryptoVerifier);
+
+            // Verify a XML file
+            $xmlVerified = $xmlSignatureVerifier->verifyXml(file_get_contents($temp_file_path));
+            if (! $xmlVerified) {
+                $this->addError("Invalid signature");
+            }
         } catch (Exception $e) {
             $this->addError($e->getMessage());
-        }
-
-        $xmlVerified = $signatureValidator->verifyXmlFile($temp_file_path);
-        if (! $xmlVerified) {
-            $this->addError("Invalid signature");
         }
 
         fclose($temp_file);
