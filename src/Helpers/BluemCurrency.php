@@ -14,7 +14,6 @@ use Stringable;
 
 class BluemCurrency implements Stringable
 {
-
     private const EURO_CURRENCY = 'EUR';
     private const US_DOLLAR_CURRENCY = 'USD';
 
