@@ -6,11 +6,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Integration;
+namespace Bluem\BluemPHP\Tests\Integration;
 
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 
-require_once __DIR__ . '/BluemGenericTestCase.php';
 
 class MandateRequestTest extends BluemGenericTestCase
 {

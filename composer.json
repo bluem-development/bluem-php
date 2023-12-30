@@ -26,7 +26,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Bluem\\BluemPHP\\": "src/"
+            "Bluem\\BluemPHP\\": "src/",
+            "Bluem\\BluemPHP\\Tests": "tests/"
         }
     },
     "require-dev": {

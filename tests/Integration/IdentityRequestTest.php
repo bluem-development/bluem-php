@@ -6,9 +6,8 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Integration;
+namespace Bluem\BluemPHP\Tests\Integration;
 
-require_once __DIR__ . '/BluemGenericTestCase.php';
 
 class IdentityRequestTest extends BluemGenericTestCase
 {

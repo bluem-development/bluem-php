@@ -6,44 +6,85 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Unit;
+namespace Bluem\BluemPHP\Tests\Unit;
 
 use Bluem\BluemPHP\Bluem;
+use Bluem\BluemPHP\Contexts\IdentityContext;
 use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
-use Exception;
+use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
+use Bluem\BluemPHP\Requests\BluemRequest;
+use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use stdClass;
 
 class BluemTest extends TestCase
 {
     private Bluem $bluem;
 
+    /**
+     * @throws InvalidBluemConfigurationException
+     */
     protected function setUp(): void
     {
-        parent::setUp();
-
-        $bluem_config = $this->getConfig();
-
-        try {
-            $this->bluem = new Bluem(
-                $bluem_config
-            );
-        } catch (Exception $e) {
-            $this->fail($e->getMessage());
-        }
+        // Mock the configuration as needed
+        $mockedConfig = $this->getConfig();
+        $this->bluem = new Bluem($mockedConfig);
     }
 
-    protected function tearDown(): void
+
+
+    public function testConstructorWithValidConfig(): void
     {
-        //$this->bluem = Bluem;
+        $this->assertInstanceOf(Bluem::class, $this->bluem);
     }
 
-    public function testMandateRequest()
+    public function testConstructorWithInvalidConfig(): void
     {
-        $result = true;
-        $this->assertEquals(true, $result);
+        $this->expectException(InvalidBluemConfigurationException::class);
+        new Bluem(null);
     }
 
+
+    public function testMandateWithValidParameters(): void
+    {
+        // Mock the expected response
+        $mockedResponse = $this->createMock(BluemResponseInterface::class);
+
+        // Test the Mandate method with valid parameters
+        $response = $this->bluem->Mandate('customer_id', 'order_id', 'mandate_id');
+
+        // Assertions
+        $this->assertInstanceOf(BluemResponseInterface::class, $response);
+    }
+
+    public function testMandateWithException(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->bluem->Mandate('', '', '');
+    }
+    public function testCreateMandateID(): void
+    {
+        $mandateID = $this->bluem->CreateMandateID('order_id', 'customer_id');
+        $this->assertIsString($mandateID);
+    }
+    public function testPerformRequestWithInvalidXml(): void
+    {
+        // Mock a request that would generate invalid XML
+        $mockBluemRequest = $this->createMock(BluemRequest::class);
+
+        $mockBluemRequest->method('XmlString')
+            ->willReturn('<xmla>Some invalid aaXML String</xmla>');
+
+        $mockBluemRequest->method('HttpRequestURL')
+            ->willReturn('https://example.com/api/request');
+        $mockBluemRequest->method('RequestContext')->willReturn(new IdentityContext());
+
+        $result = $this->bluem->PerformRequest($mockBluemRequest);
+        $this->assertInstanceOf(ErrorBluemResponse::class, $result);
+    }
+
+    // helper classes
     private function getConfig(): stdClass
     {
         $bluem_config = new stdClass;

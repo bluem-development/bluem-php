@@ -1,7 +1,6 @@
 <?php
-namespace Integration;
+namespace Bluem\BluemPHP\Tests\Integration;
 
-require_once __DIR__ . '/BluemGenericTestCase.php';
 
 class PaymentRequestTest extends BluemGenericTestCase
 {

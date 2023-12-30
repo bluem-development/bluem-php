@@ -6,7 +6,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Integration;
+namespace Bluem\BluemPHP\Tests\Integration;
 
 use Bluem\BluemPHP\Extensions\IPAPI;
 use PHPUnit\Framework\TestCase;

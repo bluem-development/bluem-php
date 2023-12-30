@@ -1,5 +1,5 @@
 <?php
-namespace Integration;
+namespace Bluem\BluemPHP\Tests\Integration;
 
 use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
 use Bluem\BluemPHP\Helpers\BluemMaxAmount;

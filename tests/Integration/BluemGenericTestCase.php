@@ -6,15 +6,15 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Integration;
+namespace Bluem\BluemPHP\Tests\Integration;
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
+use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 use Dotenv\Dotenv;
 use Exception;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 
 /**
  * Abstract base class for all BluemPHP unit tests.
