@@ -18,13 +18,13 @@ class Now
     {
         try {
             $timezone = new DateTimeZone($timezoneString);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             $timezone = new DateTimeZone(self::DEFAULT_TIMEZONE);
         }
 
         try {
             $this->dateTime = new DateTimeImmutable(datetime: "now", timezone: $timezone);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->dateTime = new DateTimeImmutable("now", self::DEFAULT_TIMEZONE);
         }
     }
@@ -55,28 +55,25 @@ class Now
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function fromDate(string $dateTimeString): static
     {
-        try {
-            $this->dateTime = new DateTimeImmutable(
-                datetime: $dateTimeString,
-                timezone: new DateTimeZone(self::DEFAULT_TIMEZONE)
-            );
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $this->dateTime = new DateTimeImmutable(
+            datetime: $dateTimeString,
+            timezone: new DateTimeZone(self::DEFAULT_TIMEZONE)
+        );
+
         return $this;
     }
 
     public function fromTimestamp(string $timestamp): static
     {
-        try {
-            $this->dateTime = (new DateTimeImmutable())
-                ->setTimestamp($timestamp)
-                ->setTimezone(new DateTimeZone(self::DEFAULT_TIMEZONE));
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $this->dateTime = (new DateTimeImmutable())
+            ->setTimestamp($timestamp)
+            ->setTimezone(new DateTimeZone(self::DEFAULT_TIMEZONE));
+
         return $this;
     }
 }

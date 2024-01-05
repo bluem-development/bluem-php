@@ -11,19 +11,15 @@ namespace Bluem\BluemPHP\Helpers;
 
 class BluemMaxAmount implements \Stringable
 {
-
     public BluemCurrency $currency;
-    public float $amount;
 
     public function __construct(
-        float $amount,
+        private float $amount,
         string $currencyCode
     ) {
         // @todo: validate the amount to be non-negative and have a maximum, see xsd
-        $this->amount = $amount;
 
         try {
-
             $this->currency = new BluemCurrency($currencyCode);
         } catch (\Exception $e) {
             $this->currency = new BluemCurrency();

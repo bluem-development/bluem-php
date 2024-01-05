@@ -37,12 +37,7 @@ class BluemConfiguration
      * this is given by the bank and never changed (default 0)
      */
     public string $merchantSubID;
-    private string $PaymentsBrandID;
-    // @todo: consider deprecating this?
-    private string $EmandateBrandID;
-    // @todo: consider deprecating this?
 
-    // additional helper flags
     /**
      * Allows for testing webhook on local environments with no HTTPS check and verbose output.
      */
@@ -80,9 +75,7 @@ class BluemConfiguration
         $this->test_accessToken = $validated->test_accessToken ?? null;
 
         $this->IDINBrandID = $this->_assumeBrandID("Identity", $this->brandID);
-        $this->PaymentsBrandID = $this->_assumeBrandID("Payment", $this->brandID);
-        $this->EmandateBrandID = $this->_assumeBrandID("Mandate", $this->brandID);
-
+        
         $this->sequenceType = $validated->sequenceType ?? null;
 
         $this->merchantID             = $validated->merchantID ?? null;

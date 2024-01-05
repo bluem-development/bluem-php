@@ -65,10 +65,6 @@ class IdentityContext extends BluemContext
 
     private function validateDetails(array $details = []): array
     {
-        if ($this->isIDIN()) {
-            // no validation yet
-        }
-
         return [];
     }
 
