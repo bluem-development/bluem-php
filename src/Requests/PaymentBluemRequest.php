@@ -9,6 +9,7 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
+use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
 use Exception;
@@ -34,6 +35,7 @@ class PaymentBluemRequest extends BluemRequest
     private float $amount;
 
     /**
+     * @throws InvalidBluemRequestException
      * @throws Exception
      */
     public function __construct(
@@ -56,22 +58,7 @@ class PaymentBluemRequest extends BluemRequest
         //  Default Currency EUR
         $this->currency = $this->validateCurrency($currency);
 
-        $now = new Now();
-
-        if ($dueDateTime === null) {
-            $this->dueDateTime = $now->tomorrow()->getCreateDateTimeForRequest();
-        } else {
-            try {
-                if (is_int($dueDateTime)) {
-                    $then = ($now->fromTimestamp($dueDateTime));
-                } else {
-                    $then = ($now->fromDate($dueDateTime));
-                }
-            } catch (Exception $e) {
-                throw $e;
-            }
-            $this->dueDateTime = $then->getCreateDateTimeForRequest();
-        }
+        $this->dueDateTime = $this->getDueDateTime($dueDateTime);
 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
         //         $sanitizedDebtorReferenceParts = [];
@@ -135,16 +122,16 @@ class PaymentBluemRequest extends BluemRequest
      *
      * @param $currency
      *
-     * @throws Exception
+     * @return string
+     * @throws InvalidBluemRequestException
      */
     private function validateCurrency($currency): string
     {
         $availableCurrencies = [ "EUR" ]; // @todo: add list of currencies based on
         if (!in_array($currency, $availableCurrencies, true)) {
-            throw new Exception(
-                "Currency not recognized,
-                    should be one of the following available currencies: " .
-                                 implode(",", $availableCurrencies)
+            throw new InvalidBluemRequestException(
+                "Currency not recognized, should be one of the following available currencies: " .
+                implode(",", $availableCurrencies)
             );
         }
 
@@ -271,6 +258,28 @@ class PaymentBluemRequest extends BluemRequest
     {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CARTE_BANCAIRE);
         return $this;
+    }
+
+    /**
+     * @param mixed $dueDateTime
+     * @return string
+     * @throws InvalidBluemRequestException
+     */
+    public function getDueDateTime(mixed $dueDateTime): string
+    {
+        $now = new Now();
+
+        if ($dueDateTime === null) {
+            return $now->tomorrow()->getCreateDateTimeForRequest();
+        }
+        try {
+            $then = is_int($dueDateTime)
+                ? ($now->fromTimestamp($dueDateTime))
+                : ($now->fromDate($dueDateTime));
+            return $then->getCreateDateTimeForRequest();
+        } catch (Exception $e) {
+            throw new InvalidBluemRequestException($e);
+        }
     }
 
     private function addZeroPrefix($number)

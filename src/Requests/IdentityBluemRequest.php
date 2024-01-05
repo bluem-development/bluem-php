@@ -168,7 +168,7 @@ class IdentityBluemRequest extends BluemRequest
     }
 
     /**
-     * EntranceCodes for iDIN starting with the prefix 'showConsumerGui,
+     * EntranceCodes for iDIN starting with the prefix `showConsumerGui`,
      * will always get to a test status page
      * of the bank where you can choose which status you want to receive back.
      *
