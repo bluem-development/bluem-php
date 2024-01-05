@@ -38,7 +38,6 @@
         "squizlabs/php_codesniffer": "^3.7",
         "magento/magento-coding-standard": "^31.0",
         "phpcompatibility/php-compatibility": "^9.3"
-
     },
     "prefer-stable" : true,
     "scripts": {
