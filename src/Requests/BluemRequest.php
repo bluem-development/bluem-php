@@ -8,6 +8,7 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
@@ -81,6 +82,7 @@ class BluemRequest implements BluemRequestInterface
 
     private array $_debtorAdditionalData = [];
 
+    private const TYPE_IDENTIFIERS = [ 'createTransaction', 'requestStatus' ];
     /**
      * @var string[]
      */
@@ -108,16 +110,15 @@ class BluemRequest implements BluemRequestInterface
      *
      * @param BluemConfiguration|object $config
      *
-     * @throws Exception
+     * @throws InvalidBluemRequestException
      */
     public function __construct(
         $config,
         string $entranceCode = "",
         string $expectedReturn = ""
     ) {
-        $possibleTypeIdentifiers = [ 'createTransaction', 'requestStatus' ];
-        if (! in_array($this->typeIdentifier, $possibleTypeIdentifiers)) {
-            throw new Exception("Invalid transaction type called for", 1);
+        if (!in_array($this->typeIdentifier, self::TYPE_IDENTIFIERS, true)) {
+            throw new InvalidBluemRequestException("Invalid transaction type called for", 1);
         }
         // @todo: move to request validation class?
 
