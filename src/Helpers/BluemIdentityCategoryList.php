@@ -11,7 +11,6 @@ namespace Bluem\BluemPHP\Helpers;
 
 class BluemIdentityCategoryList
 {
-
     /**
      * @var string[] $categories
      */

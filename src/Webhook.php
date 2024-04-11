@@ -44,18 +44,15 @@ class Webhook implements WebhookInterface
         {
             if (!$this->isHttpsRequest()) {
                 $this->exitWithError('Not HTTPS');
-                return;
             }
 
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
                 $this->exitWithError('Not POST');
-                return;
             }
 
             // Check: content type: XML with utf-8 encoding
             if ($_SERVER["CONTENT_TYPE"] !== self::XML_UTF8_CONTENT_TYPE) {
                 $this->exitWithError('Wrong Content-Type given: should be XML with UTF-8 encoding');
-                return;
             }
 
             // Check: An empty POST to the URL (normal HTTP request) always has to respond with HTTP 200 OK.
@@ -63,27 +60,23 @@ class Webhook implements WebhookInterface
 
             if (empty($xmlData)) {
                 $this->exitWithError('No data body given');
-                return;
             }
         }
 
         $xmlObject = $this->parseRawXML($xmlData);
 
-        if (! $xmlObject instanceof \SimpleXMLElement) {
+        if (! $xmlObject instanceof SimpleXMLElement) {
             $this->exitWithError('Could not parse XML');
-            return;
         }
 
         $xmlValidation = (new WebhookXmlValidation($this->senderID))->validate($xmlObject);
         if (! $xmlValidation::$isValid) {
             $this->exitWithError($xmlValidation->errorMessage());
-            return;
         }
 
         $signatureValidation = (new WebhookSignatureValidation($this->environment))->validate($xmlData);
         if (! $signatureValidation::$isValid) {
             $this->exitWithError($signatureValidation->errorMessage());
-            return;
         }
 
         $this->xmlObject = $xmlObject;
@@ -98,10 +91,11 @@ class Webhook implements WebhookInterface
             || $_SERVER['SERVER_PORT'] === 443
         );
     }
-
-    private function exitWithError(string $string): void
+    
+    private function exitWithError(string $errorMessage): void
     {
         http_response_code(self::STATUSCODE_BAD_REQUEST);
+        exit($errorMessage);
     }
 
     private function parseRawXML($postData): string|SimpleXMLElement
@@ -144,7 +138,7 @@ class Webhook implements WebhookInterface
         if ((is_countable($payload->children()) ? count($payload->children()) : 0) > 0) {
             return $payload;
         }
-        return $payload->$key ?? '';
+        return $payload->$key ? ($payload->$key . '') : '';
     }
 
     private function getPayload(): SimpleXMLElement
@@ -261,7 +255,7 @@ class Webhook implements WebhookInterface
     {
         $paymentDetails = $this->getPaymentMethodDetails();
 
-        if (!$paymentDetails instanceof \SimpleXMLElement) {
+        if (!$paymentDetails instanceof SimpleXMLElement) {
             return null;
         }
         return $paymentDetails->IDealDetails;
@@ -269,7 +263,7 @@ class Webhook implements WebhookInterface
     public function getDebtorAccountName(): ?string
     {
         $details = $this->getIDealDetails();
-        if (!$details instanceof \SimpleXMLElement) {
+        if (!$details instanceof SimpleXMLElement) {
             return "";
         }
         return $details->DebtorAccountName."" ?? "";
@@ -277,7 +271,7 @@ class Webhook implements WebhookInterface
     public function getDebtorIBAN(): ?string
     {
         $details = $this->getIDealDetails();
-        if (!$details instanceof \SimpleXMLElement) {
+        if (!$details instanceof SimpleXMLElement) {
             return "";
         }
         return $details->DebtorIBAN."" ?? "";
@@ -285,7 +279,7 @@ class Webhook implements WebhookInterface
     public function getDebtorBankID(): ?string
     {
         $details = $this->getIDealDetails();
-        if (!$details instanceof \SimpleXMLElement) {
+        if (!$details instanceof SimpleXMLElement) {
             return "";
         }
         return $details->DebtorBankID."" ?? "";
@@ -358,7 +352,7 @@ class Webhook implements WebhookInterface
     {
         $report = $this->getPayload()->IdentityReport ?? null;
 
-        if (!$report instanceof \SimpleXMLElement) {
+        if (!$report instanceof SimpleXMLElement) {
             return [];
         }
 
