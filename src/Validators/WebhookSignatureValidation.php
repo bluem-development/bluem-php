@@ -9,11 +9,10 @@
 namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Helpers\Now;
-use Selective\XmlDSig\PublicKeyStore;
-use Selective\XmlDSig\CryptoVerifier;
-use Selective\XmlDSig\XmlSignatureVerifier;
-
+use DOMDocument;
 use Exception;
+use RobRichards\XMLSecLibs\XMLSecurityDSig;
+use RobRichards\XMLSecLibs\XMLSecurityKey;
 
 class WebhookSignatureValidation extends WebhookValidator
 {
@@ -30,26 +29,44 @@ class WebhookSignatureValidation extends WebhookValidator
      */
     public function validate(string $data): self
     {
+        $public_key_file_path = dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
+
         $temp_file = tmpfile();
         fwrite($temp_file, $data);
         $temp_file_path = stream_get_meta_data($temp_file)['uri'];
 
-        $publicKeyStore = new PublicKeyStore();
 
-        $public_key_file_path = dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
+        // Load the XML to be verified
+        $doc = new DOMDocument();
+        $doc->load($temp_file_path);
+
+        // Create a new Security object
+        $objDSig = new XMLSecurityDSig();
+
+        // Locate the signature within the XML
+        try {
+            $objDSig->locateSignature($doc);
+            $objDSig->canonicalizeSignedInfo();
+            $objDSig->validateReference();
+        } catch (Exception $e) {
+            $this->addError('Reference Validation Failed: ' . $e->getMessage());
+        }
 
         try {
-            $publicKeyStore->loadFromPem(file_get_contents($public_key_file_path));
-            $cryptoVerifier = new CryptoVerifier($publicKeyStore);
+            // Load the public key
+            $objKey = new XMLSecurityKey(XMLSecurityKey::RSA_SHA256, ['type' => 'public']);
+            $objKey->loadKey($public_key_file_path, TRUE);
 
-            // Create a verifier instance and pass the crypto decoder
-            $xmlSignatureVerifier = new XmlSignatureVerifier($cryptoVerifier);
+        } catch (Exception $e) {
+            $this->addError('Could not load public key');
+        }
 
-            // Verify a XML file
-            $xmlVerified = $xmlSignatureVerifier->verifyXml(file_get_contents($temp_file_path));
-            if (! $xmlVerified) {
+        try {
+            // Check the signature
+            if (!$objDSig->verify($objKey)) {
                 $this->addError("Invalid signature");
             }
+            // else, the signature is valid
         } catch (Exception $e) {
             $this->addError($e->getMessage());
         }
