@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8d436a0e1ee8d487796958789238686",
+    "content-hash": "1cd474d4354dafb5533494d852cad5bc",
     "packages": [
         {
             "name": "selective/xmldsig",
@@ -3049,7 +3049,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
