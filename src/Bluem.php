@@ -20,6 +20,8 @@ use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
 use Bluem\BluemPHP\Observability\SentryLogger;
+use Bluem\BluemPHP\Observability\SimpleFileIO;
+use Bluem\BluemPHP\Observability\SimpleMailer;
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateStatusBluemRequest;
 use Bluem\BluemPHP\Requests\IBANBluemRequest;
@@ -96,7 +98,16 @@ class Bluem
 
         $logger = new SentryLogger();
         $logger->initialize($this->configuration);
+        
+        $fileIO = new SimpleFileIO();
+        if (!$fileIO->activationFileExists()) {
+            $fileIO->writeActivationFile($this->configuration);
 
+            $logger->captureMessage('PHP library instantiated');
+
+            $mailer = new SimpleMailer();
+            $mailer->notifyConfiguration($this->configuration);
+        }
     }
 
 
