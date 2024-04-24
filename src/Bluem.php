@@ -19,6 +19,7 @@ use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
+use Bluem\BluemPHP\Observability\SentryLogger;
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateStatusBluemRequest;
 use Bluem\BluemPHP\Requests\IBANBluemRequest;
@@ -51,6 +52,10 @@ if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
 }
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
     define("BLUEM_STATIC_MERCHANT_ID", "0020000387");
+}
+
+if (!defined("BLUEM_PHP_LIBRARY_VERSION")) {
+    define("BLUEM_PHP_LIBRARY_VERSION", "2.3.3");
 }
 
 /**
@@ -88,6 +93,10 @@ class Bluem
         } catch (Exception $e) {
             throw new InvalidBluemConfigurationException($e->getMessage());
         }
+
+        $logger = new SentryLogger();
+        $logger->initialize($this->configuration);
+
     }
 
 
