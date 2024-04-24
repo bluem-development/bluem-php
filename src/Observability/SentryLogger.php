@@ -33,7 +33,7 @@ final class SentryLogger
 
     private function getEnvironment(): string
     {
-        if ($_SERVER['SERVER_NAME'] === 'localhost') {
+        if (!isset($_SERVER['SERVER_NAME']) || $_SERVER['SERVER_NAME'] === 'localhost') {
             return 'development';
         }
 
