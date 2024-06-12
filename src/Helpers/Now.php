@@ -54,29 +54,29 @@ class Now
         $this->dateTime = $this->dateTime->add(new DateInterval("P{$days}D"));
         return $this;
     }
-
+    
+    /**
+     * @throws Exception
+     */
     public function fromDate(string $dateTimeString): static
     {
-        try {
-            $this->dateTime = new DateTimeImmutable(
-                datetime: $dateTimeString,
-                timezone: new DateTimeZone(self::DEFAULT_TIMEZONE)
-            );
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $this->dateTime = new DateTimeImmutable(
+            datetime: $dateTimeString,
+            timezone: new DateTimeZone(self::DEFAULT_TIMEZONE)
+        );
+
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function fromTimestamp(string $timestamp): static
     {
-        try {
-            $this->dateTime = (new DateTimeImmutable())
-                ->setTimestamp($timestamp)
-                ->setTimezone(new DateTimeZone(self::DEFAULT_TIMEZONE));
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $this->dateTime = (new DateTimeImmutable())
+            ->setTimestamp($timestamp)
+            ->setTimezone(new DateTimeZone(self::DEFAULT_TIMEZONE));
+
         return $this;
     }
 }
