@@ -254,9 +254,27 @@ class PaymentBluemRequest extends BluemRequest
         return $this;
     }
 
+    public function setPaymentMethodToSofortDigitalServices(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_SOFORT_DIGITAL_SERVICES);
+        return $this;
+    }
+
     public function setPaymentMethodToCarteBancaire(): self
     {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CARTE_BANCAIRE);
+        return $this;
+    }
+    
+    public function setPaymentMethodToBancontact(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
+        return $this;
+    }
+
+    public function setPaymentMethodToGiropay(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_GIROPAY);
         return $this;
     }
 
