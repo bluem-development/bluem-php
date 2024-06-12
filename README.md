@@ -11,6 +11,20 @@ Utilized by other applications as well:
 - [Magento2 module](https://github.com/bluem-development/bluem-magento/), available for Bluem customers.
 - Several third-party customer applications by Bluem customers.
 
+## Documentation
+
+> Read our improved documentation [**here**](https://bluem-development.github.io/bluem-docs/bluemphp.html)
+
+We have several guides available there. They include:
+- [Getting started guide](https://bluem-development.github.io/bluem-docs/tutorial-configuration.html)
+- [Tutorial on payments](https://bluem-development.github.io/bluem-docs/tutorial-payments.html)
+- [Tutorial on webhooks](https://bluem-development.github.io/bluem-docs/tutorial-webhooks.html)
+- More are coming soon!
+
+## Remaining documentation
+
+Most of this will be migrated into the documentation mentioned above. Note: You might find duplicate information below.
+
 ## Table of Contents
 
 * [Requirements](#requirements)
