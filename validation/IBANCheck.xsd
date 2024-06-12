@@ -52,15 +52,6 @@
          </xsd:restriction>
     </xsd:simpleType>
 
-
-    <xsd:simpleType name="LanguageCodeSimpleType"> <!-- two small letters -->
-        <xsd:restriction base="xsd:token">
-            <xsd:minLength value="2"/>
-            <xsd:maxLength value="2"/>
-            <xsd:pattern value="[a-z]{2}"/>
-         </xsd:restriction>
-    </xsd:simpleType>
-
     <xsd:simpleType name="VersionSimpleType">
         <xsd:restriction base="xsd:token">
             <xsd:pattern value="[0-9].[0-9]"/>
@@ -86,7 +77,7 @@
     <xsd:simpleType name="MessageCountSimpleType">
         <xsd:restriction base="xsd:nonNegativeInteger">
             <xsd:minInclusive value="0"/>
-            <xsd:maxInclusive value="1000"/>
+            <xsd:maxInclusive value="3000"/>
         </xsd:restriction>
     </xsd:simpleType>
     
@@ -133,7 +124,16 @@
             <xsd:maxLength value="256"/>
         </xsd:restriction>
     </xsd:simpleType>
-    
+        
+   <xsd:simpleType name="NonEmptyRestrictedTokenLength80SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="80"/>
+            <xsd:pattern value="[^&gt;&lt;]+"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+   
     <xsd:simpleType name="IBANTokenLength128SimpleType">
         <xsd:restriction base="xsd:token">
             <xsd:minLength value="1"/>
@@ -248,7 +248,7 @@
     <xsd:complexType name="IBANCheckTransactionRequestType">
         <xsd:all>
             <xsd:element name="IBAN" type="IBANTokenLength128SimpleType"/>
-            <xsd:element name="AssumedName" type="TokenLength256SimpleType"/>
+            <xsd:element name="AssumedName" type="NonEmptyRestrictedTokenLength80SimpleType"/>
 
 			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType" minOccurs="0"/>
 
@@ -269,7 +269,7 @@
     <xsd:complexType name="IBANCheckTransactionResponseType">
        <xsd:all>
             <xsd:element name="IBAN" type="IBANTokenLength128SimpleType"/>
-            <xsd:element name="AssumedName" type="TokenLength256SimpleType" minOccurs="0"/>
+            <xsd:element name="AssumedName" type="NonEmptyRestrictedTokenLength80SimpleType"/>
 			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType" minOccurs="0"/>
 			
 			<xsd:element name="IBANCheckResult" type="IBANCheckResultComplexType"/>
@@ -284,6 +284,7 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    
     
     
          
