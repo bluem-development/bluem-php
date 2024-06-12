@@ -14,7 +14,7 @@ use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
 use Exception;
 
-class PaymentBluemRequest extends BluemRequest
+class PaymentBluemRequest extends BluemRequest implements PaymentMethodSetterInterface
 {
     public $request_url_type = "pr";
     public $typeIdentifier = "createTransaction";
@@ -40,17 +40,18 @@ class PaymentBluemRequest extends BluemRequest
      */
     public function __construct(
         BluemConfiguration $config,
-        $description,
-        $debtorReference,
-        $amount,
-        $dueDateTime = null,
-        $currency = null,
-        $transactionID = null,
-        $entranceCode = "",
-        string $expected_return = "none",
-        $debtorReturnURL = "",
-        $paymentReference = ""
-    ) {
+                           $description,
+                           $debtorReference,
+                           $amount,
+                           $dueDateTime = null,
+                           $currency = null,
+                           $transactionID = null,
+                           $entranceCode = "",
+        string             $expected_return = "none",
+                           $debtorReturnURL = "",
+                           $paymentReference = ""
+    )
+    {
         parent::__construct($config, $entranceCode, $expected_return);
 
         $this->description = $this->_sanitizeDescription($description);
@@ -101,7 +102,7 @@ class PaymentBluemRequest extends BluemRequest
 
     private function sanitizeTransactionID(string $transactionID): string
     {
-         $sanitizedTransactionIDParts = [];
+        $sanitizedTransactionIDParts = [];
         $sanitizedTransactionIDCount = preg_match_all(
             "/[\da-zA-Z]{1,64}/i",
             $transactionID,
@@ -127,7 +128,7 @@ class PaymentBluemRequest extends BluemRequest
      */
     private function validateCurrency($currency): string
     {
-        $availableCurrencies = [ "EUR" ]; // @todo: add list of currencies based on
+        $availableCurrencies = ["EUR"]; // @todo: add list of currencies based on
         if (!in_array($currency, $availableCurrencies, true)) {
             throw new InvalidBluemRequestException(
                 "Currency not recognized, should be one of the following available currencies: " .
@@ -147,8 +148,8 @@ class PaymentBluemRequest extends BluemRequest
     {
         $extraOptions = [
             'documentType' => "PayRequest",
-            'sendOption'   => "none",
-            'language'     => "nl",
+            'sendOption' => "none",
+            'language' => "nl",
         ];
 
         if (!empty($this->brandID)) {
@@ -193,7 +194,7 @@ class PaymentBluemRequest extends BluemRequest
         if (!empty($BIC)) {
             $this->context->addPaymentMethodDetails(
                 [
-                'BIC'=>$BIC
+                    'BIC' => $BIC
                 ]
             );
         }
@@ -211,7 +212,7 @@ class PaymentBluemRequest extends BluemRequest
         if (!empty($payPalAccount)) {
             $this->context->addPaymentMethodDetails(
                 [
-                'PayPalAccount'=>$payPalAccount
+                    'PayPalAccount' => $payPalAccount
                 ]
             );
         }
@@ -225,7 +226,8 @@ class PaymentBluemRequest extends BluemRequest
         string $securityCode = '',
         string $expirationDateMonth = '',
         string $expirationDateYear = ''
-    ): self {
+    ): self
+    {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CREDITCARD);
 
         /**
@@ -236,11 +238,11 @@ class PaymentBluemRequest extends BluemRequest
         ) {
             $this->context->addPaymentMethodDetails(
                 [
-                'CardNumber'=>$cardNumber,
-                'Name'=>$name,
-                'SecurityCode'=>$securityCode,
-                'ExpirationDateMonth'=>$expirationDateMonth,
-                'ExpirationDateYear'=>$expirationDateYear,
+                    'CardNumber' => $cardNumber,
+                    'Name' => $name,
+                    'SecurityCode' => $securityCode,
+                    'ExpirationDateMonth' => $expirationDateMonth,
+                    'ExpirationDateYear' => $expirationDateYear,
                 ]
             );
         }
@@ -265,7 +267,7 @@ class PaymentBluemRequest extends BluemRequest
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CARTE_BANCAIRE);
         return $this;
     }
-    
+
     public function setPaymentMethodToBancontact(): self
     {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
@@ -297,13 +299,6 @@ class PaymentBluemRequest extends BluemRequest
             return $then->getCreateDateTimeForRequest();
         } catch (Exception $e) {
             throw new InvalidBluemRequestException($e);
-        }
-    }
-
-    private function addZeroPrefix($number)
-    {
-        if (strlen($number.'') === 1) {
-            return (int) '0'.$number;
         }
     }
 
@@ -377,8 +372,7 @@ class PaymentBluemRequest extends BluemRequest
      */
     public function selectDebtorWallet($BIC)
     {
-
-        if (! in_array($BIC, $this->context->getBICCodes())) {
+        if (!in_array($BIC, $this->context->getBICCodes(), true)) {
             throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
 
