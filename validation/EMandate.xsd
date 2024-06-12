@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.4.0">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.5.0">
 	<!--=====================================================================-->
 	<!--                        Schema Management                            -->
 	<!--=====================================================================-->
@@ -9,8 +9,8 @@
 		<xsd:documentation xml:lang="en"/>
 		<xsd:documentation>
 			<name>EMandate Interface</name>
-			<revision version="1.4.0">
-				<date>2020-MAY-20</date>
+			<revision version="1.5.0">
+				<date>2022-DECEMBER-12</date>
 			</revision>
 		</xsd:documentation>
 	</xsd:annotation>
@@ -48,6 +48,16 @@
             <xsd:pattern value="[0-9a-zA-Z_\-]{1,32}"/>
          </xsd:restriction>
     </xsd:simpleType>
+    
+   	<xsd:simpleType name="LanguageCodeSimpleType">
+        <!-- two small letters -->
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="2"/>
+            <xsd:maxLength value="2"/>
+            <xsd:pattern value="[a-z]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
 
 	<xsd:simpleType name="VersionSimpleType">
 		<xsd:restriction base="xsd:token">
@@ -86,7 +96,7 @@
 	<xsd:simpleType name="MessageCountSimpleType">
 		<xsd:restriction base="xsd:nonNegativeInteger">
 			<xsd:minInclusive value="0"/>
-			<xsd:maxInclusive value="1000"/>
+			<xsd:maxInclusive value="3000"/>
 		</xsd:restriction>
 	</xsd:simpleType>
     <xsd:simpleType name="StatusCodeSimpleType">
@@ -161,9 +171,6 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 	
-	
-	
-	
 	<xsd:simpleType name="SkinIDSimpleType">
 		<xsd:restriction base="xsd:token">
 			<xsd:pattern value="[0-9a-zA-Z_\-]{0,32}"/>
@@ -184,8 +191,9 @@
 	
 	<xsd:simpleType name="ReasonSimpleType">
         <xsd:restriction base="xsd:token">
-		      <xsd:pattern value="[-0-9a-zA-ZéèëïôóöüúÉÈËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,70}"/>
-        </xsd:restriction>
+	        <xsd:pattern value="[-0-9a-zA-ZàáâäæãåāçćčèéêëēėęîïíīįìłñńôöòóœøōõßśšûüùúūÿžźżÀÁÂÄÆÃÅĀÇĆČÈÉÊËĒĖĘÎÏÍĪĮÌŁÑŃÔÖÒÓŒØŌÕŚŠÛÜÙÚŪŸŽŹŻ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,70}"/>
+       		  
+      </xsd:restriction>
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="DebtorReferenceSimpleType">
@@ -561,17 +569,9 @@
             </xsd:simpleType>
         </xsd:attribute>
 
-		<xsd:attribute name="language" default = "nl">
-			<xsd:simpleType>
-				<xsd:restriction base="xsd:token">
-					<xsd:enumeration value="en"/>
-					<xsd:enumeration value="nl"/>
-				</xsd:restriction>
-			</xsd:simpleType>
-		</xsd:attribute>
+        <xsd:attribute name="language" type="LanguageCodeSimpleType" default="nl"/>
+
 	</xsd:attributeGroup>
-	<!--                            ATTRIBUTES                               -->
-	<!--                              GROUPS                                 -->
-	<!--                             ELEMENTS                                -->
+
 	<xsd:element name="EMandateInterface" type="EMandateInterfaceType"/>
 </xsd:schema>
