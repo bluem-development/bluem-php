@@ -56,7 +56,17 @@ class EmandateBluemRequest extends BluemRequest
         $this->mandateID = $mandateID;
 
         // https - unique return URL for customer
-        $this->merchantReturnURL = "$this->merchantReturnURLBase?mandateID=$this->mandateID";
+
+        $urlBase = $this->merchantReturnURLBase;
+        $hasQueryString = preg_match('/\?.+=.+/', $urlBase);
+
+        if ($hasQueryString) {
+            $this->merchantReturnURL = "$this->merchantReturnURLBase&amp;mandateID=$this->mandateID";
+        } else {
+            $this->merchantReturnURL = "$this->merchantReturnURLBase?mandateID=$this->mandateID";
+        }
+
+
         $this->sequenceType = $config->sequenceType ?? "RCUR";
         // reason for the mandate; configurable per client
         $this->eMandateReason = $config->eMandateReason ?? "Incasso machtiging";
