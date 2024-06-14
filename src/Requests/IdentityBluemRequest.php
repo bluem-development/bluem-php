@@ -60,9 +60,12 @@ class IdentityBluemRequest extends BluemRequest
 
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         $this->description     = $this->_sanitizeDescription($description);
-        if ($debtorReturnURL == "") {
-            throw new Exception("Debtor return URL is required");
+
+
+        if (!$debtorReturnURL || (string)$debtorReturnURL === "") {
+            $debtorReturnURL = $config->merchantReturnURLBase;
         }
+        
         $this->debtorReturnURL = $this->appendToUrl($debtorReturnURL,"debtorReference",$this->debtorReference);
 
         // @todo: make this a configurable setting
