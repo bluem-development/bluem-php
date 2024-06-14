@@ -9,11 +9,10 @@
 namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Helpers\Now;
-use Selective\XmlDSig\PublicKeyStore;
-use Selective\XmlDSig\CryptoVerifier;
-use Selective\XmlDSig\XmlSignatureVerifier;
-
+use DOMDocument;
 use Exception;
+use RobRichards\XMLSecLibs\XMLSecurityDSig;
+use RobRichards\XMLSecLibs\XMLSecurityKey;
 
 class WebhookSignatureValidation extends WebhookValidator
 {
@@ -28,26 +27,36 @@ class WebhookSignatureValidation extends WebhookValidator
      * Validate webhook signature based on a key file
      * available in the `keys` folder.
      */
+
     public function validate(string $data): self
     {
         $temp_file = tmpfile();
         fwrite($temp_file, $data);
         $temp_file_path = stream_get_meta_data($temp_file)['uri'];
 
-        $publicKeyStore = new PublicKeyStore();
-
         $public_key_file_path = dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
 
         try {
-            $publicKeyStore->loadFromPem(file_get_contents($public_key_file_path));
-            $cryptoVerifier = new CryptoVerifier($publicKeyStore);
+            $xml = new DOMDocument();
+            $xml->load($temp_file_path);
 
-            // Create a verifier instance and pass the crypto decoder
-            $xmlSignatureVerifier = new XmlSignatureVerifier($cryptoVerifier);
+            $objDSig = new XMLSecurityDSig();
 
-            // Verify a XML file
-            $xmlVerified = $xmlSignatureVerifier->verifyXml(file_get_contents($temp_file_path));
-            if (! $xmlVerified) {
+            $objDSig->locateSignature($xml);
+
+            $objDSig->canonicalizeSignedInfo();
+
+            // Validate the reference
+            if (! $objDSig->validateReference()) {
+                $this->addError("Reference validation failed");
+            }
+
+            // Load the public key
+            $key = new XMLSecurityKey(XMLSecurityKey::RSA_SHA256, ['type' => 'public']);
+            $key->loadKey($public_key_file_path, true, true);
+
+            // Verify the signature
+            if (! $objDSig->verify($key)) {
                 $this->addError("Invalid signature");
             }
         } catch (Exception $e) {
