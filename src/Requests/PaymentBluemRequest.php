@@ -86,9 +86,9 @@ class PaymentBluemRequest extends BluemRequest implements PaymentMethodSetterInt
         } else {
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
-        $this->debtorReturnURL .= "?entranceCode=$this->entranceCode&transactionID=$this->transactionID";
 
-        $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
+        $this->debtorReturnURL = $this->appendToUrl($this->debtorReturnURL, 'entranceCode', $this->entranceCode);
+        $this->debtorReturnURL = $this->appendToUrl($this->debtorReturnURL, 'transactionID',$this->transactionID);
 
         // Note: different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class.
@@ -155,7 +155,7 @@ class PaymentBluemRequest extends BluemRequest implements PaymentMethodSetterInt
         if (!empty($this->brandID)) {
             $extraOptions['brandID'] = $this->brandID;
         }
-
+        
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
