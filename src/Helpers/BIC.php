@@ -8,7 +8,7 @@
 
 namespace Bluem\BluemPHP\Helpers;
 
-class BIC
+final class BIC
 {
     public function __construct(
         public string $issuerID,
