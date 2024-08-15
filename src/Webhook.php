@@ -144,7 +144,7 @@ class Webhook implements WebhookInterface
         if ((is_countable($payload->children()) ? count($payload->children()) : 0) > 0) {
             return $payload;
         }
-        return $payload->$key ?? '';
+        return $payload ?? '';
     }
 
     private function getPayload(): SimpleXMLElement
@@ -175,7 +175,7 @@ class Webhook implements WebhookInterface
     // general, shared attributes
     public function getEntranceCode(): ?string
     {
-        return $this->getPayload()->attributes()['EntranceCode'] . '' ?? null;
+        return $this->getPayload()->attributes()->entranceCode . '' ?? null;
     }
 
     // Different attributes for different services
