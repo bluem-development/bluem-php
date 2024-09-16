@@ -19,6 +19,9 @@ use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
+use Bluem\BluemPHP\Observability\SentryLogger;
+use Bluem\BluemPHP\Observability\SimpleFileIO;
+use Bluem\BluemPHP\Observability\SimpleMailer;
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
 use Bluem\BluemPHP\Requests\EmandateStatusBluemRequest;
 use Bluem\BluemPHP\Requests\IBANBluemRequest;
@@ -51,6 +54,10 @@ if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
 }
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
     define("BLUEM_STATIC_MERCHANT_ID", "0020000387");
+}
+
+if (!defined("BLUEM_PHP_LIBRARY_VERSION")) {
+    define("BLUEM_PHP_LIBRARY_VERSION", "2.3.3");
 }
 
 /**
@@ -87,6 +94,19 @@ class Bluem
             $this->configuration = new BluemConfiguration($rawConfig);
         } catch (Exception $e) {
             throw new InvalidBluemConfigurationException($e->getMessage());
+        }
+
+        $logger = new SentryLogger();
+        $logger->initialize($this->configuration);
+        
+        $fileIO = new SimpleFileIO();
+        if (!$fileIO->activationFileExists()) {
+            $fileIO->writeActivationFile($this->configuration);
+
+            $logger->captureMessage('PHP library instantiated');
+
+            $mailer = new SimpleMailer();
+            $mailer->notifyConfiguration($this->configuration);
         }
     }
 
