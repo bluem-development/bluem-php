@@ -4,58 +4,49 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1cd474d4354dafb5533494d852cad5bc",
+    "content-hash": "abfcea3a1385997af764e1857d3b5f72",
     "packages": [
         {
-            "name": "selective/xmldsig",
-            "version": "3.1.0",
+            "name": "robrichards/xmlseclibs",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/selective-php/xmldsig.git",
-                "reference": "adfa81bc744a29f808a5216bf73e0cb2bcd7af91"
+                "url": "https://github.com/robrichards/xmlseclibs.git",
+                "reference": "f8f19e58f26cdb42c54b214ff8a820760292f8df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/selective-php/xmldsig/zipball/adfa81bc744a29f808a5216bf73e0cb2bcd7af91",
-                "reference": "adfa81bc744a29f808a5216bf73e0cb2bcd7af91",
+                "url": "https://api.github.com/repos/robrichards/xmlseclibs/zipball/f8f19e58f26cdb42c54b214ff8a820760292f8df",
+                "reference": "f8f19e58f26cdb42c54b214ff8a820760292f8df",
                 "shasum": ""
             },
             "require": {
-                "ext-dom": "*",
                 "ext-openssl": "*",
-                "php": "~8.1 || ~8.2"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3",
-                "phpstan/phpstan": "^1",
-                "phpunit/phpunit": "^10",
-                "squizlabs/php_codesniffer": "^3",
-                "starkbank/ecdsa": "^2.0"
+                "php": ">= 5.4"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Selective\\XmlDSig\\": "src/"
+                    "RobRichards\\XMLSecLibs\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
-                "MIT"
+                "BSD-3-Clause"
             ],
-            "description": "Sign XML Documents with Digital Signatures",
-            "homepage": "https://github.com/selective-php/xmldsig",
+            "description": "A PHP library for XML Security",
+            "homepage": "https://github.com/robrichards/xmlseclibs",
             "keywords": [
-                "signatures",
-                "verify",
+                "security",
+                "signature",
                 "xml",
                 "xmldsig"
             ],
             "support": {
-                "issues": "https://github.com/selective-php/xmldsig/issues",
-                "source": "https://github.com/selective-php/xmldsig/tree/3.1.0"
+                "issues": "https://github.com/robrichards/xmlseclibs/issues",
+                "source": "https://github.com/robrichards/xmlseclibs/tree/3.1.1"
             },
-            "abandoned": "robrichards/xmlseclibs",
-            "time": "2023-09-09T22:17:11+00:00"
+            "time": "2020-09-05T13:00:25+00:00"
         }
     ],
     "packages-dev": [
@@ -3049,7 +3040,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.1",
+        "php": ">=8.0",
         "ext-dom": "*",
         "ext-libxml": "*",
         "ext-simplexml": "*",
