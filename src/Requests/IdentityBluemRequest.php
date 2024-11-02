@@ -174,13 +174,12 @@ class IdentityBluemRequest extends BluemRequest
      *
      * This does clip your current entranceCode
      * to ensure the max length is respected.
-     *
+     * @deprecated Since iDeal 2.0, the status GUI via this entranceCode mutation is no longer available.
      * @return void
      */
     public function enableStatusGUI()
     {
-        $this->entranceCode = "showConsumerGui" .
-                              substr($this->entranceCode, 0, 25);
+        return;
     }
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
