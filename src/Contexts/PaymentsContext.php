@@ -19,13 +19,15 @@ class PaymentsContext extends BluemContext
     public const PAYMENT_METHOD_CREDITCARD = 'CreditCard';
     public const PAYMENT_METHOD_SOFORT = 'Sofort';
     public const PAYMENT_METHOD_CARTE_BANCAIRE = 'CarteBancaire';
+    public const PAYMENT_METHOD_BANCONTACT = 'Bancontact';
 
     public const PAYMENT_METHODS = [
         self::PAYMENT_METHOD_IDEAL,
         self::PAYMENT_METHOD_PAYPAL,
         self::PAYMENT_METHOD_CREDITCARD,
         self::PAYMENT_METHOD_SOFORT,
-        self::PAYMENT_METHOD_CARTE_BANCAIRE
+        self::PAYMENT_METHOD_CARTE_BANCAIRE,
+        self::PAYMENT_METHOD_BANCONTACT,
     ];
 
     public string $debtorWalletElementName = self::PAYMENT_METHOD_IDEAL;
@@ -130,6 +132,11 @@ class PaymentsContext extends BluemContext
         //            // add upcoming validation here
         //        }
         //
+        //          if($this->isBancontact()) {
+        //              // validate DebtorAccountName to be TokenLength70SimpleType with minOccurs="0"
+        //              // validate DebtorAccount to be TokenLength70SimpleType with minOccurs="0"
+        //          }
+
         //        return [];
     }
 
@@ -161,5 +168,10 @@ class PaymentsContext extends BluemContext
     public function isCarteBancaire(): bool
     {
         return $this->debtorWalletElementName === self::PAYMENT_METHOD_CARTE_BANCAIRE;
+    }
+
+    public function isBancontact(): bool
+    {
+        return $this->debtorWalletElementName === self::PAYMENT_METHOD_BANCONTACT;
     }
 }
