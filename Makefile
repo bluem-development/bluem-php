@@ -1,4 +1,5 @@
 # Executables and shared options
+PHP := php
 PHPUNIT := ./vendor/bin/phpunit
 RECTOR := ./vendor/bin/rector
 PHPCS := ./vendor/bin/phpcs
