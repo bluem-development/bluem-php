@@ -5,6 +5,7 @@
     "keywords": ["bluem", "php", "interface", "wrapper", "emandate", "epayment", "idin"],
     "homepage": "https://bluem-development.github.io/bluem-php/",
     "license": "GPL-3.0-or-later",
+    "version": "2.3.4.2",
     "authors": [{
         "name": "Bluem Plugin Support",
         "email": "pluginsupport@bluem.nl",
