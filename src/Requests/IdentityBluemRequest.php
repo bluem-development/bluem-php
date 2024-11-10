@@ -11,6 +11,7 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Contexts\IdentityContext;
+use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Exception;
 use stdClass;
@@ -68,8 +69,8 @@ class IdentityBluemRequest extends BluemRequest
 
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         $this->description     = $this->_sanitizeDescription($description);
-        if ($debtorReturnURL == "") {
-            throw new Exception("Debtor return URL is required");
+        if (empty($debtorReturnURL)) {
+            throw new InvalidBluemRequestException("Debtor return URL is required");
         }
 
         $this->debtorReturnURL = $debtorReturnURL . ('?debtorReference=' . $this->debtorReference);
