@@ -14,25 +14,10 @@ use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use stdClass;
 
-class BluemTest extends TestCase
+class BluemTest extends BluemTestCase
 {
-    private Bluem $bluem;
-
-    /**
-     * @throws InvalidBluemConfigurationException
-     */
-    protected function setUp(): void
-    {
-        // Mock the configuration as needed
-        $mockedConfig = $this->getConfig();
-        $this->bluem = new Bluem($mockedConfig);
-    }
-
-
 
     public function testConstructorWithValidConfig(): void
     {
@@ -84,25 +69,4 @@ class BluemTest extends TestCase
         $this->assertInstanceOf(ErrorBluemResponse::class, $result);
     }
 
-    // helper classes
-    private function getConfig(): stdClass
-    {
-        $bluem_config = new stdClass;
-        $bluem_config->environment = 'test';
-        $bluem_config->senderID = 'S12345';
-
-        $bluem_config->brandID = 'BLUEM_BRANDID';
-        $bluem_config->test_accessToken = 'BLUEM_TEST_ACCESS_TOKEN';
-        $bluem_config->IDINBrandID = 'BLUEM_BRANDID';
-        $bluem_config->merchantID = 'BLUEM_MERCHANTID';
-        $bluem_config->merchantReturnURLBase = 'BLUEM_MERCHANTRETURNURLBASE';
-
-        $bluem_config->production_accessToken = "";
-        $bluem_config->expectedReturnStatus = "success";
-        $bluem_config->eMandateReason = "eMandateReason";
-        $bluem_config->sequenceType = "OOFF";
-        $bluem_config->localInstrumentCode = "B2B";
-
-        return $bluem_config;
-    }
 }
