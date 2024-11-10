@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -193,7 +194,7 @@ class PaymentBluemRequest extends BluemRequest
         if (!empty($BIC)) {
             $this->context->addPaymentMethodDetails(
                 [
-                'BIC'=>$BIC
+                'BIC' => $BIC
                 ]
             );
         }
@@ -211,7 +212,7 @@ class PaymentBluemRequest extends BluemRequest
         if (!empty($payPalAccount)) {
             $this->context->addPaymentMethodDetails(
                 [
-                'PayPalAccount'=>$payPalAccount
+                'PayPalAccount' => $payPalAccount
                 ]
             );
         }
@@ -231,16 +232,17 @@ class PaymentBluemRequest extends BluemRequest
         /**
          * Prepared for future use.
          */
-        if (!empty($cardNumber) || !empty($name) || !empty($securityCode)
+        if (
+            !empty($cardNumber) || !empty($name) || !empty($securityCode)
             || !empty($expirationDateMonth) || !empty($expirationDateYear)
         ) {
             $this->context->addPaymentMethodDetails(
                 [
-                'CardNumber'=>$cardNumber,
-                'Name'=>$name,
-                'SecurityCode'=>$securityCode,
-                'ExpirationDateMonth'=>$expirationDateMonth,
-                'ExpirationDateYear'=>$expirationDateYear,
+                'CardNumber' => $cardNumber,
+                'Name' => $name,
+                'SecurityCode' => $securityCode,
+                'ExpirationDateMonth' => $expirationDateMonth,
+                'ExpirationDateYear' => $expirationDateYear,
                 ]
             );
         }
@@ -284,8 +286,8 @@ class PaymentBluemRequest extends BluemRequest
 
     private function addZeroPrefix($number)
     {
-        if (strlen($number.'') === 1) {
-            return (int) '0'.$number;
+        if (strlen($number . '') === 1) {
+            return (int) '0' . $number;
         }
     }
 

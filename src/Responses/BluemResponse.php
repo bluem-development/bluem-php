@@ -19,7 +19,6 @@ use SimpleXMLElement;
  */
 class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
 {
-
     public static string $response_primary_key;
     public static string $transaction_type;
     public static ?string $error_response_type = null;
@@ -76,7 +75,7 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
         return self::$response_primary_key;
     }
 
-    protected function getParentStringVariable(string $variable) : string
+    protected function getParentStringVariable(string $variable): string
     {
         return ( isset($this->{$this->getParentXmlElement()}->$variable) ) ? $this->{$this->getParentXmlElement()}->$variable . '' : '';
     }

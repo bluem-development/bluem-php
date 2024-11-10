@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -6,10 +7,8 @@
  * with this source code in the file LICENSE.
  */
 
-
 namespace Bluem\BluemPHP\Interfaces;
 
 interface WebhookInterface
 {
-
 }

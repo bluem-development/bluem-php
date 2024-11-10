@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -77,7 +78,7 @@ class MandatesContext extends BluemContext
     {
         $validationErrors = $this->validateDetails($details);
         if ($validationErrors !== []) {
-            throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
+            throw new RuntimeException('Invalid details given: ' . implode(', ', $validationErrors));
         }
 
         $this->paymentMethodDetails = $details;
