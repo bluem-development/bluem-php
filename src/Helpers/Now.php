@@ -54,7 +54,7 @@ class Now
         $this->dateTime = $this->dateTime->add(new DateInterval("P{$days}D"));
         return $this;
     }
-    
+
     /**
      * @throws Exception
      */

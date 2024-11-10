@@ -1,11 +1,11 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
-
 
 namespace Bluem\BluemPHP\Helpers;
 
@@ -14,7 +14,6 @@ use Stringable;
 
 class BluemCurrency implements Stringable
 {
-
     private const EURO_CURRENCY = 'EUR';
     private const US_DOLLAR_CURRENCY = 'USD';
 

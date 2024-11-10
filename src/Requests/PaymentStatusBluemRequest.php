@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -27,15 +28,18 @@ class PaymentStatusBluemRequest extends BluemRequest
         parent::__construct($config, $entranceCode, $expected_return);
 
         if ($config instanceof BluemConfiguration) {
-            if (isset($config->paymentBrandID)
+            if (
+                isset($config->paymentBrandID)
                 && $config->paymentBrandID !== ""
             ) {
                 $config->setBrandID($config->paymentBrandID);
             } else {
                 $config->setBrandID($config->brandID);
             }
-        } elseif ($config instanceof \stdClass && isset($config->paymentBrandID)
-            && $config->paymentBrandID !== "") {
+        } elseif (
+            $config instanceof \stdClass && isset($config->paymentBrandID)
+            && $config->paymentBrandID !== ""
+        ) {
             $config->brandID = $config->paymentBrandID;
         }
 
