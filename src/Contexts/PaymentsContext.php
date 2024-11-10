@@ -42,6 +42,7 @@ class PaymentsContext extends BluemContext
      */
     public function __construct()
     {
+        // @todo: make BICs method-specific
         parent::__construct(
             [
                 new BIC("ABNANL2A", "ABN AMRO"),

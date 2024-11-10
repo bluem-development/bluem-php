@@ -348,8 +348,10 @@ class PaymentBluemRequest extends BluemRequest
         } elseif ($this->context->isSofort()) {
             // if specific sofort body becomes required in the future; please add it here
         } elseif ($this->context->isCarteBancaire()) {
+//            $res .= "CARTE_BANCAIRE";
             // if specific carte bancaire body becomes required in the future; please add it here
         } elseif ($this->context->isBancontact()) {
+//            $res .= "BANCONTACT";
             // if specific bancontact body becomes required in the future; please add it here
         }
 
@@ -366,7 +368,7 @@ class PaymentBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
-    public function selectDebtorWallet($BIC)
+    public function selectDebtorWallet($BIC): void
     {
 
         if (! in_array($BIC, $this->context->getBICCodes())) {
