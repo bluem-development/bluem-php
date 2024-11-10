@@ -1,11 +1,11 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
-
 
 namespace Bluem\BluemPHP\Helpers;
 
@@ -66,7 +66,9 @@ class BluemConfiguration
         $validated = $this->validator->validate($raw);
 
         if ($validated === false) {
-            throw new InvalidBluemConfigurationException('Bluem Configuration is not valid: ' . $this->errorsAsString());
+            throw new InvalidBluemConfigurationException(
+                'Bluem Configuration is not valid: ' . $this->errorsAsString()
+            );
         }
 
         $this->environment           = $validated->environment ?? self::TESTING_ENVIRONMENT;
@@ -120,7 +122,7 @@ class BluemConfiguration
         }
 
         $prefix = str_replace($available_services, '', $brandID);
-        return $prefix.ucfirst($service);
+        return $prefix . ucfirst($service);
     }
 
     /**

@@ -21,10 +21,13 @@ jobs:
             - name: Run composer
               uses: php-actions/composer@v5
 
+            - name: PHP CodeSniffer
+              run: ./vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1 --standard=PSR12 --exclude=Generic.NamingConventions.UpperCaseConstantName,PSR1.Methods.CamelCapsMethodName,PSR2.Methods.MethodDeclaration ./src
+
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v3
               with:
-                  version: 9.5
+                  version: 10.0
                   php_version: 8.1
                   bootstrap: ./vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml

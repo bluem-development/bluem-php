@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -12,7 +13,6 @@ use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 
 abstract class BluemContext implements BluemContextInterface
 {
-
     public function __construct(public array $BICs = [])
     {
     }

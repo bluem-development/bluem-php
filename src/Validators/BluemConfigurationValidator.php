@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -8,6 +9,7 @@
 
 namespace Bluem\BluemPHP\Validators;
 
+use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Exception;
 use Throwable;
 
@@ -24,7 +26,7 @@ class BluemConfigurationValidator
 {
     private ?array $errors = null;
 
-    function validate($config)
+    public function validate($config)
     {
 
         // essential validation
@@ -44,7 +46,6 @@ class BluemConfigurationValidator
             $config = $this->_validateEMandateReason($config);
             $config = $this->_validateLocalInstrumentCode($config);
             $config = $this->_validateMerchantReturnURLBase($config);
-
         } catch (Throwable $th) {
             $this->errors[] = $th->getMessage();
 
@@ -56,15 +57,16 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
-        if (!in_array(
-            $config->environment,
-            [
-            BLUEM_ENVIRONMENT_TESTING,
-            BLUEM_ENVIRONMENT_ACCEPTANCE,
-            BLUEM_ENVIRONMENT_PRODUCTION
-            ],
-            true
-        )
+        if (
+            !in_array(
+                $config->environment,
+                [
+                BLUEM_ENVIRONMENT_TESTING,
+                BLUEM_ENVIRONMENT_ACCEPTANCE,
+                BLUEM_ENVIRONMENT_PRODUCTION
+                ],
+                true
+            )
         ) {
             throw new Exception(
                 "Invalid environment setting, should be either
@@ -101,7 +103,8 @@ class BluemConfigurationValidator
 
     private function _validateTest_accessToken($config)
     {
-        if ($config->environment === BLUEM_ENVIRONMENT_TESTING
+        if (
+            $config->environment === BLUEM_ENVIRONMENT_TESTING
             && ( ! isset($config->test_accessToken)
             || $config->test_accessToken === "" )
         ) {
@@ -118,7 +121,8 @@ class BluemConfigurationValidator
     {
         // only required if mode is set to PROD
         // production_accessToken
-        if ($config->environment === BLUEM_ENVIRONMENT_PRODUCTION
+        if (
+            $config->environment === BLUEM_ENVIRONMENT_PRODUCTION
             && ( ! isset($config->production_accessToken)
             || $config->production_accessToken === "" )
         ) {
@@ -135,7 +139,10 @@ class BluemConfigurationValidator
     private function _validateBrandID($config)
     {
         if (! isset($config->brandID)) {
-            throw new Exception("brandID not set; please add this to your configuration when instantiating the Bluem integration");
+            throw new InvalidBluemConfigurationException(
+                "brandID not set; please add this to your configuration " .
+                "when instantiating the Bluem integration"
+            );
         }
 
         return $config;
@@ -180,7 +187,8 @@ class BluemConfigurationValidator
     private function _validateExpectedReturnStatus($config): mixed
     {
         if ($config->environment === BLUEM_ENVIRONMENT_TESTING) {
-            if (! isset($config->expectedReturnStatus)
+            if (
+                ! isset($config->expectedReturnStatus)
                 || ( $config->expectedReturnStatus !== ""
                 && !in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
             ) {
@@ -219,7 +227,8 @@ class BluemConfigurationValidator
 
     private function _validateLocalInstrumentCode($config)
     {
-        if (! isset($config->localInstrumentCode)
+        if (
+            ! isset($config->localInstrumentCode)
             || ! in_array(
                 $config->localInstrumentCode,
                 [ 'B2B', 'CORE' ]

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -9,6 +10,7 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
+use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Exception;
 
 define("BLUEM_DEFAULT_MIN_AGE", 18);
@@ -60,8 +62,8 @@ class IdentityBluemRequest extends BluemRequest
 
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         $this->description     = $this->_sanitizeDescription($description);
-        if ($debtorReturnURL == "") {
-            throw new Exception("Debtor return URL is required");
+        if (empty($debtorReturnURL)) {
+            throw new InvalidBluemRequestException("Debtor return URL is required");
         }
         $this->debtorReturnURL = $debtorReturnURL . "?debtorReference=$this->debtorReference";
 

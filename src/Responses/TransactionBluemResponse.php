@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -10,7 +11,6 @@ namespace Bluem\BluemPHP\Responses;
 
 class TransactionBluemResponse extends BluemResponse
 {
-
     public function GetTransactionURL(): string
     {
         return $this->getParentStringVariable("TransactionURL");
