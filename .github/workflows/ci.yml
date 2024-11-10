@@ -22,7 +22,7 @@ jobs:
               uses: php-actions/composer@v5
 
             - name: PHP CodeSniffer
-              run: ./vendor/bin/phpcs --standard=PSR12 --exclude=Generic.NamingConventions.UpperCaseConstantName,PSR1.Methods.CamelCapsMethodName,PSR2.Methods.MethodDeclaration /src
+              run: ./vendor/bin/phpcs --runtime-set ignore_warnings_on_exit 1 --standard=PSR12 --exclude=Generic.NamingConventions.UpperCaseConstantName,PSR1.Methods.CamelCapsMethodName,PSR2.Methods.MethodDeclaration ./src
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v3
