@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<ruleset name="Custom PHP CodeSniffer Rules">
+
+    <!-- Set the coding standard -->
+    <rule ref="PSR12" />
+
+    <!-- Exclude specific sniffs that check capitalization and underscores -->
+    <exclude name="Generic.NamingConventions.UpperCaseConstantName" />
+    <exclude name="PSR1.Classes.ClassDeclaration.MissingNamespace" />
+    <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps" />
+    <exclude name="PSR12.Classes.ClassDeclaration.MissingNamespace" />
+
+</ruleset>
