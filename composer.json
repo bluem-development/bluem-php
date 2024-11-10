@@ -13,6 +13,7 @@
     ],
     "homepage": "https://bluem-development.github.io/bluem-php/",
     "license": "GPL-3.0-or-later",
+    "version": "2.5",
     "authors": [
         {
             "name": "Bluem Plugin Support",
