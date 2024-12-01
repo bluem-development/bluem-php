@@ -8,20 +8,23 @@
 
 namespace Bluem\BluemPHP\Contexts;
 
+use Bluem\BluemPHP\Helpers\BIC;
 use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 
 abstract class BluemContext implements BluemContextInterface
 {
-
+    /** @var BIC[] $BICs */
     public function __construct(public array $BICs = [])
     {
     }
 
+    /** @return BIC[] $BICs */
     public function getBICs(): array
     {
         return $this->BICs;
     }
 
+    /** @return string[] $codes */
     public function getBICCodes(): array
     {
         $codes = [];

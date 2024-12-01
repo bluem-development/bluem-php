@@ -25,12 +25,19 @@ class PaymentStatusBluemRequest extends BluemRequest
     ) {
         parent::__construct($config, $entranceCode, $expected_return);
 
-        if (isset($config->paymentBrandID)
+
+        if(method_exists($config,'setBrandID')) {
+            if (isset($config->paymentBrandID)
+                && $config->paymentBrandID !== ""
+            ) {
+                $config->setBrandID($config->paymentBrandID);
+            } else {
+                $config->setBrandID($config->brandID);
+            }
+        } else if (isset($config->paymentBrandID)
             && $config->paymentBrandID !== ""
         ) {
-            $config->setBrandID($config->paymentBrandID);
-        } else {
-            $config->setBrandID($config->brandID);
+            $config->brandID = $config->paymentBrandID;
         }
 
         $this->transactionID = $transactionID;

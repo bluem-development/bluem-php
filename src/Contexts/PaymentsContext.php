@@ -18,14 +18,20 @@ class PaymentsContext extends BluemContext
     public const PAYMENT_METHOD_PAYPAL = 'PayPal';
     public const PAYMENT_METHOD_CREDITCARD = 'CreditCard';
     public const PAYMENT_METHOD_SOFORT = 'Sofort';
+    public const PAYMENT_METHOD_SOFORT_DIGITAL_SERVICES = 'SofortDigitalServices';
     public const PAYMENT_METHOD_CARTE_BANCAIRE = 'CarteBancaire';
+    public const PAYMENT_METHOD_BANCONTACT = 'Bancontact';
+    public const PAYMENT_METHOD_GIROPAY = 'Giropay';
 
     public const PAYMENT_METHODS = [
         self::PAYMENT_METHOD_IDEAL,
         self::PAYMENT_METHOD_PAYPAL,
         self::PAYMENT_METHOD_CREDITCARD,
         self::PAYMENT_METHOD_SOFORT,
-        self::PAYMENT_METHOD_CARTE_BANCAIRE
+        self::PAYMENT_METHOD_SOFORT_DIGITAL_SERVICES,
+        self::PAYMENT_METHOD_CARTE_BANCAIRE,
+        self::PAYMENT_METHOD_BANCONTACT,
+        self::PAYMENT_METHOD_GIROPAY,
     ];
 
     public string $debtorWalletElementName = self::PAYMENT_METHOD_IDEAL;
