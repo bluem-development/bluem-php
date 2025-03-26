@@ -11,6 +11,20 @@ Utilized by other applications as well:
 - [Magento2 module](https://github.com/bluem-development/bluem-magento/), available for Bluem customers.
 - Several third-party customer applications by Bluem customers.
 
+## Documentation
+
+> Read our improved documentation [**here**](https://bluem-development.github.io/bluem-docs/bluemphp.html)
+
+We have several guides available there. They include:
+- [Getting started guide](https://bluem-development.github.io/bluem-docs/tutorial-configuration.html)
+- [Tutorial on payments](https://bluem-development.github.io/bluem-docs/tutorial-payments.html)
+- [Tutorial on webhooks](https://bluem-development.github.io/bluem-docs/tutorial-webhooks.html)
+- More are coming soon!
+
+## Remaining documentation
+
+Most of this will be migrated into the documentation mentioned above. Note: You might find duplicate information below.
+
 ## Table of Contents
 * [Requirements](#requirements)
 * [Getting started:](#getting-started)
@@ -237,86 +251,6 @@ The Webhook is only needed for ePayments and eMandates: online stores/portals th
 
 Please note that the flow for the IBAN-Name check is shorter: a TransactionRequest is performed. The results return as a TransactionResponse. 
 This is because the end-user is not needed; the call is straight to the Bank Database, that provides in the TransactionResponse the IBAN-Name check results. 
-
-## Preselecting a bank for Payment requests using debtorWallet 
-**Note:** This is relevant for bank-based transactions and services:
-
-It is possible to preselect a Bank within your own application for Payments, based on an IssuerID (BIC/Swift code) when creating a Mandate, Payment or Identity request. This can be used if you want to user to select the given bank in your own interface and skip the bank selection within the Bluem portal interface.
-This reduces the amount of steps required by performing the selection of the bank within your own application and interface by utilizing the preselection feature from the PHP library on the request object as so:
-
-```php
-$BIC = "INGBNL2A";
-$request->selectDebtorWallet($BIC);
-```
-Parameter has to be a valid BIC code of a supported bank. An invalid BIC code will trigger an exception. **Please note that supported BICs differ per service as not every bank offers the same services!** The supported BIC codes per service can also be requested from a Bluem object, given the service context. **As appendix to this Documentation file, you can find a full list of all BICs per context.**
-
-Illustrated here is that a list of BICs per context can also be retrieved programmatically:
-
-```php
-$MandatesBICs = $bluem->retrieveBICsForContext("Mandates"); // also specific to localInstrumentCode, see notes.
-$PaymentsBICs = $bluem->retrieveBICsForContext("Payments");
-$IdentityBICs = $bluem->retrieveBICsForContext("Identity");
-```
-Input of a different context will trigger an exception. If valid, the result is an array of `Bluem\BluemPHP\BIC` objects with attributes `IssuerID` and `IssuerName`: the BIC and Bank name respectively. You can use this to populate your user interface.
-
-Please note that the BIC list will vary when a different `localInstrumentCode` is configured. The localInstrumentCode `CORE` and `B2B` are supported by different banks. Based on your configuration, the right BIC list is loaded from context automatically and used to verify the debtorWallet.
-
-This method can be used when creating iDIN and when creating iDEAL requests; you could store the selected bank (“Issuer”) on user level and use it when creating a request for your user.
-- You can inform the user WHY this is necessary and refer to the new laws and rules, in your own website/application or refer to the news/public announcements.
-- You can inform the user about the amount of trouble required: display a piece of text saying that it only takes a minute or two, and that it is stored for your convenience: that it ensures integrity, and a valid webshop experience.
-
-## Using different Payment transaction methods
-
-**Important note: ensure you have the right BrandID set up for specific payment methods. Refer to your account manager to retrieve a list of the specific BrandIDs per payment method**
-
-You can allow the PayPal and Creditcard payment methods by selecting these within the request object before sending it.
-
-To use iDeal, (default option). A BIC **can** be provided. If left empty, bank selection will occur in the Bluem portal.
-```php
-$BIC = 'INGBNL2A';
-$request = $request->setPaymentMethodToIDEAL($BIC); 
-```
-
-To use PayPal, give in a PayPal account email address. The email is also not required.
-```php
-$payPalAccount = 'john.doe@gmail.com';
-$request = $request->setPaymentMethodToPayPal($payPalAccount); 
-```
-
-To use Creditcards, you can set the credit card details as follows (not required)
-```php
-$request = $request->setPaymentMethodToCreditCard();
-```
-or
-```php
-$cardNumber = '1234000012340000';
-$name = 'John Doe';
-$securityCode = 123;
-$expirationDateMonth = 11;
-$expirationDateYear = 2025;
-
-$request = $request->setPaymentMethodToCreditCard(
-    $cardNumber,
-    $name,
-    $securityCode,
-    $expirationDateMonth,
-    $expirationDateYear
-); 
-```
-
-To use Sofort, use the following method:
-```php
-$request = $request->setPaymentMethodToSofort(); 
-```
-
-To use Carte Bancaire, use the following method:
-```php
-$request = $request->setPaymentMethodToCarteBancaire(); 
-```
-
-These methods will throw an exception if required information is missing.
-
-Once the request executes, the link to the transaction will send you to the Bluem Portal with the corresponding interface and flow.
 
 ## Webhooks
 Webhooks exist for Payments, eMandates and Identity. They trigger during requests to the Bluem flow and send data to your application.
