@@ -49,7 +49,7 @@ class MandatesContext extends BluemContext
                 new BIC("INGBNL2A", "ING"),
                 new BIC("RABONL2U", "Rabobank"),
                 new BIC("RBRBNL21", "RegioBank"),
-                new BIC("SNSBNL2A", "SNS"),
+                new BIC("SNSBNL2A", "ASN voorheen SNS"),
                 new BIC("TRIONL2U", "Triodos Bank"),
             ];
         } else {

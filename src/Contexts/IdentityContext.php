@@ -36,7 +36,7 @@ class IdentityContext extends BluemContext
                 new BIC("INGBNL2A", "ING"),
                 new BIC("RABONL2U", "Rabobank"),
                 new BIC("RBRBNL21", "RegioBank"),
-                new BIC("SNSBNL2A", "SNS"),
+                new BIC("SNSBNL2A", "ASN voorheen SNS"),
 
                 // Triodos Bank, BIC TRIONL2U no longer supported as of 1 june 2021.
             ]
