@@ -72,7 +72,7 @@ class WebhookSignatureValidation extends WebhookValidator
         $prefix = 'webhook_bluem_nl_';
 
         // 2025 certificate on testing from July 17th, 8:30 CET time
-        if ( (  $current_date === "2024-07-17" && $current_time >= "6:30" ) || $current_date > "2024-07-17") {
+        if ( (  $current_date === "2025-07-17" && $current_time >= "6:30" ) || $current_date > "2025-07-17") {
             $timestamp = '20250717';
         } elseif ( (  $current_date === "2024-07-01" && $current_time >= "12:00" ) || $current_date > "2024-07-01") {
             $timestamp = '20240701';
