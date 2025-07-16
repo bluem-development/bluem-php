@@ -72,7 +72,7 @@ class WebhookSignatureValidation extends WebhookValidator
         $prefix = 'webhook_bluem_nl_';
 
         // 2025 certificate on production from July 18th, 8:30 CET time
-        if ($this->env === BLUEM_ENVIRONMENT_PRODUCTION && ( ( $current_date === "2025-07-18" && $current_time >= "08:30" ) || $current_date > "2023-07-18")) {
+        if ($this->env === BLUEM_ENVIRONMENT_PRODUCTION && ( ( $current_date === "2025-07-18" && $current_time >= "08:30" ) || $current_date > "2025-07-18")) {
             $timestamp = '20250717';
         // 2025 certificate on testing & acceptance from July 17th, 8:30 CET time
         } elseif (($this->env === BLUEM_ENVIRONMENT_TESTING || $this->env === BLUEM_ENVIRONMENT_ACCEPTANCE)
