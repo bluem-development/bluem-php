@@ -859,12 +859,12 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 #### ePayments
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
+- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - bunq  <BR> BIC: `BUNQNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Knab  <BR> BIC: `KNABNL2H`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
-- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - Triodos Bank  <BR> BIC: `TRIONL2U`
 - Van Lanschot  <BR> BIC: `FVLBNL22`
 - Revolut   <BR> BIC: `REVOLT21`
