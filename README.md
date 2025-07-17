@@ -864,7 +864,7 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 - Knab  <BR> BIC: `KNABNL2H`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
-- SNS   <BR> BIC: `SNSBNL2A`
+- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - Triodos Bank  <BR> BIC: `TRIONL2U`
 - Van Lanschot  <BR> BIC: `FVLBNL22`
 - Revolut   <BR> BIC: `REVOLT21`
@@ -874,10 +874,10 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 #### eMandates CORE
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
+- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
-- SNS   <BR> BIC: `SNSBNL2A`
 - Triodos Bank  <BR> BIC: `TRIONL2U`
 #### eMandates B2B
 - ABN AMRO  <BR> BIC: `ABNANL2A`
@@ -887,11 +887,11 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 #### Identity
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
+- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - bunq  <BR> BIC: `BUNQNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
-- SNS   <BR> BIC: `SNSBNL2A`
 
 Please note: Knab with BIC: `KNABNL2H` does not support eMandates CORE anymore as of 4th of October 2023.
 
