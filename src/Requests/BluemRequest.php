@@ -453,4 +453,18 @@ class BluemRequest implements BluemRequestInterface
     {
         $this->brandID = $brandID;
     }
+
+    /**
+     * Use the right separator based on the presence of a query string
+     */
+    protected function appendToUrl(string $urlBase, string $key, $value): string
+    {
+        $hasQueryString = preg_match('/\?.+=.+/', $urlBase);
+
+        if ($hasQueryString) {
+            return "{$urlBase}&amp;{$key}={$value}";
+        }
+
+        return "{$urlBase}?{$key}={$value}";
+    }
 }
