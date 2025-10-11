@@ -74,6 +74,9 @@ Please contact us if you have any questions regarding the examples or the implem
 
 ## Notes per version
 
+### Version 2.4
+- Added Bancontact support
+
 ### Version 2.3.2.4 (latest)
 - Added bank 'N26' to ePayments BIC list.
 - Restructured code for Magento compatibility.
@@ -313,6 +316,12 @@ To use Carte Bancaire, use the following method:
 ```php
 $request = $request->setPaymentMethodToCarteBancaire(); 
 ```
+
+To use Bancontact, use the following method
+```php
+$request = $request->setPaymentMethodToBancontact();
+```
+
 
 These methods will throw an exception if required information is missing.
 
