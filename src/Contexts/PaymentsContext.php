@@ -25,6 +25,7 @@ class PaymentsContext extends BluemContext
     public const PAYMENT_METHOD_SOFORT = 'Sofort';
 
     public const PAYMENT_METHOD_CARTE_BANCAIRE = 'CarteBancaire';
+    public const PAYMENT_METHOD_BANCONTACT = 'Bancontact';
 
     public const PAYMENT_METHOD_BANCONTACT = 'Bancontact';
 
