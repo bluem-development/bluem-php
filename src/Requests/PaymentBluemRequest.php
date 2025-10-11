@@ -260,6 +260,13 @@ class PaymentBluemRequest extends BluemRequest
         return $this;
     }
 
+    public function setPaymentMethodToBancontact(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
+        return $this;
+    }
+
+
     /**
      * @param mixed $dueDateTime
      * @return string
