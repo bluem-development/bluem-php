@@ -22,7 +22,8 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-openssl": "*",
-        "selective/xmldsig": "^3.0"
+        "selective/xmldsig": "^3.0",
+        "sentry/sentry": "^4.7"
     },
     "autoload": {
         "psr-4": {
