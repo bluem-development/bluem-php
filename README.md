@@ -1,4 +1,4 @@
-![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
+<img width="250" height="250" alt="image" src="https://github.com/user-attachments/assets/c1e56d5e-87c6-41db-8076-880255523f86" />
 
 **Bluem-php for Payment, Mandates, iDIN & IBAN-Name check**
 
