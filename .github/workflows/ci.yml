@@ -35,7 +35,7 @@ jobs:
                   php_version: ${{ matrix.php-version }}
 
             - name: PHPCS Lint
-              run: vendor/bin/phpcs --standard=PSR12 src tests
+              run: make lint
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v4
