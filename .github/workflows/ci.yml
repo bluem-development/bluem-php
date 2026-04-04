@@ -1,14 +1,15 @@
 name: CI
-
 on: [push]
-
 jobs:
     build-test:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php-version: ['8.3', '8.4']
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Setup .env
               run: cp .env.example .env
@@ -18,13 +19,21 @@ jobs:
                 sed -i "s/BLUEM_SENDER_ID=S/BLUEM_SENDER_ID=${{ secrets.BLUEM_SENDER_ID }}/g" .env
                 sed -i "s/BLUEM_TEST_ACCESS_TOKEN=/BLUEM_TEST_ACCESS_TOKEN=${{ secrets.BLUEM_TEST_ACCESS_TOKEN }}/g" .env
 
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: mbstring, intl
+                  coverage: xdebug
+
             - name: Run composer
-              uses: php-actions/composer@v5
+              uses: php-actions/composer@v6
+              with:
+                  php_version: ${{ matrix.php-version }}
 
             - name: PHPUnit Tests
               uses: php-actions/phpunit@v3
               with:
-                  version: 9.5
-                  php_version: 8.1
+                  php_version: ${{ matrix.php-version }}
                   bootstrap: ./vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
