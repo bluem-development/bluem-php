@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -68,4 +69,25 @@ class BluemTest extends BluemTestCase
         $this->assertInstanceOf(ErrorBluemResponse::class, $result);
     }
 
+    // helper classes
+    private function getConfig(): stdClass
+    {
+        $bluem_config = new stdClass();
+        $bluem_config->environment = 'test';
+        $bluem_config->senderID = 'S12345';
+
+        $bluem_config->brandID = 'BLUEM_BRANDID';
+        $bluem_config->test_accessToken = 'BLUEM_TEST_ACCESS_TOKEN';
+        $bluem_config->IDINBrandID = 'BLUEM_BRANDID';
+        $bluem_config->merchantID = 'BLUEM_MERCHANTID';
+        $bluem_config->merchantReturnURLBase = 'BLUEM_MERCHANTRETURNURLBASE';
+
+        $bluem_config->production_accessToken = "";
+        $bluem_config->expectedReturnStatus = "success";
+        $bluem_config->eMandateReason = "eMandateReason";
+        $bluem_config->sequenceType = "OOFF";
+        $bluem_config->localInstrumentCode = "B2B";
+
+        return $bluem_config;
+    }
 }

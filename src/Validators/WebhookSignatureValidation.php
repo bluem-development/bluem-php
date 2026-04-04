@@ -17,7 +17,7 @@ use RobRichards\XMLSecLibs\XMLSecurityKey;
 
 class WebhookSignatureValidation extends WebhookValidator
 {
-    private const string KEY_FOLDER = "/keys/";
+    private const string KEY_FOLDER = '/keys/';
 
     public function __construct(
         private readonly string $env
@@ -46,6 +46,7 @@ class WebhookSignatureValidation extends WebhookValidator
         } catch (Exception $e) {
             $this->addError('Reference Validation Failed: ' . $e->getMessage());
             fclose($temp_file);
+
             return $this;
         }
 
@@ -54,18 +55,20 @@ class WebhookSignatureValidation extends WebhookValidator
             if (! $objKey instanceof XMLSecurityKey) {
                 $this->addError('Unable to determine signature key algorithm');
                 fclose($temp_file);
+
                 return $this;
             }
             $objKey->loadKey($this->getPublicKeyFilePath(), true);
         } catch (Exception) {
             $this->addError('Could not load public key');
             fclose($temp_file);
+
             return $this;
         }
 
         try {
             if ($objDSig->verify($objKey) !== 1) {
-                $this->addError("Invalid signature");
+                $this->addError('Invalid signature');
             }
         } catch (Exception $exception) {
             $this->addError($exception->getMessage());
@@ -96,7 +99,6 @@ class WebhookSignatureValidation extends WebhookValidator
         $timestamp = '202206090200-202307110159';
 
         if ($this->uses2026Certificate($current_date, $current_time)) {
-            // Placeholder until the 2026 certificate file is available.
             $timestamp = '20250717';
         } elseif ($this->uses2025Certificate($current_date, $current_time)) {
             $timestamp = '20250717';

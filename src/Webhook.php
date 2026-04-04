@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -45,6 +46,7 @@ class Webhook implements WebhookInterface
 
     private function parse($xmlData = ''): void
     {
+        if (empty($xmlData)) {
         if (empty($xmlData)) {
             if (!$this->isHttpsRequest()) {
                 $this->exitWithError();
@@ -361,15 +363,18 @@ class Webhook implements WebhookInterface
     public function getRequestType(): string
     {
         return $this->getPayload()->RequestType . "";
+        return $this->getPayload()->RequestType . "";
     }
 
     public function getAuthenticationAuthorityID(): string
     {
         return $this->getPayload()->AuthenticationAuthorityID . '';
+        return $this->getPayload()->AuthenticationAuthorityID . '';
     }
 
     public function getAuthenticationAuthorityName(): string
     {
+        return $this->getPayload()->AuthenticationAuthorityName . '';
         return $this->getPayload()->AuthenticationAuthorityName . '';
     }
 
@@ -384,7 +389,16 @@ class Webhook implements WebhookInterface
         return [
             'DateTime' => $report->DateTime . '',
             'CustomerIDResponse' => $report->CustomerIDResponse . '',
+            'DateTime' => $report->DateTime . '',
+            'CustomerIDResponse' => $report->CustomerIDResponse . '',
             'NameResponse' => [
+                'Initials' => $report->NameResponse->Initials . '',
+                'LegalLastName' => $report->NameResponse->LegalLastName . '',
+                'LegalLastNamePrefix' => $report->NameResponse->LegalLastNamePrefix . '',
+                'PreferredLastName' => $report->NameResponse->PreferredLastName . '',
+                'PreferredLastNamePrefix' => $report->NameResponse->PreferredLastNamePrefix . '',
+                'PartnerLastName' => $report->NameResponse->PartnerLastName . '',
+                'PartnerLastNamePrefix' => $report->NameResponse->PartnerLastNamePrefix . '',
                 'Initials' => $report->NameResponse->Initials . '',
                 'LegalLastName' => $report->NameResponse->LegalLastName . '',
                 'LegalLastNamePrefix' => $report->NameResponse->LegalLastNamePrefix . '',
@@ -400,10 +414,17 @@ class Webhook implements WebhookInterface
                 'PostalCode' => $report->AddressResponse->PostalCode . '',
                 'City' => $report->AddressResponse->City . '',
                 'CountryCode' => $report->AddressResponse->CountryCode . '',
+                'Street' => $report->AddressResponse->Street . '',
+                'HouseNumber' => $report->AddressResponse->HouseNumber . '',
+                'HouseNumberSuffix' => $report->AddressResponse->HouseNumberSuffix . '' ?? '',
+                'PostalCode' => $report->AddressResponse->PostalCode . '',
+                'City' => $report->AddressResponse->City . '',
+                'CountryCode' => $report->AddressResponse->CountryCode . '',
             ],
             'BirthDateResponse' => $report->BirthDateResponse . '',
             'GenderResponse' => $report->GenderResponse . '',
             'TelephoneResponse1' => $report->TelephoneResponse1 . '',
+            'EmailResponse' => $report->EmailResponse . ''
             'EmailResponse' => $report->EmailResponse . ''
         ];
     }

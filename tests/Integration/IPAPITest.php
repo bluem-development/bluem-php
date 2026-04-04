@@ -42,7 +42,7 @@ class IPAPITest extends TestCase
             [
                 'ipAddress' => '31.187.128.0',
                 'expectedNetherlands' => true,
-            ]
+            ],
             // @todo: add true negative test and check for usage rate limits to prevent false negatives.
         ];
     }

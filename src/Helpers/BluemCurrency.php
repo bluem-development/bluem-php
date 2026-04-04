@@ -8,6 +8,7 @@ declare(strict_types=1);
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Bluem\BluemPHP\Helpers;
 
 use RuntimeException;
@@ -15,7 +16,6 @@ use Stringable;
 
 class BluemCurrency implements Stringable
 {
-
     private const string EURO_CURRENCY = 'EUR';
 
     private const string US_DOLLAR_CURRENCY = 'USD';

@@ -79,6 +79,7 @@ class Bluem
     public function __construct(mixed $rawConfig)
     {
         if ($rawConfig === null) {
+        if ($rawConfig === null) {
             throw new InvalidBluemConfigurationException('No configuration given');
         }
 
@@ -206,7 +207,7 @@ class Bluem
     {
         $validator = new BluemXMLValidator();
         if (
-            !$validator->validate(
+            ! $validator->validate(
                 $transaction_request->RequestContext(),
                 $transaction_request->XmlString()
             )
@@ -321,8 +322,8 @@ class Bluem
                 default:
                     return new ErrorBluemResponse('Unexpected / erroneous response (code ' . $response_status . ')');
             }
-        } catch (Throwable $th) {
-            return new ErrorBluemResponse('HTTP Request Error' . $th->getMessage());
+        } catch (Throwable $throwable) {
+            return new ErrorBluemResponse('HTTP Request Error' . $throwable->getMessage());
             // @todo improve request return exceptions; add our own exception type
         }
     }

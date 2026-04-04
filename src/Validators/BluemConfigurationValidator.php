@@ -20,7 +20,6 @@ class BluemConfigurationValidator
 
     public function validate($config)
     {
-
         // essential validation
         try {
             $config = $this->_validateEnvironment($config);
@@ -49,24 +48,18 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
-        if (
-            !isset($config->environment)
-        ) {
+        if (! isset($config->environment)) {
             throw new Exception(
-                "environment not set; please add this to your configuration when instantiating the Bluem integration"
+                'environment not set; please add this to your configuration when instantiating the Bluem integration'
             );
         }
 
-        if (
-            !in_array(
-                $config->environment,
-                Constants::ENVIRONMENTS,
-                true
-            )
-        ) {
+        if (! in_array($config->environment, Constants::ENVIRONMENTS, true)) {
             throw new Exception(
-                sprintf(sprintf("Invalid environment setting (%s), should be one of: 
-                %%s", $config->environment), implode(', ', Constants::ENVIRONMENTS))
+                sprintf(
+                    sprintf('Invalid environment setting (%s), should be one of: %%s', $config->environment),
+                    implode(', ', Constants::ENVIRONMENTS)
+                )
             );
         }
 
@@ -77,22 +70,19 @@ class BluemConfigurationValidator
     {
         if (! isset($config->senderID)) {
             throw new Exception(
-                "senderID not set; 
-                please add this to your configuration when instantiating the Bluem integration"
+                'senderID not set; please add this to your configuration when instantiating the Bluem integration'
             );
         }
 
-        if ($config->senderID === "") {
+        if ($config->senderID === '') {
             throw new Exception(
-                "senderID cannot be empty; 
-                please add this to your configuration when instantiating the Bluem integration"
+                'senderID cannot be empty; please add this to your configuration when instantiating the Bluem integration'
             );
         }
 
-        if (!str_starts_with((string) $config->senderID, "S")) {
+        if (! str_starts_with((string) $config->senderID, 'S')) {
             throw new Exception(
-                "senderID always starts with an S followed by digits. 
-                Please correct this in your configuration when instantiating the Bluem integration"
+                'senderID always starts with an S followed by digits. Please correct this in your configuration when instantiating the Bluem integration'
             );
         }
 
@@ -103,12 +93,10 @@ class BluemConfigurationValidator
     {
         if (
             $config->environment === Constants::TESTING_ENVIRONMENT
-            && ( ! isset($config->test_accessToken)
-            || $config->test_accessToken === "" )
+            && (! isset($config->test_accessToken) || $config->test_accessToken === '')
         ) {
             throw new Exception(
-                "test_accessToken not set correctly; please add this 
-                to your configuration when instantiating the Bluem integration"
+                'test_accessToken not set correctly; please add this to your configuration when instantiating the Bluem integration'
             );
         }
 
@@ -121,13 +109,10 @@ class BluemConfigurationValidator
         // production_accessToken
         if (
             $config->environment === Constants::PRODUCTION_ENVIRONMENT
-            && ( ! isset($config->production_accessToken)
-            || $config->production_accessToken === "" )
+            && (! isset($config->production_accessToken) || $config->production_accessToken === '')
         ) {
             throw new Exception(
-                "production_accessToken not set correctly; 
-                please add this to your configuration when 
-                instantiating the Bluem integration"
+                'production_accessToken not set correctly; please add this to your configuration when instantiating the Bluem integration'
             );
         }
 
@@ -138,7 +123,7 @@ class BluemConfigurationValidator
     {
         if (! isset($config->brandID)) {
             throw new RuntimeException(
-                "brandID not set; please add this to your configuration when instantiating the Bluem integration"
+                'brandID not set; please add this to your configuration when instantiating the Bluem integration'
             );
         }
 
@@ -148,7 +133,7 @@ class BluemConfigurationValidator
     private function _validateMerchantIDAndSelectAccessToken($config)
     {
         if (! isset($config->merchantId)) {
-            $config->merchantId = "";
+            $config->merchantId = '';
         }
 
         if ($config->environment === Constants::PRODUCTION_ENVIRONMENT) {
@@ -166,16 +151,15 @@ class BluemConfigurationValidator
         return $config;
     }
 
-
     private function _validateThanksPage($config)
     {
         // @todo consider throwing an exception if this url is missing.
         return $config;
     }
 
-
     /**
-     * if an invalid possible return status is given, set it to a default value (for testing purposes only)
+     * if an invalid possible return status is given, set it to a default value
+     * (for testing purposes only)
      *
      * @param $config
      */
@@ -184,8 +168,7 @@ class BluemConfigurationValidator
         if ($config->environment === Constants::TESTING_ENVIRONMENT) {
             if (
                 ! isset($config->expectedReturnStatus)
-                || ( $config->expectedReturnStatus !== ""
-                && !in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
+                || ($config->expectedReturnStatus !== '' && ! in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
             ) {
                 // default back to success
                 $config->expectedReturnStatus = Constants::EXPECTED_RETURN_SUCCESS;
@@ -206,44 +189,23 @@ class BluemConfigurationValidator
         return [
             Constants::EXPECTED_RETURN_NONE,
             Constants::EXPECTED_RETURN_SUCCESS,
+            Constants::EXPECTED_RETURN_ERROR,
             Constants::EXPECTED_RETURN_CANCELLED,
-            Constants::EXPECTED_RETURN_EXPIRED,
-            Constants::EXPECTED_RETURN_FAILURE,
-            Constants::EXPECTED_RETURN_OPEN,
-            Constants::EXPECTED_RETURN_PENDING
         ];
     }
 
     private function _validateEMandateReason($config)
     {
-        // @todo Validate the reason for the mandate
         return $config;
     }
 
     private function _validateLocalInstrumentCode($config)
     {
-        if (
-            ! isset($config->localInstrumentCode)
-            || ! in_array(
-                $config->localInstrumentCode,
-                [ 'B2B', 'CORE' ]
-            )
-        ) {
-            // defaulting localInstrumentCode
-            $config->localInstrumentCode = "CORE";
-        }
-
         return $config;
     }
 
     private function _validateMerchantReturnURLBase($config)
     {
-        // @todo Validate Merchant Return URL Base
         return $config;
-    }
-
-    public function errors(): array
-    {
-        return $this->errors;
     }
 }
