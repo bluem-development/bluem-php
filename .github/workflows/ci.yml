@@ -41,6 +41,6 @@ jobs:
               uses: php-actions/phpunit@v4
               with:
                   php_version: ${{ matrix.php-version }}
-                  version: 9.5
+                  version: 11
                   bootstrap: ./vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
