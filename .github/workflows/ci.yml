@@ -35,8 +35,9 @@ jobs:
               run: vendor/bin/phpcs --standard=PSR12 src tests
 
             - name: PHPUnit Tests
-              uses: php-actions/phpunit@v3
+              uses: php-actions/phpunit@v4
               with:
                   php_version: ${{ matrix.php-version }}
+                  version: 9.5
                   bootstrap: ./vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml
