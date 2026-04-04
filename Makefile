@@ -8,7 +8,7 @@ test_integration:
 	./vendor/bin/phpunit tests/Integration
 
 lint:
-	./vendor/bin/phpcs --standard=PSR12 --extensions=php --ignore=vendor/ .
+	./vendor/bin/phpcs --standard=phpcs.xml.dist --extensions=php --ignore=vendor/ .
 
 lint_fix:
-	./vendor/bin/phpcbf --standard=PSR12 --extensions=php --ignore=vendor/ .
+	./vendor/bin/phpcbf --standard=phpcs.xml.dist --extensions=php --ignore=vendor/ .
