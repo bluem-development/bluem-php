@@ -1,6 +1,6 @@
 <?php
-namespace Bluem\BluemPHP\Tests\Integration;
 
+namespace Bluem\BluemPHP\Tests\Integration;
 
 class PaymentRequestTest extends BluemGenericTestCase
 {
@@ -33,7 +33,7 @@ class PaymentRequestTest extends BluemGenericTestCase
     {
         $entranceCode = $this->bluem->CreateEntranceCode();
         $this->assertTrue(
-            (is_string($entranceCode) && $entranceCode!==""),
+            (is_string($entranceCode) && $entranceCode !== ""),
             "Valid entranceCode generated"
         );
     }
