@@ -9,7 +9,6 @@
 
 namespace Bluem\BluemPHP\Requests;
 
-use Bluem\BluemPHP\Constants;
 use Bluem\BluemPHP\Contexts\MandatesContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 
@@ -91,8 +90,8 @@ class EmandateBluemRequest extends BluemRequest
         $this->merchantID = $config->merchantID ?? "";
 
         // override with hardcoded merchantID when in test environment, according to documentation
-        if ($this->environment === Constants::TESTING_ENVIRONMENT) {
-            $this->merchantID = Constants::BLUEM_STATIC_MERCHANT_ID;
+        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+            $this->merchantID = "0020000387";
         }
 
         $this->merchantSubID = $config->merchantSubID ?? "0";
@@ -162,30 +161,30 @@ class EmandateBluemRequest extends BluemRequest
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
-        if (!$this->context->isMandate()) {
-            return '';
-        }
+        $res = '';
 
-        if (empty($this->context->getPaymentDetail('BIC'))) {
-            if (!empty($this->debtorWallet)) {
-                $bic = $this->debtorWallet;
+        if ($this->context->isMandate()) {
+            $bic = '';
+
+            if (empty($this->context->getPaymentDetail('BIC'))) {
+                if (!empty($this->debtorWallet)) {
+                    $bic = $this->debtorWallet;
+                }
             } else {
-                $bic = '';
+                $bic = $this->context->getPaymentDetail('BIC');
             }
-        } else {
-            $bic = $this->context->getPaymentDetail('BIC');
+
+            if (empty($bic)) {
+                return '';
+            }
+
+            $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+            $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
+            $res .= "<BIC>" . $bic . "</BIC>";
+            $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
+
+            return $res . ("</DebtorWallet>" . PHP_EOL);
         }
-
-        if (empty($bic)) {
-            return '';
-        }
-
-        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-        $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
-        $res .= "<BIC>" . $bic . "</BIC>";
-        $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
-
-        return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
     /**

@@ -9,12 +9,9 @@
 
 namespace Bluem\BluemPHP\Requests;
 
-use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Contexts\IdentityContext;
 use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
-use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Exception;
-use stdClass;
 
 define("BLUEM_DEFAULT_MIN_AGE", 18);
 
@@ -53,7 +50,7 @@ class IdentityBluemRequest extends BluemRequest
      * @throws Exception
      */
     public function __construct(
-        BluemConfiguration|stdClass $config,
+        $config,
         $entranceCode,
         $expectedReturn,
         array $requestCategory = [],
@@ -194,30 +191,30 @@ class IdentityBluemRequest extends BluemRequest
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
+        $res = '';
+
         if ($this->context->isIDIN()) {
-            return '';
-        }
+            $bic = '';
 
-        if (empty($this->context->getPaymentDetail('BIC'))) {
-            if (!empty($this->debtorWallet)) {
-                $bic = $this->debtorWallet;
+            if (empty($this->context->getPaymentDetail('BIC'))) {
+                if (!empty($this->debtorWallet)) {
+                    $bic = $this->debtorWallet;
+                }
             } else {
-                $bic = '';
+                $bic = $this->context->getPaymentDetail('BIC');
             }
-        } else {
-            $bic = $this->context->getPaymentDetail('BIC');
+
+            if (empty($bic)) {
+                return '';
+            }
+
+            $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+            $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
+            $res .= "<BIC>" . $bic . "</BIC>";
+            $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
+
+            return $res . ("</DebtorWallet>" . PHP_EOL);
         }
-
-        if (empty($bic)) {
-            return '';
-        }
-
-        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-        $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
-        $res .= "<BIC>" . $bic . "</BIC>";
-        $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
-
-        return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
     /**

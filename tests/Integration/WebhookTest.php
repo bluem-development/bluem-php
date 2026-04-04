@@ -1,5 +1,4 @@
 <?php
-
 /*
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -8,6 +7,7 @@
  */
 
 namespace Bluem\BluemPHP\Tests\Integration;
+
 
 class WebhookTest extends BluemGenericTestCase
 {
@@ -98,6 +98,6 @@ class WebhookTest extends BluemGenericTestCase
             }
         }
 
-        $this->assertEquals('Success', $status, $fileName . ': Status not success: ' . $status);
+        $this->assertEquals('Success', $status,  $fileName . ': Status not success: ' . $status);
     }
 }

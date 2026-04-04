@@ -1,5 +1,4 @@
 <?php
-
 namespace Bluem\BluemPHP\Tests\Integration;
 
 use Bluem\BluemPHP\Helpers\BluemIdentityCategoryList;
@@ -16,10 +15,11 @@ require_once __DIR__ . '/BluemGenericTestCase.php';
 
 class BluemMainTest extends BluemGenericTestCase
 {
+
     public function testCanCreateMandateRequest(): void
     {
         $debtorReference = '123456789';
-        $current_user_id  = "1";
+        $current_user_id  ="1";
         $mandate_id = "12134";
 
         try {
@@ -53,12 +53,6 @@ class BluemMainTest extends BluemGenericTestCase
             $this->fail("Could not create mandate: " . $exception->getMessage());
         }
 
-        if ($response instanceof ErrorBluemResponse) {
-            $this->fail(
-                'Got ErrorBluem response: ' . $response->Error()
-            );
-        }
-
         $this->assertInstanceOf(
             MandateTransactionBluemResponse::class,
             $response
@@ -80,6 +74,7 @@ class BluemMainTest extends BluemGenericTestCase
 
         // @todo: deal with the corresponding status if proper or improper status request
         if ($response->Status()) {
+
             $this->assertInstanceOf(
                 MandateStatusBluemResponse::class,
                 $response

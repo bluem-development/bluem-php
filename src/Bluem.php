@@ -34,13 +34,10 @@ use Bluem\BluemPHP\Responses\MandateStatusBluemResponse;
 use Bluem\BluemPHP\Responses\MandateTransactionBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentStatusBluemResponse;
 use Bluem\BluemPHP\Responses\PaymentTransactionBluemResponse;
-use Bluem\BluemPHP\Transport\CurlHttpTransport;
-use Bluem\BluemPHP\Transport\HttpTransportInterface;
 use Bluem\BluemPHP\Validators\BluemXMLValidator;
 use DOMException;
 use Exception;
 use RuntimeException;
-use SimpleXMLElement;
 use Throwable;
 
 if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) {
@@ -71,8 +68,6 @@ class Bluem
 
     private BluemConfiguration $configuration;
 
-    private HttpTransportInterface $transport;
-
 
     /**
      * Bluem constructor.
@@ -81,7 +76,7 @@ class Bluem
      *
      * @throws InvalidBluemConfigurationException
      */
-    public function __construct(mixed $rawConfig, ?HttpTransportInterface $transport = null)
+    public function __construct(mixed $rawConfig)
     {
         if ($rawConfig === null) {
             throw new InvalidBluemConfigurationException('No configuration given');
@@ -92,8 +87,6 @@ class Bluem
         } catch (Exception $exception) {
             throw new InvalidBluemConfigurationException($exception->getMessage(), $exception->getCode(), $exception);
         }
-
-        $this->transport = $transport ?? new CurlHttpTransport();
     }
 
 
@@ -177,9 +170,9 @@ class Bluem
             $customer_id,
             $order_id,
             $mandate_id,
-            ( $this->configuration->environment === "test" &&
-              $this->configuration->expectedReturnStatus !== null ?
-                $this->configuration->expectedReturnStatus : "" )
+            ($this->configuration->environment === "test" &&
+            $this->configuration->expectedReturnStatus !== null ?
+                $this->configuration->expectedReturnStatus : "")
         );
     }
 
@@ -209,12 +202,11 @@ class Bluem
      * @throws DOMException
      * @throws Exception
      */
-    public function PerformRequest(
-        BluemRequestInterface $transaction_request
-    ): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse {
+    public function PerformRequest(BluemRequestInterface $transaction_request): BluemResponseInterface
+    {
         $validator = new BluemXMLValidator();
         if (
-            ! $validator->validate(
+            !$validator->validate(
                 $transaction_request->RequestContext(),
                 $transaction_request->XmlString()
             )
@@ -231,18 +223,22 @@ class Bluem
         $now = new Now('UTC');
         // set timezone to UTC to let the transaction xttrs timestamp work; 8-9-2021
 
-        $xttrs_filename = $transaction_request->transaction_code . sprintf('-%s-BSP1-', $this->configuration->senderID) . $now->format('YmdHis') . "000.xml";
+        $xttrs_filename = sprintf(
+            "%s-{$this->configuration->senderID}-BSP1-%s000.xml",
+            $transaction_request->transaction_code,
+            $now->format('YmdHis')
+        );
 
         // conform Rfc1123 standard in GMT time
         // Since v2.0.5 : use preset format instead of
         // function to allow for Carbon 1.21 legacy compatibility
         $xttrs_date = $now->rfc1123();
 
-        $request_url = $transaction_request->HttpRequestURL();
+        $request_url = $transaction_request->HttpRequestUrl();
 
         $curl_xml = $transaction_request->XmlString();
 
-        $headers = [
+        $curl_headers = [
             'Access-Control-Allow-Origin: *',
             'Content-Type: application/xml; type=' . $transaction_request->transaction_code . '; charset=UTF-8',
             'x-ttrs-date: ' . $xttrs_date,
@@ -250,41 +246,72 @@ class Bluem
             'x-ttrs-filename: ' . $xttrs_filename,
         ];
 
-        try {
-            $transport_response = $this->transport->send(
-                url: $request_url,
-                headers: $headers,
-                body: "xmlRequest=" . $curl_xml
-            );
+        $curl = curl_init();
 
-            $response_status = $transport_response->statusCode;
-            $responseBody = $transport_response->body;
+        $curl_options = [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => "xmlRequest=" . $curl_xml,
+            // CURLOPT_POSTFIELDS => http_build_query($params),
+            CURLOPT_URL => $request_url,
+            CURLOPT_HTTPHEADER => $curl_headers,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_SSL_VERIFYPEER => true, // @todo: check if we can set this to true
+            CURLOPT_FOLLOWLOCATION => 1,
+            CURLOPT_TIMEOUT => 30
+        ];
+
+        // Set options to cURL request
+        curl_setopt_array($curl, $curl_options);
+
+        try {
+            // Execute cURL request
+            $response = curl_exec($curl);
+
+            // Get response HTTP status code
+            $response_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+            // Convert the XML result into array
+            $array_data = json_decode(json_encode(simplexml_load_string($response)), true);
+
+            curl_close($curl);
+
+            if (empty($response_status)) {
+                return new ErrorBluemResponse("Error: Empty response status returned");
+            }
 
             switch ($response_status) {
                 case 200:
-                    if ($responseBody === '' || $responseBody === '0') {
+                    if (empty($response)) {
                         return new ErrorBluemResponse("Error: Empty response returned");
                     }
-                    $xml = $this->parseResponseXml($responseBody);
-                    if ($xml === null) {
-                        return new ErrorBluemResponse('Error: Could not parse Bluem response XML');
-                    }
                     try {
-                        $bluemResponse = $this->fabricateResponseObject($transaction_request->transaction_code, $responseBody);
+                        $response = $this->fabricateResponseObject(
+                            $transaction_request->transaction_code,
+                            $response
+                        );
                     } catch (Throwable $th) {
-                        return new ErrorBluemResponse("Error: Could not create Bluem Response object. More details: " . $th->getMessage());
+                        return new ErrorBluemResponse(
+                            "Error: Could not create Bluem Response object. More details: " .
+                            $th->getMessage()
+                        );
                     }
-                    $rootAttributes = $xml->attributes();
-                    if ($rootAttributes !== null && isset($rootAttributes['type']) && (string) $rootAttributes['type'] === 'ErrorResponse') {
-                        $errorMessage = $this->extractErrorMessage($xml, (string) $transaction_request->transaction_code);
+                    if ($array_data['@attributes']['type'] === "ErrorResponse") {
+                        $errorMessage = match ((string)$transaction_request->transaction_code) {
+                            'SRX', 'SUD', 'TRX', 'TRS' => (string)$response->EMandateErrorResponse->Error->ErrorMessage,
+                            'PSU', 'PSX', 'PTS', 'PTX' => (string)$response->PaymentErrorResponse->Error->ErrorMessage,
+                            'ITS', 'ITX', 'ISU', 'ISX' => (string)$response->IdentityErrorResponse->Error->ErrorMessage,
+                            'INS', 'INX' => (string)$response->IBANCheckErrorResponse->Error->ErrorMessage,
+                            default => throw new RuntimeException("Invalid transaction type requested"),
+                        };
 
                         // @todo: move into a separate function
-                        return new ErrorBluemResponse("Error: " . ( $errorMessage ));
+                        return new ErrorBluemResponse("Error: " . ($errorMessage));
                     }
-                    if (! $bluemResponse->Status()) {
-                        return new ErrorBluemResponse("Error: " . $bluemResponse->Error());
+
+                    if (!$response->Status()) {
+                        return new ErrorBluemResponse("Error: " . ($response->Error->ErrorMessage));
                     }
-                    return $bluemResponse;
+                    return $response;
                 case 400:
                     return new ErrorBluemResponse('Your request was not formed correctly.');
                 case 401:
@@ -294,41 +321,10 @@ class Bluem
                 default:
                     return new ErrorBluemResponse('Unexpected / erroneous response (code ' . $response_status . ')');
             }
-        } catch (Throwable $throwable) {
-            return new ErrorBluemResponse('HTTP Request Error' . $throwable->getMessage());
+        } catch (Throwable $th) {
+            return new ErrorBluemResponse('HTTP Request Error' . $th->getMessage());
             // @todo improve request return exceptions; add our own exception type
         }
-    }
-
-    private function parseResponseXml(string $response): ?SimpleXMLElement
-    {
-        $previousUseInternalErrors = libxml_use_internal_errors(true);
-        $xml = simplexml_load_string($response);
-        libxml_clear_errors();
-        libxml_use_internal_errors($previousUseInternalErrors);
-
-        if ($xml === false) {
-            return null;
-        }
-
-        return $xml;
-    }
-
-    private function extractErrorMessage(SimpleXMLElement $xml, string $transactionCode): string
-    {
-        $errorNodeName = match ($transactionCode) {
-            'SRX', 'SUD', 'TRX', 'TRS' => 'EMandateErrorResponse',
-            'PSU', 'PSX', 'PTS', 'PTX' => 'PaymentErrorResponse',
-            'ITS', 'ITX', 'ISU', 'ISX' => 'IdentityErrorResponse',
-            'INS', 'INX' => 'IBANCheckErrorResponse',
-            default => throw new RuntimeException('Invalid transaction type requested'),
-        };
-
-        if (!isset($xml->{$errorNodeName}->Error->ErrorMessage)) {
-            return '';
-        }
-
-        return (string) $xml->{$errorNodeName}->Error->ErrorMessage;
     }
 
     /**
@@ -339,7 +335,7 @@ class Bluem
      *
      * @throws Exception
      */
-    private function fabricateResponseObject($type, $response_xml): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
+    private function fabricateResponseObject($type, $response_xml): BluemResponseInterface
     {
         return match ($type) {
             'SRX', 'SUD' => new MandateStatusBluemResponse($response_xml),
@@ -369,9 +365,9 @@ class Bluem
             $this->configuration,
             $mandateID,
             $entranceCode,
-            ( $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
-              $this->configuration->expectedReturnStatus !== null ?
-                $this->configuration->expectedReturnStatus : "" )
+            ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            $this->configuration->expectedReturnStatus !== null ?
+                $this->configuration->expectedReturnStatus : "")
         );
 
         return $this->PerformRequest($r);
@@ -396,6 +392,7 @@ class Bluem
      * @param        $amount
      *
      * @throws DOMException
+     * @throws HTTP_Request2_LogicException
      * @throws RuntimeException
      */
     public function Payment(
@@ -413,7 +410,7 @@ class Bluem
                 $amount,
                 $dueDateTime,
                 $currency,
-                $entranceCode ??  $this->CreateEntranceCode()
+                $entranceCode ?? $this->CreateEntranceCode()
             );
         } catch (Exception $exception) {
             throw new RuntimeException("Could not create request: " . $exception->getMessage(), $exception->getCode(), $exception);
@@ -473,9 +470,9 @@ class Bluem
             $currency,
             $this->CreatePaymentTransactionID($debtorReference),
             $entranceCode,
-            ( $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
-              $this->configuration->expectedReturnStatus !== null ?
-                $this->configuration->expectedReturnStatus : "" ),
+            ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            $this->configuration->expectedReturnStatus !== null ?
+                $this->configuration->expectedReturnStatus : ""),
             $debtorReturnURL,
             $paymentReference
         );
@@ -493,6 +490,7 @@ class Bluem
 
 
     // @todo: Create Identity shorthand function
+
     /**
      * Retrieve the status of a payment request, based on transactionID and Entrance Code
      *
@@ -501,14 +499,16 @@ class Bluem
      *
      * @throws Exception
      */
-    public function PaymentStatus($transactionID, $entranceCode): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-    {
+    public function PaymentStatus(
+        $transactionID,
+        $entranceCode
+    ): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse {
         $r = new PaymentStatusBluemRequest(
             $this->configuration,
             $transactionID,
-            ( $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
-              $this->configuration->expectedReturnStatus !== null ?
-                $this->configuration->expectedReturnStatus : "" ),
+            $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            $this->configuration->expectedReturnStatus !== null ?
+                $this->configuration->expectedReturnStatus : "",
             $entranceCode
         );
 
@@ -539,7 +539,7 @@ class Bluem
             $this->configuration,
             $entranceCode,
             $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
-              $this->configuration->expectedReturnStatus !== null ?
+            $this->configuration->expectedReturnStatus !== null ?
                 $this->configuration->expectedReturnStatus : "",
             $requestCategory,
             $description,
@@ -561,9 +561,9 @@ class Bluem
         $r = new IdentityStatusBluemRequest(
             $this->configuration,
             $entranceCode,
-            ( $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
-              $this->configuration->expectedReturnStatus !== null ?
-                $this->configuration->expectedReturnStatus : "" ),
+            ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            $this->configuration->expectedReturnStatus !== null ?
+                $this->configuration->expectedReturnStatus : ""),
             $transactionID
         );
 
@@ -637,10 +637,14 @@ class Bluem
      * @param string $debtorReference An optional given debtor reference
      *                                to append to the check request
      * @throws DOMException
+     * @throws HTTP_Request2_LogicException
      * @throws Exception
      */
-    public function IBANNameCheck(string $iban, string $name, string $debtorReference = ""): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-    {
+    public function IBANNameCheck(
+        string $iban,
+        string $name,
+        string $debtorReference = ""
+    ): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse {
         $r = $this->CreateIBANNameCheckRequest($iban, $name, $debtorReference);
 
         return $this->PerformRequest($r);
@@ -656,8 +660,11 @@ class Bluem
      *
      * @throws Exception
      */
-    public function CreateIBANNameCheckRequest(string $iban, string $name, string $debtorReference = ""): IBANBluemRequest
-    {
+    public function CreateIBANNameCheckRequest(
+        string $iban,
+        string $name,
+        string $debtorReference = ""
+    ): IBANBluemRequest {
         $entranceCode = $this->CreateEntranceCode();
 
         return new IBANBluemRequest(
@@ -701,7 +708,7 @@ class Bluem
                 $context = new IdentityContext();
                 break;
             default:
-                $contexts = [ "Mandates", "Payments", "Identity" ];
+                $contexts = ["Mandates", "Payments", "Identity"];
                 throw new RuntimeException(
                     "Invalid Context requested, should be
                 one of the following: " .

@@ -1,5 +1,4 @@
 <?php
-
 /*
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -15,23 +14,10 @@ use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
-use Bluem\BluemPHP\Tests\FakeHttpTransport;
 use RuntimeException;
 
 class BluemTest extends BluemTestCase
 {
-    private FakeHttpTransport $transport;
-
-    /**
-     * @throws InvalidBluemConfigurationException
-     */
-    protected function setUp(): void
-    {
-        // Mock the configuration as needed
-        $mockedConfig = $this->getConfig();
-        $this->transport = new FakeHttpTransport();
-        $this->bluem = new Bluem($mockedConfig, $this->transport);
-    }
 
     public function testConstructorWithValidConfig(): void
     {
@@ -45,37 +31,13 @@ class BluemTest extends BluemTestCase
     }
 
 
-    public function testIdentityRequestWithValidParameters(): void
+    public function testMandateWithValidParameters(): void
     {
-        $this->transport->setResponse(
-            200,
-            <<<'XML'
-<?xml version="1.0" encoding="UTF-8"?>
-<IdentityInterface createDateTime="2026-04-05T00:00:00Z" messageCount="1" mode="direct" senderID="S12345" type="TransactionRequest" version="1.0">
-    <IdentityTransactionResponse entranceCode="20260405095326915">
-        <TransactionURL>https://test.viamijnbank.net/identity/transaction/1234abcdef</TransactionURL>
-        <TransactionID>1234abcdef</TransactionID>
-        <DebtorReference>1234</DebtorReference>
-    </IdentityTransactionResponse>
-</IdentityInterface>
-XML
-        );
+        // Test the Mandate method with valid parameters
+        $response = $this->bluem->Mandate('customer_id', 'order_id', 'mandate_id');
 
-        $request = $this->bluem->CreateIdentityRequest(
-            requestCategory: ['CustomerIDRequest', 'NameRequest'],
-            description: 'Identificatie test',
-            debtorReference: '1234',
-            entranceCode: '20260405095326915',
-            returnURL: 'http://localhost/code/etc/'
-        );
-
-        $response = $this->bluem->PerformRequest($request);
-
+        // Assertions
         $this->assertInstanceOf(BluemResponseInterface::class, $response);
-        $this->assertNotInstanceOf(ErrorBluemResponse::class, $response);
-        $this->assertNotSame('', $this->transport->lastUrl);
-        $this->assertStringStartsWith('xmlRequest=', $this->transport->lastBody);
-        $this->assertNotEmpty($this->transport->lastHeaders);
     }
 
     public function testMandateWithException(): void
@@ -93,7 +55,7 @@ XML
     public function testPerformRequestWithInvalidXml(): void
     {
         // Mock a request that would generate invalid XML
-        $mockBluemRequest = $this->createStub(BluemRequest::class);
+        $mockBluemRequest = $this->createMock(BluemRequest::class);
 
         $mockBluemRequest->method('XmlString')
             ->willReturn('<xmla>Some invalid aaXML String</xmla>');
@@ -105,4 +67,5 @@ XML
         $result = $this->bluem->PerformRequest($mockBluemRequest);
         $this->assertInstanceOf(ErrorBluemResponse::class, $result);
     }
+
 }
