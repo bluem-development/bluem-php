@@ -43,7 +43,7 @@ class BluemXMLValidator
      *
      * @param string|null $feedSchema
      */
-    public function __construct(string $feedSchema = null)
+    public function __construct(?string $feedSchema = null)
     {
         $this->handler = new DOMDocument('1.0', 'utf-8');
         $this->feedSchema = $feedSchema;

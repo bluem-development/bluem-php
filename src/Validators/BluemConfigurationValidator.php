@@ -56,7 +56,7 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
-        if (!in_array(
+        if (!isset($config->environment) || !in_array(
             $config->environment,
             [
             BLUEM_ENVIRONMENT_TESTING,
