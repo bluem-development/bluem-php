@@ -29,7 +29,6 @@ abstract class BluemGenericTestCase extends TestCase
     /**
      * Set up the required config and objects necessary for proper testing
      *
-     * @return void
      * @throws \Exception
      */
     protected function setUp() : void
@@ -58,8 +57,8 @@ abstract class BluemGenericTestCase extends TestCase
 
         try {
             $this->bluem = new Bluem($bluem_config);
-        } catch (\Exception $e) {
-            $this->fail("While initializing Bluem, ".$e->getMessage()." occurred");
+        } catch (\Exception $exception) {
+            $this->fail("While initializing Bluem, ".$exception->getMessage()." occurred");
         }
     }
 
@@ -87,30 +86,27 @@ abstract class BluemGenericTestCase extends TestCase
 
     /**
      * Perform assertions based on a created BluemPHP Request object
-     *
-     * @param BluemRequestInterface $request
-     * @return void
      */
     protected function _finalizeBluemRequestAssertion(BluemRequestInterface $request) :void
     {
         try {
             // $this->assertEquals($request->getStatus(), "success");
             $response = $this->bluem->PerformRequest($request);
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             $this->fail(
                 "Exception when performing the request: " .
-                $e->getMessage()
+                $exception->getMessage()
             );
         }
 
-        if (is_a($response, ErrorBluemResponse::class, false)) {
+        if ($response instanceof \Bluem\BluemPHP\Responses\ErrorBluemResponse) {
             $this->fail(
                 "Erroneous response returned: " .
                 $response->error()
             );
         } else {
-            $cname = get_class($request);
-            $this->assertTrue(true, "Can utilize {$cname} request and perform it");
+            $cname = $request::class;
+            $this->assertTrue(true, sprintf('Can utilize %s request and perform it', $cname));
         }
     }
 }

@@ -16,27 +16,29 @@ use Bluem\BluemPHP\Contexts\IBANCheckContext;
 class IBANBluemRequest extends BluemRequest
 {
     public $request_url_type = "icr";
+
     public $typeIdentifier = "createTransaction";
+
     public $transaction_code = "INX";
+
     private string $xmlInterfaceName = "IBANCheckInterface";
-    private string $_inputIban;
-    private string $_inputName;
+
+    private readonly string $_inputIban;
+
+    private readonly string $_inputName;
 
     /**
      * Construct the request and prepare all properties
      *
      * @param [type] $config
      * @param [type] $entranceCode
-     * @param string $_inputIban
-     * @param string $_inputName
-     * @param string $_debtorReference
      */
     public function __construct(
         $config,
         $entranceCode,
         string $_inputIban,
         string $_inputName,
-        private string $_debtorReference = ""
+        private readonly string $_debtorReference = ""
     ) {
         parent::__construct($config, $entranceCode);
 
@@ -45,6 +47,7 @@ class IBANBluemRequest extends BluemRequest
 
         $this->context = new IBANCheckContext();
     }
+
     // @todo: deprecated, remove
     /**
      * Sanitize input IBAN for proper XML handling
@@ -79,6 +82,7 @@ class IBANBluemRequest extends BluemRequest
     /**
      * Generate XML string that is used in the request
      */
+    #[\Override]
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(

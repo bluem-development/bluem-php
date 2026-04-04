@@ -10,12 +10,15 @@ use stdClass;
 if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) {
     define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
 }
+
 if (!defined("BLUEM_ENVIRONMENT_TESTING")) {
     define("BLUEM_ENVIRONMENT_TESTING", "test");
 }
+
 if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
     define("BLUEM_ENVIRONMENT_ACCEPTANCE", "acc");
 }
+
 if (!defined("BLUEM_STATIC_MERCHANT_ID")) {
     define("BLUEM_STATIC_MERCHANT_ID", "0020000387");
 }

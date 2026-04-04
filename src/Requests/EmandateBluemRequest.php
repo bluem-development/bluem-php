@@ -18,25 +18,35 @@ use Bluem\BluemPHP\Helpers\BluemConfiguration;
 class EmandateBluemRequest extends BluemRequest
 {
     public $typeIdentifier = "createTransaction";
+
     public $request_url_type = "mr";
+
     public $transaction_code = "TRX";
+
     protected $merchantID;
+
     protected $merchantSubID;
-    private string $localInstrumentCode;
+
+    private readonly string $localInstrumentCode;
+
     private $merchantReturnURLBase;
+
     private $merchantReturnURL;
+
     private $sequenceType;
+
     private ?string $eMandateReason = null;
-    private string $purchaseID;
-    private string $automatically_redirect;
+
+    private readonly string $purchaseID;
+
+    private readonly string $automatically_redirect;
+
     private string $xmlInterfaceName = "EMandateInterface";
 
     /**
-     * @param BluemConfiguration $config
      * @param $customer_id
      * @param $order_id
      * @param $mandateID
-     * @param string             $expected_return
      *
      * @throws Exception
      */
@@ -56,7 +66,7 @@ class EmandateBluemRequest extends BluemRequest
         $this->mandateID = $mandateID;
 
         // https - unique return URL for customer
-        $this->merchantReturnURL = "$this->merchantReturnURLBase?mandateID=$this->mandateID";
+        $this->merchantReturnURL = sprintf('%s?mandateID=%s', $this->merchantReturnURLBase, $this->mandateID);
         $this->sequenceType = $config->sequenceType ?? "RCUR";
         // reason for the mandate; configurable per client
         $this->eMandateReason = $config->eMandateReason ?? "Incasso machtiging";
@@ -72,7 +82,8 @@ class EmandateBluemRequest extends BluemRequest
         } else {
             $purchaseIDPrefix = "";
         }
-        $this->purchaseID = substr("$purchaseIDPrefix$this->debtorReference-$order_id", 0, 34);  // INKOOPNUMMER
+
+        $this->purchaseID = substr(sprintf('%s%s-%s', $purchaseIDPrefix, $this->debtorReference, $order_id), 0, 34);  // INKOOPNUMMER
 
 
         // @todo: move to mandate-specifics; as it is only necessary there
@@ -92,6 +103,7 @@ class EmandateBluemRequest extends BluemRequest
         $this->context = new MandatesContext($config->localInstrumentCode);
     }
 
+    #[\Override]
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(
@@ -144,6 +156,7 @@ class EmandateBluemRequest extends BluemRequest
     {
         return "TRX";
     }
+
     // @todo: deprecated, remove
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
@@ -166,9 +179,9 @@ class EmandateBluemRequest extends BluemRequest
             }
 
             $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-            $res .= "<{$this->context->debtorWalletElementName}>";
+            $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
             $res .= "<BIC>" . $bic . "</BIC>";
-            $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+            $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
 
             return $res . ("</DebtorWallet>" . PHP_EOL);
         }
@@ -182,6 +195,7 @@ class EmandateBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
+    #[\Override]
     public function selectDebtorWallet($BIC)
     {
 
