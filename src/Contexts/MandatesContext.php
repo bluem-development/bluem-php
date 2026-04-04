@@ -8,6 +8,7 @@ declare(strict_types=1);
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Bluem\BluemPHP\Contexts;
 
 use Bluem\BluemPHP\Helpers\BIC;
@@ -78,7 +79,7 @@ class MandatesContext extends BluemContext
     {
         $validationErrors = $this->validateDetails();
         if ($validationErrors !== []) {
-            throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
+            throw new RuntimeException('Invalid details given: ' . implode(', ', $validationErrors));
         }
 
         $this->paymentMethodDetails = $details;

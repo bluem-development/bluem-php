@@ -78,7 +78,7 @@ class Bluem
      */
     public function __construct(mixed $rawConfig)
     {
-        if ($rawConfig ===null) {
+        if ($rawConfig === null) {
             throw new InvalidBluemConfigurationException('No configuration given');
         }
 
@@ -205,10 +205,11 @@ class Bluem
     public function PerformRequest(BluemRequestInterface $transaction_request): BluemResponseInterface
     {
         $validator = new BluemXMLValidator();
-        if (! $validator->validate(
-            $transaction_request->RequestContext(),
-            $transaction_request->XmlString()
-        )
+        if (
+            ! $validator->validate(
+                $transaction_request->RequestContext(),
+                $transaction_request->XmlString()
+            )
         ) {
             return new ErrorBluemResponse(
                 "Error: Request is not formed correctly. More details: " .
@@ -306,7 +307,7 @@ class Bluem
                     return new ErrorBluemResponse('Unexpected / erroneous response (code ' . $response_status . ')');
             }
         } catch (Throwable $throwable) {
-            return new ErrorBluemResponse('HTTP Request Error'. $throwable->getMessage());
+            return new ErrorBluemResponse('HTTP Request Error' . $throwable->getMessage());
             // @todo improve request return exceptions; add our own exception type
         }
     }

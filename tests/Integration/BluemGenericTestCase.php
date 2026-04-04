@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -31,14 +32,14 @@ abstract class BluemGenericTestCase extends TestCase
      *
      * @throws \Exception
      */
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        $env_file =__DIR__. '/../..';
+        $env_file = __DIR__ . '/../..';
         $dotenv = Dotenv::createImmutable($env_file);
         $dotenv->load();
 
         // Create a Bluem object and set the Bluem configuration details based on your .env file.
-        $bluem_config = new stdClass;
+        $bluem_config = new stdClass();
         $bluem_config->environment = $_ENV['BLUEM_ENV'];
         $bluem_config->senderID = $_ENV['BLUEM_SENDER_ID'];
 
@@ -58,7 +59,7 @@ abstract class BluemGenericTestCase extends TestCase
         try {
             $this->bluem = new Bluem($bluem_config);
         } catch (\Exception $exception) {
-            $this->fail("While initializing Bluem, ".$exception->getMessage()." occurred");
+            $this->fail("While initializing Bluem, " . $exception->getMessage() . " occurred");
         }
     }
 
@@ -87,7 +88,7 @@ abstract class BluemGenericTestCase extends TestCase
     /**
      * Perform assertions based on a created BluemPHP Request object
      */
-    protected function _finalizeBluemRequestAssertion(BluemRequestInterface $request) :void
+    protected function _finalizeBluemRequestAssertion(BluemRequestInterface $request): void
     {
         try {
             // $this->assertEquals($request->getStatus(), "success");

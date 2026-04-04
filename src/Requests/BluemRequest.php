@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -181,7 +182,7 @@ class BluemRequest implements BluemRequestInterface
                 case '':
                 case 'none':
                 default:
-                break;
+                    break;
             }
         }
 

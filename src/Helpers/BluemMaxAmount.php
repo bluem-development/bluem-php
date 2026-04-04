@@ -8,11 +8,11 @@ declare(strict_types=1);
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
+
 namespace Bluem\BluemPHP\Helpers;
 
 class BluemMaxAmount implements \Stringable
 {
-
     public BluemCurrency $currency;
 
     public function __construct(
@@ -20,7 +20,6 @@ class BluemMaxAmount implements \Stringable
         string $currencyCode
     ) {
         try {
-
             $this->currency = new BluemCurrency($currencyCode);
         } catch (\Exception) {
             $this->currency = new BluemCurrency();

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -86,7 +87,7 @@ class BluemTest extends TestCase
     // helper classes
     private function getConfig(): stdClass
     {
-        $bluem_config = new stdClass;
+        $bluem_config = new stdClass();
         $bluem_config->environment = 'test';
         $bluem_config->senderID = 'S12345';
 
