@@ -17,7 +17,9 @@ use SimpleXMLElement;
 class MandateStatusBluemResponse extends StatusBluemResponse
 {
     public static string $transaction_type = "EMandate";
+
     public static string $response_primary_key = 'EMandateStatus';
+
     public static ?string $error_response_type = 'EMandateErrorResponse';
 
     public function GetDebtorIBAN(): string
@@ -44,7 +46,7 @@ class MandateStatusBluemResponse extends StatusBluemResponse
     public function GetMaximumAmount(): BluemMaxAmount
     {
         $acceptance_report = $this->getAcceptanceReport();
-        if (! $acceptance_report) {
+        if (!$acceptance_report instanceof \SimpleXMLElement) {
             throw new RuntimeException("No acceptance report delivered");
         }
 

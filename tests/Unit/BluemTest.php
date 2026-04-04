@@ -48,9 +48,6 @@ class BluemTest extends TestCase
 
     public function testMandateWithValidParameters(): void
     {
-        // Mock the expected response
-        $mockedResponse = $this->createMock(BluemResponseInterface::class);
-
         // Test the Mandate method with valid parameters
         $response = $this->bluem->Mandate('customer_id', 'order_id', 'mandate_id');
 
@@ -63,11 +60,13 @@ class BluemTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->bluem->Mandate('', '', '');
     }
+
     public function testCreateMandateID(): void
     {
         $mandateID = $this->bluem->CreateMandateID('order_id', 'customer_id');
         $this->assertIsString($mandateID);
     }
+
     public function testPerformRequestWithInvalidXml(): void
     {
         // Mock a request that would generate invalid XML

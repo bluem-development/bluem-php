@@ -17,8 +17,11 @@ use Exception;
 class EmandateStatusBluemRequest extends BluemRequest
 {
     public $typeIdentifier = "requestStatus";
+
     public $request_url_type = "mr";
+
     public $transaction_code = "SRX";
+
     private string $xmlInterfaceName = "EMandateInterface";
 
 
@@ -53,6 +56,7 @@ class EmandateStatusBluemRequest extends BluemRequest
 
     // @todo: deprecated, remove
 
+    #[\Override]
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(

@@ -1,12 +1,13 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
-
-
 namespace Bluem\BluemPHP\Contexts;
 
 use Bluem\BluemPHP\Helpers\BIC;
@@ -18,9 +19,6 @@ class IdentityContext extends BluemContext
 
     public string $debtorWalletElementName = "IDIN";
 
-    /**
-     * @var array
-     */
     private array $paymentMethodDetails;
 
     /**
@@ -43,6 +41,7 @@ class IdentityContext extends BluemContext
         );
     }
 
+    #[\Override]
     public function getValidationSchema(): string
     {
         return parent::getValidationSchema() . 'EIdentity.xsd';
@@ -55,7 +54,7 @@ class IdentityContext extends BluemContext
 
     public function addPaymentMethodDetails(array $details = []): void
     {
-        $validationErrors = $this->validateDetails($details);
+        $validationErrors = $this->validateDetails();
         if ($validationErrors !== []) {
             throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
         }
@@ -63,12 +62,11 @@ class IdentityContext extends BluemContext
         $this->paymentMethodDetails = $details;
     }
 
-    private function validateDetails(array $details = []): array
+    private function validateDetails(): array
     {
         if ($this->isIDIN()) {
             // no validation yet
         }
-
         return [];
     }
 

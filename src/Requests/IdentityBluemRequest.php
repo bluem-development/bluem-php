@@ -19,26 +19,30 @@ define("BLUEM_DEFAULT_MIN_AGE", 18);
 class IdentityBluemRequest extends BluemRequest
 {
     public $minage;
+
     public $request_url_type = "ir";
+
     public $typeIdentifier = "createTransaction";
+
     public $transaction_code = "ITX";
+
     protected $xmlInterfaceName = "IdentityInterface";
+
     /**
      * @var int
      */
     private $minAge;
 
-    private string $requestCategory;
-    private string $description;
-    private string $debtorReturnURL;
+    private readonly string $requestCategory;
+
+    private readonly string $description;
+
+    private readonly string $debtorReturnURL;
 
     /**
      * @param $config
      * @param $entranceCode
      * @param $expectedReturn
-     * @param array  $requestCategory
-     * @param string $description
-     * @param string $debtorReference
      * @param string $debtorReturnURL
      *
      * @throws Exception
@@ -49,7 +53,7 @@ class IdentityBluemRequest extends BluemRequest
         $expectedReturn,
         array $requestCategory = [],
         string $description = "",
-        private string $debtorReference = "",
+        private readonly string $debtorReference = "",
         $debtorReturnURL = ""
     ) {
         parent::__construct($config, $entranceCode, $expectedReturn);
@@ -63,7 +67,8 @@ class IdentityBluemRequest extends BluemRequest
         if ($debtorReturnURL == "") {
             throw new Exception("Debtor return URL is required");
         }
-        $this->debtorReturnURL = $debtorReturnURL . "?debtorReference=$this->debtorReference";
+
+        $this->debtorReturnURL = $debtorReturnURL . ('?debtorReference=' . $this->debtorReference);
 
         // @todo: make this a configurable setting
         $this->minAge = $config->minAge ?? BLUEM_DEFAULT_MIN_AGE;
@@ -120,17 +125,17 @@ class IdentityBluemRequest extends BluemRequest
         $action = ( $active ? "request" : "skip" );
 
         return match ($category) {
-            'CustomerIDRequest' => "<CustomerIDRequest action=\"$action\"/>",
-            'NameRequest' => "<NameRequest action=\"$action\"/>",
-            'AddressRequest' => "<AddressRequest action=\"$action\"/>",
-            'BirthDateRequest' => "<BirthDateRequest action=\"$action\"/>",
-            'GenderRequest' => "<GenderRequest action=\"$action\"/>",
-            'TelephoneRequest' => "<TelephoneRequest action=\"$action\"/>",
-            'EmailRequest' => "<EmailRequest action=\"$action\"/>",
-            'AgeCheckRequest' => "<AgeCheckRequest ageOrOlder=\"" .
+            'CustomerIDRequest' => sprintf('<CustomerIDRequest action="%s"/>', $action),
+            'NameRequest' => sprintf('<NameRequest action="%s"/>', $action),
+            'AddressRequest' => sprintf('<AddressRequest action="%s"/>', $action),
+            'BirthDateRequest' => sprintf('<BirthDateRequest action="%s"/>', $action),
+            'GenderRequest' => sprintf('<GenderRequest action="%s"/>', $action),
+            'TelephoneRequest' => sprintf('<TelephoneRequest action="%s"/>', $action),
+            'EmailRequest' => sprintf('<EmailRequest action="%s"/>', $action),
+            'AgeCheckRequest' => '<AgeCheckRequest ageOrOlder="' .
                    $this->getMinAge() .
-                   "\" action=\"$action\"/>",
-            'CustomerIDLoginRequest' => "<CustomerIDLoginRequest action=\"$action\"/>",
+                   sprintf('" action="%s"/>', $action),
+            'CustomerIDLoginRequest' => sprintf('<CustomerIDLoginRequest action="%s"/>', $action),
             default => throw new Exception("No proper iDIN request category given", 1),
         };
     }
@@ -145,6 +150,7 @@ class IdentityBluemRequest extends BluemRequest
         return "ITX";
     }
 
+    #[\Override]
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(
@@ -179,7 +185,6 @@ class IdentityBluemRequest extends BluemRequest
      */
     public function enableStatusGUI()
     {
-        return;
     }
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
@@ -202,9 +207,9 @@ class IdentityBluemRequest extends BluemRequest
             }
 
             $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-            $res .= "<{$this->context->debtorWalletElementName}>";
+            $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
             $res .= "<BIC>" . $bic . "</BIC>";
-            $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+            $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
 
             return $res . ("</DebtorWallet>" . PHP_EOL);
         }
@@ -218,6 +223,7 @@ class IdentityBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
+    #[\Override]
     public function selectDebtorWallet($BIC)
     {
 

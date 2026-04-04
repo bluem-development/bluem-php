@@ -16,10 +16,10 @@ use Selective\XmlDSig\XmlSignatureVerifier;
 
 class WebhookSignatureValidation extends WebhookValidator
 {
-    private const KEY_FOLDER = "/keys/";
+    private const string KEY_FOLDER = "/keys/";
 
     public function __construct(
-        private string $env
+        private readonly string $env
     ) {
     }
 
@@ -49,8 +49,8 @@ class WebhookSignatureValidation extends WebhookValidator
             if (! $xmlVerified) {
                 $this->addError("Invalid signature");
             }
-        } catch (Exception $e) {
-            $this->addError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->addError($exception->getMessage());
         }
 
         fclose($temp_file);

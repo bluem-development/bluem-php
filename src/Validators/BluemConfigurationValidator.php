@@ -24,7 +24,7 @@ class BluemConfigurationValidator
 {
     private ?array $errors = null;
 
-    function validate($config)
+    public function validate($config)
     {
 
         // essential validation
@@ -45,8 +45,8 @@ class BluemConfigurationValidator
             $config = $this->_validateLocalInstrumentCode($config);
             $config = $this->_validateMerchantReturnURLBase($config);
 
-        } catch (Throwable $th) {
-            $this->errors[] = $th->getMessage();
+        } catch (Throwable $throwable) {
+            $this->errors[] = $throwable->getMessage();
 
             return false;
         }
@@ -56,7 +56,7 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
-        if (!in_array(
+        if (!isset($config->environment) || !in_array(
             $config->environment,
             [
             BLUEM_ENVIRONMENT_TESTING,
@@ -83,13 +83,15 @@ class BluemConfigurationValidator
                 please add this to your configuration when instantiating the Bluem integration"
             );
         }
+
         if ($config->senderID === "") {
             throw new Exception(
                 "senderID cannot be empty; 
                 please add this to your configuration when instantiating the Bluem integration"
             );
         }
-        if (!str_starts_with($config->senderID, "S")) {
+
+        if (!str_starts_with((string) $config->senderID, "S")) {
             throw new Exception(
                 "senderID always starts with an S followed by digits. 
                 Please correct this in your configuration when instantiating the Bluem integration"
@@ -174,8 +176,6 @@ class BluemConfigurationValidator
      * if an invalid possible return status is given, set it to a default value (for testing purposes only)
      *
      * @param $config
-     *
-     * @return mixed
      */
     private function _validateExpectedReturnStatus($config): mixed
     {
