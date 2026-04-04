@@ -20,9 +20,9 @@ use SimpleXMLElement;
 class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
 {
 
-    public static string $response_primary_key = null;
+    public static ?string $response_primary_key = null;
 
-    public static string $transaction_type = null;
+    public static ?string $transaction_type = null;
 
     public static ?string $error_response_type = null;
 

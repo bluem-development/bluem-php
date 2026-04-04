@@ -242,8 +242,8 @@ class PaymentBluemRequest extends BluemRequest
         /**
          * Prepared for future use.
          */
-        if ($cardNumber !== '' && $cardNumber !== '0' || $name !== '' && $name !== '0' || $securityCode !== '' && $securityCode !== '0'
-            || $expirationDateMonth !== '' && $expirationDateMonth !== '0' || $expirationDateYear !== '' && $expirationDateYear !== '0'
+        if (!empty($cardNumber) || !empty($name) || !empty($securityCode)
+            || !empty($expirationDateMonth) || !empty($expirationDateYear)
         ) {
             $this->context->addPaymentMethodDetails(
                 [

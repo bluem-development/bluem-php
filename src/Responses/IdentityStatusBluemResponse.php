@@ -10,9 +10,9 @@ namespace Bluem\BluemPHP\Responses;
 
 class IdentityStatusBluemResponse extends StatusBluemResponse
 {
-    public static string $transaction_type = "Identity";
+    public static ?string $transaction_type = "Identity";
 
-    public static string $response_primary_key = 'IdentityStatus';
+    public static ?string $response_primary_key = 'IdentityStatus';
 
     public static ?string $error_response_type = 'IdentityErrorResponse';
 
