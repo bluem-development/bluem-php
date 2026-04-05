@@ -10,6 +10,7 @@
 namespace Bluem\BluemPHP\Tests\Integration;
 
 use Bluem\BluemPHP\Extensions\IPAPI;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class IPAPITest extends TestCase
@@ -27,7 +28,7 @@ class IPAPITest extends TestCase
         $this->assertTrue($result);
     }
 
-    /** @dataProvider NetherlandsIPTestDataProvider */
+    #[DataProvider('NetherlandsIPTestDataProvider')]
     public function testCheckIPAdressGivenDataProvider($ipAddress, $expectedNetherlands): void
     {
         $isNetherlands = $this->IPAPI->checkIsNetherlands($ipAddress);
