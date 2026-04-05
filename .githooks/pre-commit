@@ -4,6 +4,8 @@ set -eu
 if git diff --cached --name-only --diff-filter=ACM | grep -qE '\.php$'; then
   echo "PHP files changed — running unit tests..."
   make test_unit
+
+  make lint
 else
   echo "No PHP changes — skipping unit tests."
 fi
