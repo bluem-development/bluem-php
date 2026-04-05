@@ -30,7 +30,7 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
         return null;
     }
 
-    private function getKeyFromIBANCheckResult(string $key, string $parentObjectKey = null): string
+    private function getKeyFromIBANCheckResult(string $key, ?string $parentObjectKey = null): string
     {
         $result = $this->getIBANCheckResultObject($parentObjectKey);
 

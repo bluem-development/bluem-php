@@ -9,6 +9,7 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\Constants;
 use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
@@ -159,7 +160,7 @@ class BluemRequest implements BluemRequestInterface
         $entranceCode = (new Now())->format("YmdHisv");
 
         $prefix = "";
-        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+        if ($this->environment === Constants::TESTING_ENVIRONMENT) {
             switch ($expectedReturn) {
                 case 'success':
                     $prefix = "HIO100OIH";

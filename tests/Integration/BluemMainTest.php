@@ -53,9 +53,9 @@ class BluemMainTest extends BluemGenericTestCase
             $this->fail("Could not create mandate: " . $exception->getMessage());
         }
 
-        if($response instanceof ErrorBluemResponse) {
+        if ($response instanceof ErrorBluemResponse) {
             $this->fail(
-                'Got ErrorBluem response: '. $response->Error()
+                'Got ErrorBluem response: ' . $response->Error()
             );
         }
 
