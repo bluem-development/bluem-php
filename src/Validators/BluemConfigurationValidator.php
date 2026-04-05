@@ -9,17 +9,9 @@
 
 namespace Bluem\BluemPHP\Validators;
 
+use Bluem\BluemPHP\Constants;
 use Exception;
 use Throwable;
-
-define("BLUEM_EXPECTED_RETURN_NONE", "none");
-define("BLUEM_EXPECTED_RETURN_SUCCESS", "success");
-define("BLUEM_EXPECTED_RETURN_CANCELLED", "cancelled");
-define("BLUEM_EXPECTED_RETURN_EXPIRED", "expired");
-define("BLUEM_EXPECTED_RETURN_FAILURE", "failure");
-define("BLUEM_EXPECTED_RETURN_OPEN", "open");
-define("BLUEM_EXPECTED_RETURN_PENDING", "pending");
-
 
 class BluemConfigurationValidator
 {
@@ -59,17 +51,13 @@ class BluemConfigurationValidator
         if (
             !isset($config->environment) || !in_array(
                 $config->environment,
-                [
-                BLUEM_ENVIRONMENT_TESTING,
-                BLUEM_ENVIRONMENT_ACCEPTANCE,
-                BLUEM_ENVIRONMENT_PRODUCTION
-                ],
+                Constants::ENVIRONMENTS,
                 true
             )
         ) {
             throw new Exception(
-                "Invalid environment setting, should be either
-                'test', 'acc' or 'prod'"
+                sprintf(sprintf("Invalid environment setting (%s), should be one of: 
+                %%s", $config->environment), implode(', ', Constants::ENVIRONMENTS))
             );
         }
 
@@ -105,7 +93,7 @@ class BluemConfigurationValidator
     private function _validateTest_accessToken($config)
     {
         if (
-            $config->environment === BLUEM_ENVIRONMENT_TESTING
+            $config->environment === Constants::TESTING_ENVIRONMENT
             && ( ! isset($config->test_accessToken)
             || $config->test_accessToken === "" )
         ) {
@@ -123,7 +111,7 @@ class BluemConfigurationValidator
         // only required if mode is set to PROD
         // production_accessToken
         if (
-            $config->environment === BLUEM_ENVIRONMENT_PRODUCTION
+            $config->environment === Constants::PRODUCTION_ENVIRONMENT
             && ( ! isset($config->production_accessToken)
             || $config->production_accessToken === "" )
         ) {
@@ -152,16 +140,16 @@ class BluemConfigurationValidator
             $config->merchantId = "";
         }
 
-        if ($config->environment === BLUEM_ENVIRONMENT_PRODUCTION) {
+        if ($config->environment === Constants::PRODUCTION_ENVIRONMENT) {
             $config->accessToken = $config->production_accessToken;
             // @todo consider throwing an exception if these tokens are missing.
-        } elseif ($config->environment === BLUEM_ENVIRONMENT_TESTING) {
+        } elseif ($config->environment === Constants::TESTING_ENVIRONMENT) {
             $config->accessToken = $config->test_accessToken;
             // @todo consider throwing an exception if these tokens are missing.
 
             // hardcoded merchantID in case of test.
             // It is always the bluem merchant ID then.
-            $config->merchantID = BLUEM_STATIC_MERCHANT_ID;
+            $config->merchantID = Constants::BLUEM_STATIC_MERCHANT_ID;
         }
 
         return $config;
@@ -182,14 +170,14 @@ class BluemConfigurationValidator
      */
     private function _validateExpectedReturnStatus($config): mixed
     {
-        if ($config->environment === BLUEM_ENVIRONMENT_TESTING) {
+        if ($config->environment === Constants::TESTING_ENVIRONMENT) {
             if (
                 ! isset($config->expectedReturnStatus)
                 || ( $config->expectedReturnStatus !== ""
                 && !in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
             ) {
                 // default back to success
-                $config->expectedReturnStatus = BLUEM_EXPECTED_RETURN_SUCCESS;
+                $config->expectedReturnStatus = Constants::EXPECTED_RETURN_SUCCESS;
             }
         } else {
             // no need for expectedReturnStatus when in production
@@ -205,13 +193,13 @@ class BluemConfigurationValidator
     private function getPossibleReturnStatuses(): array
     {
         return [
-            BLUEM_EXPECTED_RETURN_NONE,
-            BLUEM_EXPECTED_RETURN_SUCCESS,
-            BLUEM_EXPECTED_RETURN_CANCELLED,
-            BLUEM_EXPECTED_RETURN_EXPIRED,
-            BLUEM_EXPECTED_RETURN_FAILURE,
-            BLUEM_EXPECTED_RETURN_OPEN,
-            BLUEM_EXPECTED_RETURN_PENDING
+            Constants::EXPECTED_RETURN_NONE,
+            Constants::EXPECTED_RETURN_SUCCESS,
+            Constants::EXPECTED_RETURN_CANCELLED,
+            Constants::EXPECTED_RETURN_EXPIRED,
+            Constants::EXPECTED_RETURN_FAILURE,
+            Constants::EXPECTED_RETURN_OPEN,
+            Constants::EXPECTED_RETURN_PENDING
         ];
     }
 
