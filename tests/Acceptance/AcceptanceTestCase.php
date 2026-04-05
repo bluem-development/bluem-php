@@ -6,8 +6,6 @@ namespace Bluem\BluemPHP\Tests\Acceptance;
 
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
-use SimpleXMLElement;
 
 /**
  * Shared helpers for acceptance-style request/response tests.
@@ -22,6 +20,7 @@ abstract class AcceptanceTestCase extends TestCase
      * Build a minimal but valid Bluem configuration for test environment usage.
      *
      * Unknown live values are kept as placeholders so the file stays copy-pastable.
+     * @throws \Exception
      */
     protected function createConfiguration(string $brandId, array $overrides = []): BluemConfiguration
     {
@@ -47,12 +46,12 @@ abstract class AcceptanceTestCase extends TestCase
     /**
      * Load a SimpleXML fixture as one of Bluem's response subclasses.
      */
-    protected function loadXmlResponse(string $xml, string $className): SimpleXMLElement
+    protected function loadXmlResponse(string $xml, string $className)
     {
         $response = simplexml_load_string($xml, $className);
 
-        if (!$response instanceof SimpleXMLElement) {
-            throw new RuntimeException('Unable to parse XML fixture for ' . $className);
+        if ($response === false) {
+            throw new \RuntimeException('Unable to parse XML fixture for ' . $className);
         }
 
         return $response;
