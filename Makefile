@@ -12,3 +12,9 @@ lint:
 
 lint_fix:
 	./vendor/bin/phpcbf --standard=phpcs.xml.dist --extensions=php --ignore=vendor/ .
+
+
+setup-git-hooks:
+	@echo "Setting up Git hooks..."
+	git config core.hooksPath .githooks
+	chmod +x .githooks/pre-commit
