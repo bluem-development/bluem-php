@@ -9,7 +9,6 @@
 
 namespace Bluem\BluemPHP\Requests;
 
-use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Constants;
 use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
@@ -17,12 +16,18 @@ use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 use SimpleXMLElement;
+use stdClass;
 
 abstract class BluemRequest implements BluemRequestInterface
 {
     public const int AGRICULTURE = 1;
     public const int CONSTRUCTION = 2;
     public const int HEALTHCARE = 3;
+
+    protected const array TYPE_IDENTIFIERS = [
+        'createTransaction',
+        'requestStatus',
+    ];
 
     protected string $request_url_type = '';
 
@@ -66,8 +71,22 @@ abstract class BluemRequest implements BluemRequestInterface
 
     protected string $xmlInterfaceName = '';
 
-    public function __construct(BluemConfiguration|stdClass $config, string $entranceCode = '', string $expectedReturn = '')
-    {
+    /**
+     * BluemRequest constructor.
+     *
+     * @param BluemConfiguration|object $config
+     *
+     * @throws InvalidBluemRequestException
+     */
+    public function __construct(
+        BluemConfiguration|stdClass $config,
+        string $entranceCode = '',
+        string $expectedReturn = ''
+    ) {
+        if (! in_array($this->typeIdentifier, self::TYPE_IDENTIFIERS, true)) {
+            throw new InvalidBluemRequestException('Invalid transaction type called for', 1);
+        }
+
         $this->environment = $config->environment;
         $this->currency = $config->currency;
         $this->accessToken = $config->accessToken;
