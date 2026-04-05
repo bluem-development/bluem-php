@@ -23,6 +23,18 @@ use stdClass;
 abstract class BluemGenericTestCase extends TestCase
 {
     /**
+     * @var string[]
+     */
+    private const REQUIRED_ENVIRONMENT_VARIABLES = [
+        'BLUEM_ENV',
+        'BLUEM_SENDER_ID',
+        'BLUEM_BRANDID',
+        'BLUEM_TEST_ACCESS_TOKEN',
+        'BLUEM_MERCHANTID',
+        'BLUEM_MERCHANTRETURNURLBASE',
+    ];
+
+    /**
      * The Bluem integration object
      */
     protected Bluem $bluem;
@@ -36,7 +48,13 @@ abstract class BluemGenericTestCase extends TestCase
     {
         $env_file = __DIR__ . '/../..';
         $dotenv = Dotenv::createImmutable($env_file);
-        $dotenv->load();
+        $dotenv->safeLoad();
+
+        foreach (self::REQUIRED_ENVIRONMENT_VARIABLES as $variable) {
+            if (!isset($_ENV[$variable]) || $_ENV[$variable] === '') {
+                $this->markTestSkipped(sprintf('Live Bluem integration tests require %s to be set.', $variable));
+            }
+        }
 
         // Create a Bluem object and set the Bluem configuration details based on your .env file.
         $bluem_config = new stdClass();

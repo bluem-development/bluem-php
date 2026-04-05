@@ -15,10 +15,28 @@ use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
+use Bluem\BluemPHP\Transport\HttpTransportInterface;
+use Bluem\BluemPHP\Transport\HttpTransportResponse;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class BluemTest extends BluemTestCase
 {
+    private Bluem $bluem;
+    private FakeHttpTransport $transport;
+
+    /**
+     * @throws InvalidBluemConfigurationException
+     */
+    protected function setUp(): void
+    {
+        // Mock the configuration as needed
+        $mockedConfig = $this->getConfig();
+        $this->transport = new FakeHttpTransport();
+        $this->bluem = new Bluem($mockedConfig, $this->transport);
+    }
+
+
 
     public function testConstructorWithValidConfig(): void
     {
@@ -34,11 +52,35 @@ class BluemTest extends BluemTestCase
 
     public function testMandateWithValidParameters(): void
     {
-        // Test the Mandate method with valid parameters
-        $response = $this->bluem->Mandate('customer_id', 'order_id', 'mandate_id');
+        $this->transport->setResponse(
+            200,
+            <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<IdentityInterface createDateTime="2026-04-05T00:00:00Z" messageCount="1" mode="direct" senderID="S12345" type="TransactionRequest" version="1.0">
+    <IdentityTransactionResponse entranceCode="20260405095326915">
+        <TransactionURL>https://test.viamijnbank.net/identity/transaction/1234abcdef</TransactionURL>
+        <TransactionID>1234abcdef</TransactionID>
+        <DebtorReference>1234</DebtorReference>
+    </IdentityTransactionResponse>
+</IdentityInterface>
+XML
+        );
 
-        // Assertions
+        $request = $this->bluem->CreateIdentityRequest(
+            requestCategory: ['CustomerIDRequest', 'NameRequest'],
+            description: 'Identificatie test',
+            debtorReference: '1234',
+            entranceCode: '20260405095326915',
+            returnURL: 'http://localhost/code/etc/'
+        );
+
+        $response = $this->bluem->PerformRequest($request);
+
         $this->assertInstanceOf(BluemResponseInterface::class, $response);
+        $this->assertNotInstanceOf(ErrorBluemResponse::class, $response);
+        $this->assertNotSame('', $this->transport->lastUrl);
+        $this->assertStringStartsWith('xmlRequest=', $this->transport->lastBody);
+        $this->assertNotEmpty($this->transport->lastHeaders);
     }
 
     public function testMandateWithException(): void
@@ -89,5 +131,37 @@ class BluemTest extends BluemTestCase
         $bluem_config->localInstrumentCode = "B2B";
 
         return $bluem_config;
+    }
+}
+
+final class FakeHttpTransport implements HttpTransportInterface
+{
+    public int $lastStatusCode = 0;
+
+    public string $lastBody = '';
+
+    /** @var string[] */
+    public array $lastHeaders = [];
+
+    public string $lastUrl = '';
+
+    private int $nextStatusCode = 200;
+
+    private string $nextBody = '';
+
+    public function setResponse(int $statusCode, string $body): void
+    {
+        $this->nextStatusCode = $statusCode;
+        $this->nextBody = $body;
+    }
+
+    public function send(string $url, array $headers, string $body): HttpTransportResponse
+    {
+        $this->lastUrl = $url;
+        $this->lastHeaders = $headers;
+        $this->lastBody = $body;
+        $this->lastStatusCode = $this->nextStatusCode;
+
+        return new HttpTransportResponse($this->nextStatusCode, $this->nextBody);
     }
 }

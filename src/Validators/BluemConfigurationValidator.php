@@ -49,9 +49,18 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
-        if (! isset($config->environment) || ! in_array($config->environment, Constants::ENVIRONMENTS, true)) {
+        if (! isset($config->environment)) {
             throw new InvalidBluemConfigurationException(
                 'environment not set; please add this to your configuration when instantiating the Bluem integration'
+            );
+        }
+
+        if (! in_array($config->environment, Constants::ENVIRONMENTS, true)) {
+            throw new InvalidBluemConfigurationException(
+                sprintf(
+                    sprintf('Invalid environment setting (%s), should be one of: %%s', $config->environment),
+                    implode(', ', Constants::ENVIRONMENTS)
+                )
             );
         }
 
