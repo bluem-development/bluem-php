@@ -15,32 +15,29 @@ use stdClass;
 
 class PaymentStatusBluemRequest extends BluemRequest
 {
-    public $request_url_type = "pr";
+    public string $request_url_type = 'pr';
 
-    public $typeIdentifier = "requestStatus";
+    public string $typeIdentifier = 'requestStatus';
 
-    public $transaction_code = "PSX";
+    public string $transaction_code = 'PSX';
 
-    protected $xmlInterfaceName = "EPaymentInterface";
+    protected string $xmlInterfaceName = 'EPaymentInterface';
 
     public function __construct(
         BluemConfiguration|stdClass $config,
         $transactionID,
-        $expected_return = "",
-        $entranceCode = ""
+        $expected_return = '',
+        $entranceCode = ''
     ) {
         parent::__construct($config, $entranceCode, $expected_return);
 
         if ($config instanceof BluemConfiguration) {
-            if (isset($config->paymentBrandID)
-                && $config->paymentBrandID !== ""
-            ) {
+            if (isset($config->paymentBrandID) && $config->paymentBrandID !== '') {
                 $config->setBrandId($config->paymentBrandID);
             } else {
                 $config->setBrandId($config->brandID);
             }
-        } elseif ($config instanceof stdClass && isset($config->paymentBrandID)
-            && $config->paymentBrandID !== "") {
+        } elseif ($config instanceof stdClass && isset($config->paymentBrandID) && $config->paymentBrandID !== '') {
             $config->brandID = $config->paymentBrandID;
         }
 

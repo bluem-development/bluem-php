@@ -12,7 +12,8 @@ final class IbanResponseTest extends ResponseTestCase
     {
         $xml = <<<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
-<IBANCheckInterface createDateTime="2026-04-05T00:00:00Z" messageCount="1" mode="direct" senderID="S001" type="TransactionRequest" version="1.0">
+<IBANCheckInterface createDateTime="2026-04-05T00:00:00Z" 
+messageCount="1" mode="direct" senderID="S001" type="TransactionRequest" version="1.0">
     <IBANCheckTransactionResponse entranceCode="20260405095326910">
         <IBANCheckResult>
             <IBANResult>KNOWN</IBANResult>

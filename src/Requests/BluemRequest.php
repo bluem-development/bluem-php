@@ -17,170 +17,96 @@ use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 use SimpleXMLElement;
-use stdClass;
 
-/**
- * BluemRequest general class
- */
-class BluemRequest implements BluemRequestInterface
+abstract class BluemRequest implements BluemRequestInterface
 {
-    /**
-     * @var
-     */
-    public $transaction_code;
+    public const int AGRICULTURE = 1;
+    public const int CONSTRUCTION = 2;
+    public const int HEALTHCARE = 3;
 
-    // @todo make an enum or a datatype?
+    protected string $request_url_type = '';
 
-    /**
-     * @var
-     */
-    public $typeIdentifier;
+    protected string $typeIdentifier = '';
 
-    /**
-     * @var
-     */
-    public $request_url_type;
+    protected string $transaction_code = '';
 
-    /**
-     * @var string
-     */
-    public $entranceCode;
+    protected string $entranceCode = '';
 
-    /**
-     * @var
-     */
-    public $mandateID;
+    protected string $requestXML = '';
 
-    /**
-     * @var
-     */
-    public $debtorWallet;
+    protected string $expectedReturn = '';
 
-    /**
-     * @var
-     */
-    public $context;
+    protected string $transactionID = '';
 
-    /**
-     * @var
-     */
-    protected $brandID;
+    protected string $accessToken = '';
 
-    /**
-     * @var
-     */
-    protected $senderID;
+    protected string $brandID = '';
 
-    /**
-     * @var string
-     */
-    protected $createDateTime;
+    protected string $merchantID = '';
 
-    /**
-     * @var
-     */
-    protected $transactionID;
+    protected string $environment = '';
 
-    /**
-     * @var string
-     */
-    protected $environment;
+    protected string $requestMode = '';
 
-    private array $_debtorAdditionalData = [];
+    protected string $currency = '';
 
-    private const array TYPE_IDENTIFIERS = [ 'createTransaction', 'requestStatus' ];
+    protected string $merchantReturnURLBase = '';
 
-    /**
-     * @var string[]
-     */
-    private array $_possibleDebtorAdditionalDataKeys = [
-        "EmailAddress",
-        "MobilePhoneNumber",
-        "CustomerProvidedDebtorIBAN",
-        "CustomerNumber",
-        "CustomerName",
-        "AttentionOf",
-        "Salutation",
-        "CustomerAddressLine1",
-        "CustomerAddressLine2",
-        "DebtorBankID",
-        "DynamicData",
-    ];
+    protected string $merchantReturnURL = '';
 
-    /**
-     * @var string
-     */
-    private $accessToken;
+    protected string $defaultReturnURL = '';
 
-    /**
-     * BluemRequest constructor.
-     *
-     * @param BluemConfiguration|object $config
-     *
-     * @throws InvalidBluemRequestException
-     */
-    public function __construct(
-        BluemConfiguration|stdClass $config,
-        string $entranceCode = "",
-        string $expectedReturn = ""
-    ) {
-        if (!in_array($this->typeIdentifier, self::TYPE_IDENTIFIERS, true)) {
-            throw new InvalidBluemRequestException("Invalid transaction type called for", 1);
-        }
+    protected string $language = '';
 
-        // @todo: move to request validation class?
+    protected string $paymentBrandID = '';
 
+    protected object $context;
+
+    protected string $requestObjectName = '';
+
+    protected string $xmlInterfaceName = '';
+
+    public function __construct(BluemConfiguration|stdClass $config, string $entranceCode = '', string $expectedReturn = '')
+    {
         $this->environment = $config->environment;
-
-        $this->brandID     = $config->brandID;
-        $this->senderID    = $config->senderID;
+        $this->currency = $config->currency;
         $this->accessToken = $config->accessToken;
-        // @todo just use the config directly instead of copying all configuration elements
-
-        $this->createDateTime = (new Now())->getCreateDateTimeForRequest();
-
-        /**
-         *  unique identifier of payee for this transaction
-         *  which is unique in time for any request; which is string; which should not be visible for customer;
-         *  structure: prefix for testing + customer number + current timestamp up to the second
-         */
-        // @todo Validate input entrance code if not empty string, based on XSD
-
-        $this->entranceCode = $entranceCode === "" ? $this->entranceCode($expectedReturn) : $entranceCode;
+        $this->brandID = $config->brandID;
+        $this->merchantID = $config->merchantID;
+        $this->merchantReturnURLBase = $config->merchantReturnURLBase;
+        $this->merchantReturnURL = $config->merchantReturnURL;
+        $this->defaultReturnURL = $config->defaultReturnURL;
+        $this->language = $config->language;
+        $this->requestMode = $config->requestMode;
+        $this->expectedReturn = $expectedReturn;
+        $this->entranceCode = $entranceCode;
+        $this->paymentBrandID = $config->paymentBrandID ?? '';
     }
 
-    // @todo remove this?
-    /**
-     * Generate an entranceCode, including test entranceCode substrings for certain types of return responses
-     *
-     * @param string $expectedReturn a possible expected return value
-     *                               (none,success,cancelled,expired,failure,open,pending) or empty string
-     *                               "YmdHisv" standardized format, in Europe/Amsterdam timezone
-     */
-    private function entranceCode(string $expectedReturn = 'none'): string
+    public function GenerateEntranceCode(): string
     {
-        $entranceCode = (new Now())->format("YmdHisv");
+        $entranceCode = (new Now())->format('YmdHisv');
 
-        $prefix = "";
+        $prefix = '';
         if ($this->environment === Constants::TESTING_ENVIRONMENT) {
-            switch ($expectedReturn) {
+            switch ($this->expectedReturn) {
                 case 'success':
-                    $prefix = "HIO100OIH";
+                    $prefix = 'HIO100OIH';
                     break;
                 case 'cancelled':
-                    $prefix = "HIO200OIH";
+                    $prefix = 'HIO200OIH';
                     break;
                 case 'expired':
-                    $prefix = "HIO300OIH";
+                    $prefix = 'HIO300OIH';
                     break;
                 case 'failure':
-                    $prefix = "HIO500OIH";
+                    $prefix = 'HIO500OIH';
                     break;
                 case 'open':
-                    $prefix = "HIO400OIH";
+                    $prefix = 'HIO400OIH';
                     break;
                 case 'pending':
-                    $prefix = "HIO600OIH";
+                    $prefix = 'HIO600OIH';
                     break;
                 case '':
                 case 'none':
@@ -192,9 +118,6 @@ class BluemRequest implements BluemRequestInterface
         return $prefix . $entranceCode;
     }
 
-    /**
-     * @return mixed
-     */
     public function getContext()
     {
         return $this->context;
@@ -212,236 +135,137 @@ class BluemRequest implements BluemRequestInterface
     }
 
     /**
-     * Returning the current XML string; as this is an abstract request, it will be overridden by classes that
-     * implement this.
+     * Returning the current XML string; as this is an abstract request, it will
+     * be overridden by classes that implement this.
      */
     public function XmlString(): string
-    {
-        return "";
-    }
-
-    /**
-     * Crafts the relevant HTTP request url.
-     *
-     * @retum string The http request url.
-     */
-    public function HttpRequestURL(): string
-    {
-        $request_url = "https://";
-
-        match ($this->environment) {
-            BLUEM_ENVIRONMENT_PRODUCTION => $request_url .= "",
-            BLUEM_ENVIRONMENT_ACCEPTANCE => $request_url .= "acc.",
-            default => $request_url .= "test.",
-        };
-        $request_url .= sprintf('viamijnbank.net/%s/', $this->request_url_type);
-        match ($this->typeIdentifier) {
-            'createTransaction' => $request_url .= "createTransactionWithToken",
-            'requestStatus' => $request_url .= "requestTransactionStatusWithToken",
-            default => $request_url . ('?token=' . $this->accessToken),
-        };
-
-        return $request_url . ('?token=' . $this->accessToken);
-    }
-
-    /**
-     * Retrieve array of objects with IssuerID and IssuerName of banks from the context
-     */
-    public function retrieveBICObjects(): array
-    {
-        return $this->context->BICs();
-    }
-
-    /**
-     * Retrieve array of BIC codes (IssuerIDs) of banks from context
-     */
-    public function retrieveBICCodes(): array
-    {
-        return $this->context->getBICCodes();
-    }
-
-    /**
-     * Package a certain BIC code to be sent with the response. It has to be a BIC valid for this context.
-     *
-     * @param [type] $BIC
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function selectDebtorWallet($BIC)
-    {
-        $possibleBICs = $this->context->getBICCodes();
-
-        if (! in_array($BIC, $possibleBICs)) {
-            throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
-        }
-
-        $this->debtorWallet = $BIC;
-    }
-
-
-    /**
-     * Create the XML element necessary to be added to the request XML string.
-     */
-    public function XmlWrapDebtorWallet(): string
-    {
-        if (is_null($this->debtorWallet)) {
-            return "";
-        }
-
-        if ($this->debtorWallet === "") {
-            return "";
-        }
-
-        if (! isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName === "") {
-            return '';
-        }
-
-        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-        $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
-        $res .= "<BIC>" . $this->debtorWallet . "</BIC>";
-        $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
-
-        return $res . ("</DebtorWallet>" . PHP_EOL);
-    }
-
-    public function XmlWrapDebtorAdditionalData(): string
-    {
-        if ($this->_debtorAdditionalData === []) {
-            return '';
-        }
-
-        $res = PHP_EOL . "<DebtorAdditionalData>" . PHP_EOL;
-
-        foreach ($this->_debtorAdditionalData as $key => $value) {
-            if (! in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
-                continue;
-            }
-
-            // @todo: add specific regex pattern checks for value of each type.
-
-            $res .= sprintf('<%s>', $key);
-            $res .= $value;
-            $res .= sprintf('</%s>', $key) . PHP_EOL;
-        }
-
-        return $res . ("</DebtorAdditionalData>" . PHP_EOL);
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function addAdditionalData($key, $value): BluemRequest
-    {
-        if (! in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
-            throw new Exception(
-                "Incorrect key added as DebtorAdditionalData
-                to request."
-            );
-        }
-
-        $this->_debtorAdditionalData[ $key ] = $value;
-
-        return $this; // allow function chaining
-    }
-
-    /**
-     * @return mixed
-     */
-    public function RequestContext()
-    {
-        return $this->context;
-    }
-
-    public function RequestType(): string
     {
         return '';
     }
 
     /**
-     * Construct the XML request string parent object for any request
+     * Crafts the relevant HTTP request url.
      *
-     * @param String $element_name Typically contains the interface of the current request context
-     * @param String $type Type of request (transaction creation or status)
-     * @param String $rest Remainder of XML element, as a string, used to chain this function
-     *
-     * @return String Constructed XML as string
+     * @return string The http request url.
      */
-    protected function XmlRequestInterfaceWrap(
-        string $element_name,
-        string $type = "TransactionRequest",
-        string $rest = ""
-    ): string {
-        // @Todo validate element name using a specific BluemXMLElement class
-        // @todo validate type to be of specific options in BluemXMLElementType class
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><' . $element_name . '
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        type="' . $type . '"
-        mode="direct"
-        senderID="' . $this->senderID . '"
-        version="1.0"
-        createDateTime="' . $this->createDateTime . '"
-        messageCount="1"
-          >' . $rest . '</' . $element_name . '>';
+    public function HttpRequestURL(): string
+    {
+        $requestUrl = 'https://';
+
+        match ($this->environment) {
+            Constants::PRODUCTION_ENVIRONMENT => $requestUrl .= '',
+            Constants::ACCEPTANCE_ENVIRONMENT => $requestUrl .= 'acc.',
+            default => $requestUrl .= 'test.',
+        };
+
+        $requestUrl .= sprintf('viamijnbank.net/%s/', $this->request_url_type);
+        $requestUrl .= match ($this->typeIdentifier) {
+            'createTransaction' => 'createTransactionWithToken',
+            'requestStatus' => 'requestTransactionStatusWithToken',
+            default => '?token=' . $this->accessToken,
+        };
+
+        return $requestUrl . ('?token=' . $this->accessToken);
     }
 
-    /**
-     * Construct the XML request string objects
-     *
-     * @param String $element_name Typically contains the specific object of the current request context
-     * @param String $rest Remainder of XML element, as a string, used to chain this function
-     * @param array $extra_attrs Any arbitrary other key-value pairs to be added as XML element attributes
-     *
-     * @return String Constructed XML as string
-     */
-    protected function XmlRequestObjectWrap(string $element_name, string $rest, array $extra_attrs = []): string
+    public function retrieveBICObjects(): array
     {
-        $res = "<{$element_name}
-           entranceCode=\"$this->entranceCode\" ";
-        foreach ($extra_attrs as $key => $value) {
-            $res .= sprintf('%s="%s" ', $key, $value) . PHP_EOL;
+        return $this->context->BICs();
+    }
+
+    public function setRequestXML(string $requestXML): void
+    {
+        $this->requestXML = $requestXML;
+    }
+
+    protected function XmlRequestInterfaceWrap(string $interfaceName, string $requestType, string $requestObject): string
+    {
+        return '<' . $interfaceName . ' ' . $this->XmlRequestInterfaceAttributes($requestType) . '>' . $requestObject . '</' . $interfaceName . '>';
+    }
+
+    protected function XmlRequestObjectWrap(string $requestObjectName, string $requestData): string
+    {
+        return '<' . $requestObjectName . '>' . $requestData . '</' . $requestObjectName . '>';
+    }
+
+    protected function XmlRequestInterfaceAttributes(string $requestType): string
+    {
+        $attributes = [
+            'createDateTime' => date('c'),
+            'version' => '1.0',
+            'type' => $requestType,
+            'mode' => $this->requestMode,
+            'senderID' => $this->brandID,
+            'brandID' => $this->brandID,
+            'merchantID' => $this->merchantID,
+            'language' => $this->language,
+            'merchantReturnURLBase' => $this->merchantReturnURLBase,
+            'merchantReturnURL' => $this->merchantReturnURL,
+            'defaultReturnURL' => $this->defaultReturnURL,
+        ];
+
+        return $this->implodeAttributes($attributes);
+    }
+
+    private function implodeAttributes(array $attributes): string
+    {
+        $output = '';
+        foreach ($attributes as $name => $value) {
+            if ($value !== '') {
+                $output .= ' ' . $name . '="' . $value . '"';
+            }
         }
 
-        return $res . ('>' . $rest . '</' . $element_name . '>');
+        return $output;
     }
 
-    /**
-     * Perform sanitization of the description element
-     *
-     *
-     */
-    protected function _sanitizeDescription(string $description): string
+    protected function buildXmlRequest(string $requestType, string $requestObject): string
     {
-        // filter based on full list of invalid chars for description based on XSD
-        // Wel toegestaan: -0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%"'/:;?$
-        $description = preg_replace(
-            '/[^-0-9a-zA-ZéëïôóöüúÉËÏÔÓÖÜÚ€ ()+,.@&=%\"\'\/:;?$]/u',
-            '',
-            $description
-        );
-        // max 128 characters
-        $result = substr((string) $description, 0, 128);
-        return $result;
+        return $this->XmlRequestInterfaceWrap($this->xmlInterfaceName, $requestType, $requestObject);
     }
 
-    /*
-    <DebtorAdditionalData>
-    <EmailAddress>{0,1}</EmailAddress>
-    <MobilePhoneNumber>{0,1}</MobilePhoneNumber>
-    <CustomerProvidedDebtorIBAN>{0,1}</CustomerProvidedDebtorIBAN>
-    <CustomerNumber>{0,1}</CustomerNumber>
-    <CustomerName>{0,1}</CustomerName>
-    <AttentionOf>{0,1}</AttentionOf>
-    <Salutation>{0,1}</Salutation>
-    <CustomerAddressLine1>{0,1}</CustomerAddressLine1>
-    <CustomerAddressLine2>{0,1}</CustomerAddressLine2>
-    <DebtorBankID>{0,1}</DebtorBankID>
-    <DynamicData>{0,1}</DynamicData>
-    </DebtorAdditionalData>
-    */
-
-    public function setBrandId(string $brandID): void
+    protected function getParentXmlElement(): string
     {
-        $this->brandID = $brandID;
+        return $this->xmlInterfaceName;
+    }
+
+    protected function getChildXmlElement(): string
+    {
+        return $this->requestObjectName;
+    }
+
+    protected function validateBaseRequest(): void
+    {
+        if ($this->entranceCode === '') {
+            $this->entranceCode = $this->GenerateEntranceCode();
+        }
+
+        if ($this->expectedReturn === '') {
+            $this->expectedReturn = Constants::EXPECTED_RETURN_SUCCESS;
+        }
+
+        if ($this->requestMode === '') {
+            $this->requestMode = 'direct';
+        }
+    }
+
+    protected function validateRequest(): void
+    {
+        $this->validateBaseRequest();
+    }
+
+    public function setRequestObjectName(string $requestObjectName): void
+    {
+        $this->requestObjectName = $requestObjectName;
+    }
+
+    public function getRequestObjectName(): string
+    {
+        return $this->requestObjectName;
+    }
+
+    public function __toString(): string
+    {
+        return $this->XmlString();
     }
 }

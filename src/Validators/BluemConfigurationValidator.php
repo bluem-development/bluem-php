@@ -21,17 +21,12 @@ class BluemConfigurationValidator
 
     public function validate($config)
     {
-        // essential validation
         try {
             $config = $this->_validateEnvironment($config);
             $config = $this->_validateSenderID($config);
             $config = $this->_validateTest_accessToken($config);
             $config = $this->_validateProduction_accessToken($config);
             $config = $this->_validateBrandID($config);
-
-            // @todo: add validation for iDIN and eMandates and ePayments brandIDs if they are present
-
-            // secondary values, possibly automatically inferred
             $config = $this->_validateMerchantIDAndSelectAccessToken($config);
             $config = $this->_validateThanksPage($config);
             $config = $this->_validateExpectedReturnStatus($config);

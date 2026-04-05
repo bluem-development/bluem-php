@@ -209,8 +209,9 @@ class Bluem
      * @throws DOMException
      * @throws Exception
      */
-    public function PerformRequest(BluemRequestInterface $transaction_request): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse
-    {
+    public function PerformRequest(
+        BluemRequestInterface $transaction_request
+    ): ErrorBluemResponse|IBANNameCheckBluemResponse|IdentityStatusBluemResponse|IdentityTransactionBluemResponse|MandateStatusBluemResponse|MandateTransactionBluemResponse|PaymentStatusBluemResponse|PaymentTransactionBluemResponse {
         $validator = new BluemXMLValidator();
         if (
             ! $validator->validate(

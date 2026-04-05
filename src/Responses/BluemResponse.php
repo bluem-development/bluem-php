@@ -60,7 +60,9 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
         $attrs = $this->{$this->getParentXmlElement()}->attributes();
 
         if (! $attrs || ! isset($attrs['entranceCode'])) {
-            throw new RuntimeException("An error occurred in reading the transaction response: no entrance code found.");
+            throw new RuntimeException(
+                "An error occurred in reading the transaction response: no entrance code found."
+            );
         }
 
         return $attrs['entranceCode'] . "";
