@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.5.0">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.7.0">
     <!--=====================================================================-->
     <!--                        Schema Management                            -->
     <!--=====================================================================-->
@@ -9,8 +9,8 @@
         <xsd:documentation xml:lang="en"/>
         <xsd:documentation>
             <name>EPayment Interface</name>
-            <revision version="1.5.0">
-                <date>2020-NOVEMBER-26</date>
+            <revision version="1.6.0">
+                <date>2023-JANUARY-10</date>
             </revision>
         </xsd:documentation>
     </xsd:annotation>
@@ -129,9 +129,6 @@
     <xsd:simpleType name="DescriptionSimpleType">
         <xsd:restriction base="xsd:token">
 	        <xsd:pattern value="[-0-9a-zA-ZàáâäæãåāçćčèéêëēėęîïíīįìłñńôöòóœøōõßśšûüùúūÿžźżÀÁÂÄÆÃÅĀÇĆČÈÉÊËĒĖĘÎÏÍĪĮÌŁÑŃÔÖÒÓŒØŌÕŚŠÛÜÙÚŪŸŽŹŻ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,35}"/>
-            <!--<xsd:pattern value="[-0-9a-zA-ZéèëïôóöüúÉÈËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{1,35}"/>  -->
-            <!-- <xsd:pattern value="[-\\x00-\\x7F ()+,.@&amp;=%&quot;&apos;/:;?$]{0,35}"/>  -->
-
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -180,14 +177,7 @@
         </xsd:restriction>
     </xsd:simpleType>
 
-<!--     <xsd:simpleType name="CurrencySimpleType">
-        <xsd:restriction base="xsd:token">
-            <xsd:pattern value="[A-Z]{3}"/>
-        </xsd:restriction>
-    </xsd:simpleType>
- -->
-
-     <xsd:simpleType name="CurrencySimpleType">
+    <xsd:simpleType name="CurrencySimpleType">
         <xsd:restriction base="xsd:token">
             <xsd:enumeration value="EUR"/>
             <xsd:enumeration value="GBP"/>
@@ -288,6 +278,7 @@
 			<xsd:enumeration value="Pending"/>
             <xsd:enumeration value="SuccessManual"/>
             <xsd:enumeration value="BankSelected"/>
+            <xsd:enumeration value="Refunded"/>
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -330,7 +321,10 @@
             <xsd:enumeration value="PAYPAL"/>
             <xsd:enumeration value="VISA_MASTER"/>
             <xsd:enumeration value="SOFORT"/>
+            <xsd:enumeration value="SOFORT_DIGITALSERVICES"/>
             <xsd:enumeration value="CARTE_BANCAIRE"/>
+            <xsd:enumeration value="BANCONTACT"/>
+            <xsd:enumeration value="GIROPAY"/>
         </xsd:restriction>
     </xsd:simpleType>
     
@@ -468,59 +462,9 @@
     
     
     
-    <!-- BEGIN - DebtorWallet additions -->
-    
-    
-    <xsd:simpleType name="CreditCardMonthSimpleType">
-        <xsd:restriction base="xsd:token">
-            <xsd:pattern value="0[1-9]|1[02]"/> 
-        </xsd:restriction>
-    </xsd:simpleType>
-     
-    <xsd:simpleType name="CreditCardYearSimpleType">
-        <xsd:restriction base="xsd:token">
-            <xsd:pattern value="202[0-9]|203[0-9]|204[0-9]"/>
-        </xsd:restriction>
-    </xsd:simpleType>
- 
-    
-     <xsd:simpleType name="CreditCardSecurityCodeSimpleType">
-        <xsd:restriction base="xsd:token">
-            <xsd:pattern value="[0-9]{3,4}"/>  <!-- 3 or 4 digits -->
-        </xsd:restriction>
-    </xsd:simpleType>
-    
-    <xsd:simpleType name="CreditCardNumberSimpleType">
-        <xsd:restriction base="xsd:token">  
-	       	<xsd:minLength value="13"/>
-            <xsd:pattern value="[-0-9 ]+"/> <!--digits, spaces, dashes -->
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <xsd:simpleType name="CreditCardNameSimpleType">
-        <xsd:restriction base="xsd:token">
-	        <xsd:minLength value="1"/>
-            <xsd:maxLength value="32"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-    
-    <xsd:complexType name="CreditCardExpirationDateComplexType">
-        <xsd:sequence>
-            <xsd:element name="Month" type="CreditCardMonthSimpleType" minOccurs="1"/>
-            <xsd:element name="Year" type="CreditCardYearSimpleType" minOccurs="1"/>
-
-        </xsd:sequence>
-    </xsd:complexType>
-       
-    
+    <!-- BEGIN - DebtorWallet additions -->    
    <xsd:complexType name="DebtorCreditCardComplexType">
-<!--         <xsd:all>
-            <xsd:element name="CardNumber" type="CreditCardNumberSimpleType" minOccurs="1"/>
-            <xsd:element name="Name" type="CreditCardNameSimpleType" minOccurs="1"/>
-            <xsd:element name="SecurityCode" type="CreditCardSecurityCodeSimpleType" minOccurs="1"/>
-            <xsd:element name="ExpirationDate" type="CreditCardExpirationDateComplexType" minOccurs="1"/>
-        </xsd:all>
- -->    </xsd:complexType>
+   </xsd:complexType>
 
     <xsd:complexType name="IDealComplexType">
         <xsd:all>
@@ -528,20 +472,17 @@
         </xsd:all>
     </xsd:complexType>
 
-    <xsd:complexType name="PayPalComplexType">
- <!--        <xsd:all>
-	        <xsd:element name="PayPalAccount" type="EmailSimpleType" minOccurs="1"/>
-      </xsd:all>
- -->    </xsd:complexType>
+    <xsd:complexType name="PayPalComplexType"></xsd:complexType>
  
-    <xsd:complexType name="SofortComplexType">
- 
-    </xsd:complexType>
+    <xsd:complexType name="SofortComplexType"></xsd:complexType>
     
-   <xsd:complexType name="CarteBancaireComplexType">
- 
-    </xsd:complexType>
+    <xsd:complexType name="SofortDigitalServicesComplexType"></xsd:complexType>
 
+    <xsd:complexType name="CarteBancaireComplexType"></xsd:complexType>
+
+    <xsd:complexType name="BancontactComplexType"></xsd:complexType>
+
+    <xsd:complexType name="GiropayComplexType"></xsd:complexType>
 
     <xsd:complexType name="DebtorWalletComplexType">
         <xsd:choice>
@@ -549,14 +490,13 @@
             <xsd:element name="PayPal" type="PayPalComplexType" maxOccurs="1"/>
             <xsd:element name="CreditCard" type="DebtorCreditCardComplexType" maxOccurs="1"/>
             <xsd:element name="Sofort" type="SofortComplexType" maxOccurs="1"/>
+            <xsd:element name="SofortDigitalServices" type="SofortDigitalServicesComplexType" maxOccurs="1"/>
             <xsd:element name="CarteBancaire" type="CarteBancaireComplexType" maxOccurs="1"/>
+            <xsd:element name="Bancontact" type="BancontactComplexType" maxOccurs="1"/>
+            <xsd:element name="Giropay" type="GiropayComplexType" maxOccurs="1"/>
+
         </xsd:choice>
     </xsd:complexType>
-    
-    
-    
-    
-    
     <!-- END - DebtorWallet additions -->
     
 
@@ -566,7 +506,10 @@
             <xsd:element name="PayPalDetails" type="PayPalDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="VisaMasterDetails" type="VisaMasterDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="SofortDetails" type="SofortDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="SofortDigitalServicesDetails" type="SofortDigitalServicesDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="CarteBancaireDetails" type="CarteBancaireDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="BancontactDetails" type="BancontactDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="GiropayDetails" type="GiropayDetailsComplexType" minOccurs="0" maxOccurs="1"/>
 
         </xsd:sequence>
     </xsd:complexType>
@@ -600,8 +543,22 @@
             <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
-
+    
+   <xsd:complexType name="SofortDigitalServicesDetailsComplexType">
+        <xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
     <xsd:complexType name="CarteBancaireDetailsComplexType">
+        <xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="BancontactDetailsComplexType">
         <xsd:sequence>
             <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
             <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
@@ -609,6 +566,12 @@
     </xsd:complexType>
 
 
+   <xsd:complexType name="GiropayDetailsComplexType">
+        <xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
 
 
     <xsd:complexType name="DocComplexType">
@@ -721,20 +684,8 @@
         </xsd:attribute>
 
         <xsd:attribute name="language" type="LanguageCodeSimpleType" default="nl"/>
-        <!--           <xsd:simpleType>
-                <xsd:restriction base="xsd:token">
-                    <xsd:enumeration value="en"/>
-                    <xsd:enumeration value="nl"/>
-                </xsd:restriction>
-            </xsd:simpleType> 
-        </xsd:attribute> 
- -->
     </xsd:attributeGroup>
-    <!--                            ATTRIBUTES                               -->
-
-    <!--                              GROUPS                                 -->
-
-    <!--                             ELEMENTS                                -->
+ 
     <xsd:element name="EPaymentInterface" type="EPaymentInterfaceType"/>
 
 </xsd:schema>

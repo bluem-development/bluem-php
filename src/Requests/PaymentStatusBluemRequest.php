@@ -13,8 +13,11 @@ use Bluem\BluemPHP\Contexts\PaymentsContext;
 class PaymentStatusBluemRequest extends BluemRequest
 {
     public $request_url_type = "pr";
+
     public $typeIdentifier = "requestStatus";
+
     public $transaction_code = "PSX";
+
     protected $xmlInterfaceName = "EPaymentInterface";
 
     public function __construct(
@@ -44,6 +47,7 @@ class PaymentStatusBluemRequest extends BluemRequest
         return $this->transaction_code;
     }
 
+    #[\Override]
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(

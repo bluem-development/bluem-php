@@ -9,8 +9,9 @@ use Exception;
 
 class Now
 {
-    private const DEFAULT_TIMEZONE = "Europe/Amsterdam";
-    private const LOCAL_DATE_FORMAT = "Y-m-d\TH:i:s";
+    private const string DEFAULT_TIMEZONE = "Europe/Amsterdam";
+
+    private const string LOCAL_DATE_FORMAT = "Y-m-d\TH:i:s";
 
     private DateTimeImmutable $dateTime;
 
@@ -18,13 +19,13 @@ class Now
     {
         try {
             $timezone = new DateTimeZone($timezoneString);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $timezone = new DateTimeZone(self::DEFAULT_TIMEZONE);
         }
 
         try {
             $this->dateTime = new DateTimeImmutable(datetime: "now", timezone: $timezone);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->dateTime = new DateTimeImmutable("now", self::DEFAULT_TIMEZONE);
         }
     }
@@ -51,32 +52,32 @@ class Now
 
     public function addDay(int $days): static
     {
-        $this->dateTime = $this->dateTime->add(new DateInterval("P{$days}D"));
+        $this->dateTime = $this->dateTime->add(new DateInterval(sprintf('P%dD', $days)));
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function fromDate(string $dateTimeString): static
     {
-        try {
-            $this->dateTime = new DateTimeImmutable(
-                datetime: $dateTimeString,
-                timezone: new DateTimeZone(self::DEFAULT_TIMEZONE)
-            );
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $this->dateTime = new DateTimeImmutable(
+            datetime: $dateTimeString,
+            timezone: new DateTimeZone(self::DEFAULT_TIMEZONE)
+        );
+
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function fromTimestamp(string $timestamp): static
     {
-        try {
-            $this->dateTime = (new DateTimeImmutable())
-                ->setTimestamp($timestamp)
-                ->setTimezone(new DateTimeZone(self::DEFAULT_TIMEZONE));
-        } catch (Exception $e) {
-            throw $e;
-        }
+        $this->dateTime = (new DateTimeImmutable())
+            ->setTimestamp($timestamp)
+            ->setTimezone(new DateTimeZone(self::DEFAULT_TIMEZONE));
+
         return $this;
     }
 }

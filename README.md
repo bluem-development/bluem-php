@@ -1,4 +1,4 @@
-![Bluem](https://bluem.nl/img/BluemAboutIcon.svg)
+<img width="250" height="250" alt="image" src="https://github.com/user-attachments/assets/c1e56d5e-87c6-41db-8076-880255523f86" />
 
 **Bluem-php for Payment, Mandates, iDIN & IBAN-Name check**
 
@@ -50,14 +50,19 @@ Utilized by other applications as well:
 * [Appendices](#appendices)
     + [List of all supported BICs per context](#list-of-all-supported-bics-per-context)
 
-## Requirements
-- Update April 2024: Since our release >= 2.4, **PHP 8.1** is the minimum required version for this library. Previous releases requires **PHP 8.0**.
+
+# Requirements & Versioning
+## 3.0 is coming with PHP 8.3 support and requirement
+A new version of the PHP library will be released in the coming 1-2 months.
+Starting this release, **PHP 8.3** is the minimum required version for this library.
+- 2026: Starting at our release >= 3.0, **PHP 8.3** is the minimum required version for this library. Previous releases requires **PHP 8.1**.
+- 2024: Starting at our release >= 2.4, **PHP 8.1** is the minimum required version for this library. Previous releases requires **PHP 8.0**.
 - Update April 2023: Since our release >= 2.3, **PHP 8.0** is the minimum required version for this library. Previous releases requires **PHP 7.4**.
 
 - Please use the [major git releases](https://github.com/bluem-development/bluem-php/releases) for the stable versions of this plugin.
 - Refer to the `composer.json` requirements for any other dependencies
 
-## Getting started
+# Getting started
 Install the library through [Composer](https://getcomposer.org). Run Composer to install this library and dependencies from your project folder.
 
 ```bash
@@ -69,6 +74,12 @@ Refer to the [examples](https://github.com/bluem-development/bluem-php/tree/mast
 Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
 
 ## Notes per version
+
+### Version 3.0
+- PHP 8.3 minimum version requirement
+
+### Version 2.4
+- Added Bancontact support
 
 ### Version 2.3.2.4 (latest)
 - Added bank 'N26' to ePayments BIC list.
@@ -309,6 +320,12 @@ To use Carte Bancaire, use the following method:
 ```php
 $request = $request->setPaymentMethodToCarteBancaire(); 
 ```
+
+To use Bancontact, use the following method
+```php
+$request = $request->setPaymentMethodToBancontact();
+```
+
 
 These methods will throw an exception if required information is missing.
 
@@ -855,12 +872,12 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 #### ePayments
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
+- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - bunq  <BR> BIC: `BUNQNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Knab  <BR> BIC: `KNABNL2H`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
-- SNS   <BR> BIC: `SNSBNL2A`
 - Triodos Bank  <BR> BIC: `TRIONL2U`
 - Van Lanschot  <BR> BIC: `FVLBNL22`
 - Revolut   <BR> BIC: `REVOLT21`
@@ -870,10 +887,10 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 #### eMandates CORE
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
+- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
-- SNS   <BR> BIC: `SNSBNL2A`
 - Triodos Bank  <BR> BIC: `TRIONL2U`
 #### eMandates B2B
 - ABN AMRO  <BR> BIC: `ABNANL2A`
@@ -883,11 +900,11 @@ To be able to use webhook functionality, retrieve a copy of the Webhook certific
 #### Identity
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
+- ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - bunq  <BR> BIC: `BUNQNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
-- SNS   <BR> BIC: `SNSBNL2A`
 
 Please note: Knab with BIC: `KNABNL2H` does not support eMandates CORE anymore as of 4th of October 2023.
 

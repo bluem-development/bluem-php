@@ -20,7 +20,7 @@ class WebhookTest extends BluemGenericTestCase
     {
         $this->markTestSkipped("To be implemented");
 
-        $dirPath = dirname(dirname(__DIR__)) . '/validation/webhooks';
+        $dirPath = dirname(__DIR__, 2) . '/validation/webhooks';
 
         $fileName = 'webhook_payment.xml';
 
@@ -33,12 +33,11 @@ class WebhookTest extends BluemGenericTestCase
 
             $webhook = $this->bluem->Webhook($xmlData);
 
-            if ($webhook !== null) {
-                if (method_exists($webhook, 'getStatus')) {
-                    $status = $webhook->getStatus();
-                }
+            if ($webhook !== null && method_exists($webhook, 'getStatus')) {
+                $status = $webhook->getStatus();
             }
         }
+
         $this->assertEquals('Success', $status, $fileName . ': Status not success: ' . $status);
     }
 
@@ -51,7 +50,7 @@ class WebhookTest extends BluemGenericTestCase
     {
         $this->markTestSkipped("To be implemented");
 
-        $dirPath = dirname(dirname(__DIR__)) . '/validation/webhooks';
+        $dirPath = dirname(__DIR__, 2) . '/validation/webhooks';
 
         $fileName = 'webhook_mandate.xml';
 
@@ -64,12 +63,11 @@ class WebhookTest extends BluemGenericTestCase
 
             $webhook = $this->bluem->Webhook($xmlData);
 
-            if ($webhook !== null) {
-                if (method_exists($webhook, 'getStatus')) {
-                    $status = $webhook->getStatus();
-                }
+            if ($webhook !== null && method_exists($webhook, 'getStatus')) {
+                $status = $webhook->getStatus();
             }
         }
+
         $this->assertEquals('Success', $status, $fileName . ': Status not success: ' . $status);
     }
 
@@ -82,7 +80,7 @@ class WebhookTest extends BluemGenericTestCase
     {
         $this->markTestSkipped("To be implemented");
 
-        $dirPath = dirname(dirname(__DIR__)) . '/validation/webhooks';
+        $dirPath = dirname(__DIR__, 2) . '/validation/webhooks';
 
         $fileName = 'webhook_identity.xml';
 
@@ -95,12 +93,11 @@ class WebhookTest extends BluemGenericTestCase
 
             $webhook = $this->bluem->Webhook($xmlData);
 
-            if ($webhook !== null) {
-                if (method_exists($webhook, 'getStatus')) {
-                    $status = $webhook->getStatus();
-                }
+            if ($webhook !== null && method_exists($webhook, 'getStatus')) {
+                $status = $webhook->getStatus();
             }
         }
+
         $this->assertEquals('Success', $status,  $fileName . ': Status not success: ' . $status);
     }
 }

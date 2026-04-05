@@ -26,5 +26,5 @@ jobs:
               with:
                   version: 9.5
                   php_version: 8.1
-                  bootstrap: vendor/autoload.php
+                  bootstrap: ./vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml

@@ -12,8 +12,11 @@ use Bluem\BluemPHP\Contexts\IdentityContext;
 class IdentityStatusBluemRequest extends BluemRequest
 {
     public $request_url_type = "ir";
+
     public $typeIdentifier = "requestStatus";
+
     public $transaction_code = "ISX";
+
     protected $xmlInterfaceName = "IdentityInterface";
 
     public function __construct($config, $entranceCode, $expectedReturn, $transactionID)
@@ -39,6 +42,7 @@ class IdentityStatusBluemRequest extends BluemRequest
         return "ISX";
     }
 
+    #[\Override]
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(

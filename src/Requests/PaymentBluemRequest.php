@@ -9,6 +9,7 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
+use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
 use Exception;
@@ -16,24 +17,35 @@ use Exception;
 class PaymentBluemRequest extends BluemRequest
 {
     public $request_url_type = "pr";
+
     public $typeIdentifier = "createTransaction";
+
     public $transaction_code = "PTX";
+
     public string $dueDateTime;
+
     /**
      * @var array|string|string[]
      */
     public $debtorReturnURL;
+
     public string $paymentReference;
+
     private string $xmlInterfaceName = "EPaymentInterface";
-    private string $description;
+
+    private readonly string $description;
+
     /**
      * @var mixed|string
      */
-    private string $currency;
-    private string $debtorReference;
-    private float $amount;
+    private readonly string $currency;
+
+    private readonly string $debtorReference;
+
+    private readonly float $amount;
 
     /**
+     * @throws InvalidBluemRequestException
      * @throws Exception
      */
     public function __construct(
@@ -56,22 +68,7 @@ class PaymentBluemRequest extends BluemRequest
         //  Default Currency EUR
         $this->currency = $this->validateCurrency($currency);
 
-        $now = new Now();
-
-        if ($dueDateTime === null) {
-            $this->dueDateTime = $now->tomorrow()->getCreateDateTimeForRequest();
-        } else {
-            try {
-                if (is_int($dueDateTime)) {
-                    $then = ($now->fromTimestamp($dueDateTime));
-                } else {
-                    $then = ($now->fromDate($dueDateTime));
-                }
-            } catch (Exception $e) {
-                throw $e;
-            }
-            $this->dueDateTime = $then->getCreateDateTimeForRequest();
-        }
+        $this->dueDateTime = $this->getDueDateTime($dueDateTime);
 
         //  @todo: validate DebtorReference : [0-9a-zA-Z]{1,35}
         //         $sanitizedDebtorReferenceParts = [];
@@ -86,7 +83,7 @@ class PaymentBluemRequest extends BluemRequest
         //                 $sanitizedDebtorReferenceParts[0]
         //             );
         //         }
-        $this->debtorReference = substr($debtorReference, 0, 35);
+        $this->debtorReference = substr((string) $debtorReference, 0, 35);
 
 
         $this->amount = (float)$amount;
@@ -98,7 +95,8 @@ class PaymentBluemRequest extends BluemRequest
         } else {
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
-        $this->debtorReturnURL .= "?entranceCode=$this->entranceCode&transactionID=$this->transactionID";
+
+        $this->debtorReturnURL .= sprintf('?entranceCode=%s&transactionID=%s', $this->entranceCode, $this->transactionID);
 
         $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
 
@@ -106,7 +104,7 @@ class PaymentBluemRequest extends BluemRequest
         // added entranceCode as well, useful. Defined in generic bluem request class.
 
         $this->paymentReference = empty($paymentReference)
-            ? "$this->debtorReference$this->transactionID"
+            ? $this->debtorReference . $this->transactionID
             : $paymentReference;
 
         $this->context = new PaymentsContext();
@@ -121,7 +119,7 @@ class PaymentBluemRequest extends BluemRequest
             $sanitizedTransactionIDParts
         );
         if ($sanitizedTransactionIDCount !== false && $sanitizedTransactionIDCount > 0) {
-            $transactionID = implode(
+            return implode(
                 "",
                 $sanitizedTransactionIDParts[0]
             );
@@ -135,16 +133,15 @@ class PaymentBluemRequest extends BluemRequest
      *
      * @param $currency
      *
-     * @throws Exception
+     * @throws InvalidBluemRequestException
      */
     private function validateCurrency($currency): string
     {
         $availableCurrencies = [ "EUR" ]; // @todo: add list of currencies based on
         if (!in_array($currency, $availableCurrencies, true)) {
-            throw new Exception(
-                "Currency not recognized,
-                    should be one of the following available currencies: " .
-                                 implode(",", $availableCurrencies)
+            throw new InvalidBluemRequestException(
+                "Currency not recognized, should be one of the following available currencies: " .
+                implode(",", $availableCurrencies)
             );
         }
 
@@ -156,6 +153,7 @@ class PaymentBluemRequest extends BluemRequest
         return $this->transaction_code;
     }
 
+    #[\Override]
     public function XmlString(): string
     {
         $extraOptions = [
@@ -244,8 +242,8 @@ class PaymentBluemRequest extends BluemRequest
         /**
          * Prepared for future use.
          */
-        if (!empty($cardNumber) || !empty($name) || !empty($securityCode)
-            || !empty($expirationDateMonth) || !empty($expirationDateYear)
+        if ($cardNumber !== '' && $cardNumber !== '0' || $name !== '' && $name !== '0' || $securityCode !== '' && $securityCode !== '0'
+            || $expirationDateMonth !== '' && $expirationDateMonth !== '0' || $expirationDateYear !== '' && $expirationDateYear !== '0'
         ) {
             $this->context->addPaymentMethodDetails(
                 [
@@ -273,10 +271,31 @@ class PaymentBluemRequest extends BluemRequest
         return $this;
     }
 
-    private function addZeroPrefix($number)
+    public function setPaymentMethodToBancontact(): self
     {
-        if (strlen($number.'') === 1) {
-            return (int) '0'.$number;
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
+        return $this;
+    }
+
+
+    /**
+     * @throws InvalidBluemRequestException
+     */
+    public function getDueDateTime(mixed $dueDateTime): string
+    {
+        $now = new Now();
+
+        if ($dueDateTime === null) {
+            return $now->tomorrow()->getCreateDateTimeForRequest();
+        }
+
+        try {
+            $then = is_int($dueDateTime)
+                ? ($now->fromTimestamp($dueDateTime))
+                : ($now->fromDate($dueDateTime));
+            return $then->getCreateDateTimeForRequest();
+        } catch (Exception $exception) {
+            throw new InvalidBluemRequestException($exception, $exception->getCode(), $exception);
         }
     }
 
@@ -300,15 +319,15 @@ class PaymentBluemRequest extends BluemRequest
             }
 
             $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-            $res .= "<{$this->context->debtorWalletElementName}>";
+            $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
             $res .= "<BIC>" . $bic . "</BIC>";
-            $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+            $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
 
             return $res . ("</DebtorWallet>" . PHP_EOL);
         }
 
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-        $res .= "<{$this->context->debtorWalletElementName}>";
+        $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
 
         if ($this->context->isPayPal()) {
             if (!empty($this->context->getPaymentDetail('PayPalAccount'))) {
@@ -318,12 +337,15 @@ class PaymentBluemRequest extends BluemRequest
             if (!empty($this->context->getPaymentDetail('CardNumber'))) {
                 $res .= "<CardNumber>" . $this->context->getPaymentDetail('CardNumber') . "</CardNumber>";
             }
+
             if (!empty($this->context->getPaymentDetail('Name'))) {
                 $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
             }
+
             if (!empty($this->context->getPaymentDetail('Name'))) {
                 $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
             }
+
             if (!empty($this->context->getPaymentDetail('ExpirationDateMonth')) && !empty($this->context->getPaymentDetail('ExpirationDateYear'))) {
                 $res .= "<ExpirationDate>
                         <Month>" . $this->context->getPaymentDetail('ExpirationDateMonth') . "</Month>
@@ -336,7 +358,7 @@ class PaymentBluemRequest extends BluemRequest
             // if specific carte bancaire body becomes required in the future; please add it here
         }
 
-        $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+        $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
         return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
@@ -348,6 +370,7 @@ class PaymentBluemRequest extends BluemRequest
      * @return void
      * @throws Exception
      */
+    #[\Override]
     public function selectDebtorWallet($BIC)
     {
 

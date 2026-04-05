@@ -15,11 +15,11 @@ use SimpleXMLElement;
 
 class WebhookXmlValidation extends WebhookXMLValidator
 {
-    private const ALLOWED_SERVICE_INTERFACES = [
+    private const array ALLOWED_SERVICE_INTERFACES = [
         'EPaymentInterface', 'IdentityInterface', 'EMandateInterface'
     ];
 
-    public function __construct(private string $senderID)
+    public function __construct(private readonly string $senderID)
     {
     }
 
@@ -34,6 +34,7 @@ class WebhookXmlValidation extends WebhookXMLValidator
         if ($this->senderID !== $givenSenderID) {
             $this->addError("Invalid senderID");
         }
+
         if ((string)$serviceInterface->attributes()['type'] !== "StatusUpdate") {
             $this->addError("Invalid service interface type attribute");
         }
