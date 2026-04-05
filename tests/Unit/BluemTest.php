@@ -51,7 +51,7 @@ class BluemTest extends TestCase
     }
 
 
-    public function testMandateWithValidParameters(): void
+    public function testIdentityRequestWithValidParameters(): void
     {
         $this->transport->setResponse(
             200,
