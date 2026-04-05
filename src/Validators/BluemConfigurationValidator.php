@@ -10,6 +10,7 @@
 namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Constants;
+use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Exception;
 use RuntimeException;
 use Throwable;
@@ -48,18 +49,9 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
-        if (! isset($config->environment)) {
-            throw new Exception(
+        if (! isset($config->environment) || ! in_array($config->environment, Constants::ENVIRONMENTS, true)) {
+            throw new InvalidBluemConfigurationException(
                 'environment not set; please add this to your configuration when instantiating the Bluem integration'
-            );
-        }
-
-        if (! in_array($config->environment, Constants::ENVIRONMENTS, true)) {
-            throw new Exception(
-                sprintf(
-                    sprintf('Invalid environment setting (%s), should be one of: %%s', $config->environment),
-                    implode(', ', Constants::ENVIRONMENTS)
-                )
             );
         }
 
@@ -105,8 +97,6 @@ class BluemConfigurationValidator
 
     private function _validateProduction_accessToken($config)
     {
-        // only required if mode is set to PROD
-        // production_accessToken
         if (
             $config->environment === Constants::PRODUCTION_ENVIRONMENT
             && (! isset($config->production_accessToken) || $config->production_accessToken === '')
@@ -138,13 +128,8 @@ class BluemConfigurationValidator
 
         if ($config->environment === Constants::PRODUCTION_ENVIRONMENT) {
             $config->accessToken = $config->production_accessToken;
-            // @todo consider throwing an exception if these tokens are missing.
         } elseif ($config->environment === Constants::TESTING_ENVIRONMENT) {
             $config->accessToken = $config->test_accessToken;
-            // @todo consider throwing an exception if these tokens are missing.
-
-            // hardcoded merchantID in case of test.
-            // It is always the bluem merchant ID then.
             $config->merchantID = Constants::BLUEM_STATIC_MERCHANT_ID;
         }
 
@@ -153,16 +138,9 @@ class BluemConfigurationValidator
 
     private function _validateThanksPage($config)
     {
-        // @todo consider throwing an exception if this url is missing.
         return $config;
     }
 
-    /**
-     * if an invalid possible return status is given, set it to a default value
-     * (for testing purposes only)
-     *
-     * @param $config
-     */
     private function _validateExpectedReturnStatus($config): mixed
     {
         if ($config->environment === Constants::TESTING_ENVIRONMENT) {
@@ -170,27 +148,25 @@ class BluemConfigurationValidator
                 ! isset($config->expectedReturnStatus)
                 || ($config->expectedReturnStatus !== '' && ! in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
             ) {
-                // default back to success
                 $config->expectedReturnStatus = Constants::EXPECTED_RETURN_SUCCESS;
             }
         } else {
-            // no need for expectedReturnStatus when in production
             unset($config->expectedReturnStatus);
         }
 
         return $config;
     }
 
-    /**
-     * @return array List of possible return statuses as strings
-     */
     private function getPossibleReturnStatuses(): array
     {
         return [
             Constants::EXPECTED_RETURN_NONE,
             Constants::EXPECTED_RETURN_SUCCESS,
-            Constants::EXPECTED_RETURN_ERROR,
             Constants::EXPECTED_RETURN_CANCELLED,
+            Constants::EXPECTED_RETURN_EXPIRED,
+            Constants::EXPECTED_RETURN_FAILURE,
+            Constants::EXPECTED_RETURN_OPEN,
+            Constants::EXPECTED_RETURN_PENDING,
         ];
     }
 
