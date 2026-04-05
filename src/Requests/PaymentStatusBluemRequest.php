@@ -10,6 +10,7 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
 
 class PaymentStatusBluemRequest extends BluemRequest
 {
@@ -22,7 +23,7 @@ class PaymentStatusBluemRequest extends BluemRequest
     protected $xmlInterfaceName = "EPaymentInterface";
 
     public function __construct(
-        $config,
+        BluemConfiguration $config,
         $transactionID,
         $expected_return = "",
         $entranceCode = ""

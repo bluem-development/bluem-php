@@ -11,6 +11,7 @@ namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Constants;
 use Exception;
+use RuntimeException;
 use Throwable;
 
 class BluemConfigurationValidator
@@ -136,7 +137,9 @@ class BluemConfigurationValidator
     private function _validateBrandID($config)
     {
         if (! isset($config->brandID)) {
-            throw new Exception("brandID not set; please add this to your configuration when instantiating the Bluem integration");
+            throw new RuntimeException(
+                "brandID not set; please add this to your configuration when instantiating the Bluem integration"
+            );
         }
 
         return $config;

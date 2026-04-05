@@ -9,6 +9,7 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Constants;
 use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
@@ -118,7 +119,7 @@ class BluemRequest implements BluemRequestInterface
      * @throws InvalidBluemRequestException
      */
     public function __construct(
-        $config,
+        BluemConfiguration $config,
         string $entranceCode = "",
         string $expectedReturn = ""
     ) {
