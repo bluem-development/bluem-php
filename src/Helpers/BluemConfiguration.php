@@ -58,6 +58,8 @@ class BluemConfiguration
      */
     public bool $webhookDebug = false;
 
+    public ?string $paymentBrandID = '';
+
     /**
      * An object containing the configuration for the Bluem integration. Can be an array or object
      *
@@ -75,7 +77,9 @@ class BluemConfiguration
         $validated = $this->validator->validate($raw);
 
         if ($validated === false) {
-            throw new InvalidBluemConfigurationException('Bluem Configuration is not valid: ' . $this->errorsAsString());
+            throw new InvalidBluemConfigurationException(
+                'Bluem Configuration is not valid: ' . $this->errorsAsString()
+            );
         }
 
         $this->environment           = $validated->environment ?? self::TESTING_ENVIRONMENT;
