@@ -244,8 +244,8 @@ class PaymentBluemRequest extends BluemRequest
          * Prepared for future use.
          */
         if (
-            $cardNumber !== '' && $cardNumber !== '0' || $name !== '' && $name !== '0' || $securityCode !== '' && $securityCode !== '0'
-            || $expirationDateMonth !== '' && $expirationDateMonth !== '0' || $expirationDateYear !== '' && $expirationDateYear !== '0'
+            !empty($cardNumber) || !empty($name) || !empty($securityCode)
+            || !empty($expirationDateMonth) || !empty($expirationDateYear)
         ) {
             $this->context->addPaymentMethodDetails(
                 [
@@ -303,11 +303,7 @@ class PaymentBluemRequest extends BluemRequest
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
-        $res = '';
-
         if ($this->context->isIDEAL()) {
-            $bic = '';
-
             if (empty($this->context->getPaymentDetail('BIC'))) {
                 if (!empty($this->debtorWallet)) {
                     $bic = $this->debtorWallet;
