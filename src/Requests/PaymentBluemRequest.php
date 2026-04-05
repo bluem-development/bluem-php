@@ -14,6 +14,7 @@ use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
 use Exception;
+use stdClass;
 
 class PaymentBluemRequest extends BluemRequest
 {
@@ -50,7 +51,7 @@ class PaymentBluemRequest extends BluemRequest
      * @throws Exception
      */
     public function __construct(
-        BluemConfiguration $config,
+        BluemConfiguration|stdClass $config,
         $description,
         $debtorReference,
         $amount,

@@ -9,8 +9,11 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Contexts\IdentityContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Exception;
+use stdClass;
 
 define("BLUEM_DEFAULT_MIN_AGE", 18);
 
@@ -49,7 +52,7 @@ class IdentityBluemRequest extends BluemRequest
      * @throws Exception
      */
     public function __construct(
-        $config,
+        BluemConfiguration|stdClass $config,
         $entranceCode,
         $expectedReturn,
         array $requestCategory = [],
