@@ -15,8 +15,7 @@ use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
-use Bluem\BluemPHP\Transport\HttpTransportInterface;
-use Bluem\BluemPHP\Transport\HttpTransportResponse;
+use Bluem\BluemPHP\Tests\FakeHttpTransport;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
@@ -132,37 +131,5 @@ XML
         $bluem_config->localInstrumentCode = "B2B";
 
         return $bluem_config;
-    }
-}
-
-final class FakeHttpTransport implements HttpTransportInterface
-{
-    public int $lastStatusCode = 0;
-
-    public string $lastBody = '';
-
-    /** @var string[] */
-    public array $lastHeaders = [];
-
-    public string $lastUrl = '';
-
-    private int $nextStatusCode = 200;
-
-    private string $nextBody = '';
-
-    public function setResponse(int $statusCode, string $body): void
-    {
-        $this->nextStatusCode = $statusCode;
-        $this->nextBody = $body;
-    }
-
-    public function send(string $url, array $headers, string $body): HttpTransportResponse
-    {
-        $this->lastUrl = $url;
-        $this->lastHeaders = $headers;
-        $this->lastBody = $body;
-        $this->lastStatusCode = $this->nextStatusCode;
-
-        return new HttpTransportResponse($this->nextStatusCode, $this->nextBody);
     }
 }
