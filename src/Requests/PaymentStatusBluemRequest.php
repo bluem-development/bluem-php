@@ -11,6 +11,7 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\PaymentsContext;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use stdClass;
 
 class PaymentStatusBluemRequest extends BluemRequest
 {
@@ -23,20 +24,22 @@ class PaymentStatusBluemRequest extends BluemRequest
     protected $xmlInterfaceName = "EPaymentInterface";
 
     public function __construct(
-        BluemConfiguration $config,
+        BluemConfiguration|stdClass $config,
         $transactionID,
         $expected_return = "",
         $entranceCode = ""
     ) {
         parent::__construct($config, $entranceCode, $expected_return);
 
-        if (
-            isset($config->paymentBrandID)
-            && $config->paymentBrandID !== ""
-        ) {
-            $config->setBrandID($config->paymentBrandID);
-        } else {
-            $config->setBrandID($config->brandID);
+        if ($config instanceof BluemConfiguration && method_exists($config, 'setBrandId')) {
+            if (
+                isset($config->paymentBrandID)
+                && $config->paymentBrandID !== ""
+            ) {
+                $config->setBrandID($config->paymentBrandID);
+            } else {
+                $config->setBrandID($config->brandID);
+            }
         }
 
         $this->transactionID = $transactionID;

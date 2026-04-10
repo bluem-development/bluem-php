@@ -17,6 +17,7 @@ use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 use SimpleXMLElement;
+use stdClass;
 
 /**
  * BluemRequest general class
@@ -119,7 +120,7 @@ class BluemRequest implements BluemRequestInterface
      * @throws InvalidBluemRequestException
      */
     public function __construct(
-        BluemConfiguration $config,
+        BluemConfiguration|stdClass $config,
         string $entranceCode = "",
         string $expectedReturn = ""
     ) {

@@ -178,11 +178,12 @@
 	</xsd:simpleType>
 	
 	
-	<xsd:simpleType name="CreditorCountrySimpleType">
+	<xsd:simpleType name="CountryCodeSimpleType">
 		<xsd:restriction base="xsd:token">
 			<xsd:pattern value="[A-Z]{2}"/>
 		</xsd:restriction>
 	</xsd:simpleType>
+	
 	<xsd:simpleType name="TokenLength70SimpleType">
 		<xsd:restriction base="xsd:token">
 			<xsd:maxLength value="70"/>
@@ -314,6 +315,22 @@
         <xsd:attribute name="mimeType" type="ContentMimeSimpleType" use="required"/>
     </xsd:complexType>
     
+    <!--  SIMPLE TYPES ADDED FOR EMandatePlus service  -->
+    <xsd:simpleType name="FlagSimpleType">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="1"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="TokenLength10SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="10"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+
+    
 	<!--                          COMPLEX TYPES                              -->
     <xsd:complexType name="DebtorReturnURLComplexType" mixed="true">
 		<xsd:simpleContent>
@@ -326,33 +343,32 @@
 	<!--                          ROOT ELEMENT TYPE                          -->
 	<xsd:complexType name="EMandateInterfaceType">
 		<xsd:choice maxOccurs="unbounded" minOccurs="0">
-			<xsd:element name="EMandateTransactionRequest" type="EMandateTransactionRequestType" maxOccurs="unbounded"/>
-			<xsd:element name="EMandateStatusUpdate" type="EMandateStatusUpdateType" maxOccurs="unbounded"/>
+			<xsd:element name="EMandateTransactionRequest"  type="EMandateTransactionRequestType" maxOccurs="unbounded"/>
+			<xsd:element name="EMandateStatusUpdate"        type="EMandateStatusUpdateType" maxOccurs="unbounded"/>
             <xsd:element name="EMandateTransactionResponse" type="EMandateTransactionResponseType" maxOccurs="unbounded"/>
-            <xsd:element name="EMandateBatchResponse" type="EMandateBatchResponseType" minOccurs = "0" maxOccurs="1"/>
-            <xsd:element name="EMandateErrorResponse" type="EMandateErrorResponseType" minOccurs = "0" maxOccurs="1"/>
-            <xsd:element name="EMandateStatusRequest" type="EMandateStatusRequestType" minOccurs = "0" maxOccurs="1"/>
+            <xsd:element name="EMandateBatchResponse"       type="EMandateBatchResponseType" minOccurs = "0" maxOccurs="1"/>
+            <xsd:element name="EMandateErrorResponse"       type="EMandateErrorResponseType" minOccurs = "0" maxOccurs="1"/>
+            <xsd:element name="EMandateStatusRequest"       type="EMandateStatusRequestType" minOccurs = "0" maxOccurs="1"/>
 		</xsd:choice>
 		<xsd:attributeGroup ref="HeaderAttributes"/>
 	</xsd:complexType>
 	<!--                      COMPLEX TYPES DESCRIBING MAIN DOCUMENTS TYPES                           -->
 	<xsd:complexType name="EMandateTransactionRequestType">
 		<xsd:sequence>
-			<xsd:element name="MandateID" type="MandateIDSimpleType"/>
-			<xsd:element name="MerchantReturnURL" type="DebtorReturnURLComplexType" minOccurs="0"/>
-			<xsd:element name="SequenceType" type="SequenceTypeSimpleType"/>
-			<xsd:element name="EMandateReason" type="ReasonSimpleType"/>
-			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType"/>
-			<xsd:element name="PurchaseID" type="DebtorReferenceSimpleType"/>
-			<xsd:element name="MaxAmount" type="OptionalAmountSimpleType" minOccurs="0"/>
-			<xsd:element name="SkinID" type="SkinIDSimpleType" minOccurs="0"/>
-			<xsd:element name="ValidityPeriod" type="ValidityPeriodSimpleType" minOccurs="0"/>
-			<xsd:element name="OriginalIBAN" type="IBANAccountNumberSimpleType" minOccurs="0"/>
-			<xsd:element name="OriginalDebtorBankID" type="BICSimpleType" minOccurs="0"/>
-
-			<xsd:element name="DebtorAdditionalData" type="DebtorAdditionalDataComplexType" minOccurs="0"/>
-            <xsd:element name="Doc" type="DocComplexType" minOccurs="0"/>
-			<xsd:element name="DebtorWallet" type="DebtorWalletComplexType" minOccurs="0"/>
+			<xsd:element name="MandateID"             type="MandateIDSimpleType"/>
+			<xsd:element name="MerchantReturnURL"     type="DebtorReturnURLComplexType" minOccurs="0"/>
+			<xsd:element name="SequenceType"          type="SequenceTypeSimpleType"/>
+			<xsd:element name="EMandateReason"        type="ReasonSimpleType"/>
+			<xsd:element name="DebtorReference"       type="DebtorReferenceSimpleType"/>
+			<xsd:element name="PurchaseID"            type="DebtorReferenceSimpleType"/>
+			<xsd:element name="MaxAmount"             type="OptionalAmountSimpleType" minOccurs="0"/>
+			<xsd:element name="SkinID"                type="SkinIDSimpleType" minOccurs="0"/>
+			<xsd:element name="ValidityPeriod"        type="ValidityPeriodSimpleType" minOccurs="0"/>
+			<xsd:element name="OriginalIBAN"          type="IBANAccountNumberSimpleType" minOccurs="0"/>
+			<xsd:element name="OriginalDebtorBankID"  type="BICSimpleType" minOccurs="0"/>
+			<xsd:element name="DebtorAdditionalData"  type="DebtorAdditionalDataComplexType" minOccurs="0"/>
+            <xsd:element name="Doc"                   type="DocComplexType" minOccurs="0"/>
+			<xsd:element name="DebtorWallet"          type="DebtorWalletComplexType" minOccurs="0"/>
 		</xsd:sequence>
 		<xsd:attributeGroup ref="RequestAttributes"/>
 	</xsd:complexType>
@@ -360,13 +376,13 @@
 		<xsd:sequence>
 			<xsd:element name="CreateDateTimestamp" type="DateTimeSimpleType"/>
 			<xsd:choice maxOccurs="1" minOccurs="1">
-				<xsd:element name="Error" type="ErrorComplexType" maxOccurs="1"/>
+				<xsd:element name="Error"          type="ErrorComplexType" maxOccurs="1"/>
 				<xsd:element name="EMandateStatus" type="EMandateStatusComplexType" maxOccurs="1"/>
 			</xsd:choice>
 		</xsd:sequence>
 		<xsd:attribute name="entranceCode" type="EntranceCodeSimpleType" use="required"/>
-        <xsd:attribute name="brandID" type="RelaxedIdentifierSimpleType"/>
-		<xsd:attribute name="requestType" use="required" type="MandateRequestTypeSimpleType"/>
+        <xsd:attribute name="brandID"      type="RelaxedIdentifierSimpleType"/>
+		<xsd:attribute name="requestType"  use="required" type="MandateRequestTypeSimpleType"/>
 	</xsd:complexType>
 	<!--                      OTHER COMPLEX TYPES                                    -->
     <xsd:complexType name="DynamicDataComplexType" mixed="true">
@@ -376,19 +392,29 @@
 	</xsd:complexType>    
 
 	
+	
+	
 	<xsd:complexType name="DebtorAdditionalDataComplexType">
 		<xsd:sequence>
-			<xsd:element name="EmailAddress" type="EmailSimpleType" minOccurs="0"/>
-			<xsd:element name="MobilePhoneNumber" type="PhoneNumberSimpleType" minOccurs="0"/>
-			<xsd:element name="CustomerProvidedDebtorIBAN" type="CustomerProvidedDebtorIBANSimpleType" minOccurs="0"/>
-            <xsd:element name="CustomerNumber" type="DebtorReferenceSimpleType" minOccurs="0"/>
-            <xsd:element name="CustomerName" type="TokenLength70SimpleType" minOccurs="0"/>
-            <xsd:element name="AttentionOf" type="TokenLength70SimpleType" minOccurs="0"/>
-            <xsd:element name="Salutation" type="TokenLength70SimpleType" minOccurs="0"/>
-            <xsd:element name="CustomerAddressLine1" type="TokenLength70SimpleType" minOccurs="0"/>
-            <xsd:element name="CustomerAddressLine2" type="TokenLength70SimpleType" minOccurs="0"/>
-			<xsd:element name="DynamicData" type="DynamicDataComplexType" minOccurs="0"/>			
-			
+			<xsd:element name="EmailAddress"                 type="EmailSimpleType" minOccurs="0"/>
+			<xsd:element name="MobilePhoneNumber"            type="PhoneNumberSimpleType" minOccurs="0"/>
+			<xsd:element name="CustomerProvidedDebtorIBAN"   type="CustomerProvidedDebtorIBANSimpleType" minOccurs="0"/>
+			<xsd:element name="CustomerProvidedDebtorBankID" type="BICSimpleType" minOccurs="0"/>
+            <xsd:element name="CustomerNumber"               type="DebtorReferenceSimpleType" minOccurs="0"/>
+            <xsd:element name="CustomerName"                 type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="AttentionOf"                  type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="Salutation"                   type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="CustomerAddressLine1"         type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="CustomerAddressLine2"         type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="CustomerZipCode"              type="TokenLength10SimpleType" minOccurs="0"/>
+            <xsd:element name="CustomerHouseNumber"          type="xsd:nonNegativeInteger" minOccurs="0"/>
+			<xsd:element name="CustomerHouseNumberSuffix"    type="TokenLength10SimpleType" minOccurs="0"/>
+			<xsd:element name="CustomerStreetName"           type="TokenLength70SimpleType" minOccurs="0"/>
+			<xsd:element name="CustomerPlace"                type="TokenLength70SimpleType" minOccurs="0"/>
+
+			<xsd:element name="CustomerCountry"              type="CountryCodeSimpleType" default="NL" minOccurs="0"/>
+			<xsd:element name="DynamicData"                  type="DynamicDataComplexType" minOccurs="0"/>			
+			<xsd:element name="IsDebtorDataEditable"         type="FlagSimpleType" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -429,33 +455,33 @@
 
     <xsd:complexType name="DocComplexType">
         <xsd:sequence>
-            <xsd:element name="DocURL" type="URLSimpleType" minOccurs="0"/>
+            <xsd:element name="DocURL"  type="URLSimpleType" minOccurs="0"/>
             <xsd:element name="DocData" type="DocDataComplexType" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
 
 	<xsd:complexType name="ErrorComplexType">
 		<xsd:sequence>
-			<xsd:element name="ErrorCode" type="ErrorCodeSimpleType"/>
+			<xsd:element name="ErrorCode"    type="ErrorCodeSimpleType"/>
 			<xsd:element name="ErrorMessage" type="TokenLength128SimpleType" minOccurs="0"/>
-			<xsd:element name="ErrorDetail" type="TokenLength256SimpleType" minOccurs="0"/>
-            <xsd:element name="Object" type="TokenLength256SimpleType" minOccurs="0"/>
+			<xsd:element name="ErrorDetail"  type="TokenLength256SimpleType" minOccurs="0"/>
+            <xsd:element name="Object"       type="TokenLength256SimpleType" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="EMandateStatusComplexType">
 		<xsd:sequence>
-			<xsd:element name="MandateID" type="MandateIDSimpleType"/>
-			<xsd:element name="Status" type="StatusSimpleType"/>
-			<xsd:element name="StatusDateTime" type="DateTimeSimpleType"/>
-			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType"/>
-			<xsd:element name="PurchaseID" type="DebtorReferenceSimpleType"/>
-			<xsd:element name="OriginalReport" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="MandateID"        type="MandateIDSimpleType"/>
+			<xsd:element name="Status"           type="StatusSimpleType"/>
+			<xsd:element name="StatusDateTime"   type="DateTimeSimpleType"/>
+			<xsd:element name="DebtorReference"  type="DebtorReferenceSimpleType"/>
+			<xsd:element name="PurchaseID"       type="DebtorReferenceSimpleType"/>
+			<xsd:element name="OriginalReport"   type="xsd:string" minOccurs="0"/>
 			<xsd:element name="AcceptanceReport" type="AcceptanceReportComplexType" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="AcceptanceReportComplexType">
 		<xsd:sequence>
-			<xsd:element name="DateTime" type="DateTimeSimpleType"/>
+			<xsd:element name="DateTime"            type="DateTimeSimpleType"/>
 			<xsd:element name="ValidationReference" type="TokenLength128SimpleType"/>
 			<xsd:element name="AcceptedResult">
 				<xsd:simpleType>
@@ -465,39 +491,39 @@
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:element>
-			<xsd:element name="MandateRequestID" type="IdentifierSimpleType"/>
-			<xsd:element name="MandateRequestType" type="MandateRequestTypeSimpleType"/>
-			<xsd:element name="ServiceLevelCode" fixed="SEPA" type="xsd:token" />
-			<xsd:element name="LocalInstrumentCode" type="LocalInstrumentCodeSimpleType"/>
-			<xsd:element name="SequenceType" type="SequenceTypeSimpleType"/>
-			<xsd:element name="MaxAmount" type="OptionalAmountSimpleType" minOccurs="0"/>
-			<xsd:element name="MandateReason" type="TokenLength70SimpleType" minOccurs="0"/>
-			<xsd:element name="CreditorID" type="CreditorIDSimpleType"/>
-			<xsd:element name="SchemeName" fixed="SEPA" type="xsd:token"/>
-			<xsd:element name="CreditorName" type="TokenLength70SimpleType"  minOccurs="0"/>
-			<xsd:element name="CreditorCountry" type="CreditorCountrySimpleType"  minOccurs="0"/>
+			<xsd:element name="MandateRequestID"     type="IdentifierSimpleType" minOccurs="0"/>
+			<xsd:element name="MandateRequestType"   type="MandateRequestTypeSimpleType"/>
+			<xsd:element name="ServiceLevelCode"     fixed="SEPA" type="xsd:token" />
+			<xsd:element name="LocalInstrumentCode"  type="LocalInstrumentCodeSimpleType"/>
+			<xsd:element name="SequenceType"         type="SequenceTypeSimpleType"/>
+			<xsd:element name="MaxAmount"            type="OptionalAmountSimpleType" minOccurs="0"/>
+			<xsd:element name="MandateReason"        type="TokenLength70SimpleType" minOccurs="0"/>
+			<xsd:element name="CreditorID"           type="CreditorIDSimpleType" minOccurs="0"/>
+			<xsd:element name="SchemeName"           fixed="SEPA" type="xsd:token"/>
+			<xsd:element name="CreditorName"         type="TokenLength70SimpleType"  minOccurs="0"/>
+			<xsd:element name="CreditorCountry"      type="CountryCodeSimpleType"  minOccurs="0"/>
 			<xsd:element name="CreditorAddressLine1" type="TokenLength70SimpleType"  minOccurs="0"/>
 			<xsd:element name="CreditorAddressLine2" type="TokenLength70SimpleType" minOccurs="0"/>
-			<xsd:element name="CreditorTradeName" type="TokenLength70SimpleType" minOccurs="0"/>
-			<xsd:element name="DebtorAccountName" type="TokenLength70SimpleType"  minOccurs="0"/>
-			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType" minOccurs="0"/>
-			<xsd:element name="DebtorIBAN" type="IBANAccountNumberSimpleType"/>
-			<xsd:element name="DebtorBankID" type="BICSimpleType"/>
-			<xsd:element name="DebtorSignerName" type="TokenLength70SimpleType"  minOccurs="0"/>
-			<xsd:element name="PurchaseID" type="DebtorReferenceSimpleType" minOccurs="0"/>
+			<xsd:element name="CreditorTradeName"    type="TokenLength70SimpleType" minOccurs="0"/>
+			<xsd:element name="DebtorAccountName"    type="TokenLength70SimpleType"  minOccurs="0"/>
+			<xsd:element name="DebtorReference"      type="DebtorReferenceSimpleType" minOccurs="0"/>
+			<xsd:element name="DebtorIBAN"           type="IBANAccountNumberSimpleType"/>
+			<xsd:element name="DebtorBankID"         type="BICSimpleType"/>
+			<xsd:element name="DebtorSignerName"     type="TokenLength70SimpleType"  minOccurs="0"/>
+			<xsd:element name="PurchaseID"           type="DebtorReferenceSimpleType" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 	
 	<xsd:complexType name="EMandateTransactionResponseType">
 		<xsd:sequence>
-			<xsd:element name="MandateID" type="MandateIDSimpleType"/>
-			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType"/>
-			<xsd:element name="PurchaseID" type="DebtorReferenceSimpleType"/>
+			<xsd:element name="MandateID"            type="MandateIDSimpleType"/>
+			<xsd:element name="DebtorReference"      type="DebtorReferenceSimpleType"/>
+			<xsd:element name="PurchaseID"           type="DebtorReferenceSimpleType"/>
 			<xsd:element name="DebtorAdditionalData" type="DebtorAdditionalDataComplexType" minOccurs="0"/>
 			<xsd:choice maxOccurs="1" minOccurs="1">
 				<xsd:element name="Error" type="ErrorComplexType" maxOccurs="1"/>
 				<xsd:sequence>
-                    <xsd:element name="TransactionURL" type="URLSimpleType" maxOccurs="1"/>
+                    <xsd:element name="TransactionURL"      type="URLSimpleType" maxOccurs="1"/>
                     <xsd:element name="ShortTransactionURL" type="URLSimpleType" minOccurs="0" maxOccurs="1"/>
                 </xsd:sequence>
 			</xsd:choice>
@@ -508,9 +534,9 @@
     <xsd:complexType name="EMandateBatchResponseType">
 		<xsd:sequence>
 			<xsd:element name="TransactionRequestBatchID" type="BatchIdentifierSimpleType"/>
-			<xsd:element name="Status" type="StatusCodeSimpleType"/>
-			<xsd:element name="StatusMessage" type="TokenLength128SimpleType" minOccurs="0"/>
-			<xsd:element name="ErrorCount" type="MessageCountSimpleType" minOccurs="0"/>
+			<xsd:element name="Status"                    type="StatusCodeSimpleType"/>
+			<xsd:element name="StatusMessage"             type="TokenLength128SimpleType" minOccurs="0"/>
+			<xsd:element name="ErrorCount"                type="MessageCountSimpleType" minOccurs="0"/>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -530,12 +556,12 @@
 
 	<!--                         ATTRIBUTE GROUPS                            -->
 	<xsd:attributeGroup name="HeaderAttributes">
-		<xsd:attribute name="mode" type="ModeSimpleType" use="required"/>
-		<xsd:attribute name="batchID" type="BatchIdentifierSimpleType"/>
-		<xsd:attribute name="senderID" type="IdentifierSimpleType" use="required"/>
-		<xsd:attribute name="version" type="VersionSimpleType" default="1.0"/>
+		<xsd:attribute name="mode"           type="ModeSimpleType" use="required"/>
+		<xsd:attribute name="batchID"        type="BatchIdentifierSimpleType"/>
+		<xsd:attribute name="senderID"       type="IdentifierSimpleType" use="required"/>
+		<xsd:attribute name="version"        type="VersionSimpleType" default="1.0"/>
 		<xsd:attribute name="createDateTime" type="DateTimeSimpleType" use="required"/>
-		<xsd:attribute name="messageCount" type="MessageCountSimpleType" use="required"/>
+		<xsd:attribute name="messageCount"   type="MessageCountSimpleType" use="required"/>
         <xsd:attribute name="type" use="required">
 			<xsd:simpleType>
 				<xsd:restriction base="xsd:token">
@@ -550,13 +576,12 @@
 		</xsd:attribute>
 	</xsd:attributeGroup>
 	<xsd:attributeGroup name="RequestAttributes">
-        <xsd:attribute name="requestType" use="required" type="MandateRequestTypeSimpleType"/>
+        <xsd:attribute name="requestType"         use="required" type="MandateRequestTypeSimpleType"/>
 		<xsd:attribute name="localInstrumentCode" type="LocalInstrumentCodeSimpleType" use="required"/>
-
-		<xsd:attribute name="entranceCode" type="EntranceCodeSimpleType"/>
-        <xsd:attribute name="brandID" type="RelaxedIdentifierSimpleType"/>
-		<xsd:attribute name="merchantID" type="MerchantIDSimpleType" use="required"/>
-		<xsd:attribute name="merchantSubID" type="MerchantSubIDSimpleType" default="0"/>
+		<xsd:attribute name="entranceCode"        type="EntranceCodeSimpleType"/>
+        <xsd:attribute name="brandID"             type="RelaxedIdentifierSimpleType"/>
+		<xsd:attribute name="merchantID"          type="MerchantIDSimpleType" use="required"/>
+		<xsd:attribute name="merchantSubID"       type="MerchantSubIDSimpleType" default="0"/>
         <xsd:attribute name="sendOption">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:token">
