@@ -1,0 +1,10 @@
+Ensure that this error response which can come from a Bluem Payment status, will also yield an error repsonse object
+
+Response XML
+```xml
+<!--?xml version="1.0" encoding="UTF-8" standalone="yes"?-->
+<epaymentinterface mode="direct" senderid="S001" version="1.0" createdatetime="2026-04-10T12:54:22.129Z" messagecount="1" type="TransactionResponse"><paymenttransactionresponse entrancecode="20260410125421185"><paymentreference>212120260410</paymentreference><debtorreference>21</debtorreference><error><errorcode>BL2005</errorcode><errormessage>Non-existent brandID</errormessage><object>PTX-S001-BSP1-20260410105421000_16091.xml</object></error></paymenttransactionresponse></epaymentinterface>
+```
+
+Which should yield a logical error response object with the relevant information
+This currently is the case for PaymentStatuses, but might just as well apply to other status responses.
