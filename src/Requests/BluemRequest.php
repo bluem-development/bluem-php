@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -8,6 +9,8 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\Bluem;
+use Bluem\BluemPHP\Constants;
 use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
@@ -116,7 +119,7 @@ class BluemRequest implements BluemRequestInterface
      * @throws InvalidBluemRequestException
      */
     public function __construct(
-        $config,
+        BluemConfiguration $config,
         string $entranceCode = "",
         string $expectedReturn = ""
     ) {
@@ -158,7 +161,7 @@ class BluemRequest implements BluemRequestInterface
         $entranceCode = (new Now())->format("YmdHisv");
 
         $prefix = "";
-        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+        if ($this->environment === Constants::TESTING_ENVIRONMENT) {
             switch ($expectedReturn) {
                 case 'success':
                     $prefix = "HIO100OIH";
@@ -181,7 +184,7 @@ class BluemRequest implements BluemRequestInterface
                 case '':
                 case 'none':
                 default:
-                break;
+                    break;
             }
         }
 

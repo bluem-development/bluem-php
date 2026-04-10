@@ -74,4 +74,3 @@ class BluemConfigurationTest extends TestCase
         return $bluem_config;
     }
 }
-

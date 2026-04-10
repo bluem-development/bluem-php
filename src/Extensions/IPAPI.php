@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -34,7 +35,8 @@ class IPAPI
         $result = $this->QueryIP($ip);
 
         // if we encountered an error, return true for now
-        if (isset($result['success'])
+        if (
+            isset($result['success'])
             && $result['success'] === false
         ) {
             return true;

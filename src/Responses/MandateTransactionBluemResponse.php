@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -10,9 +11,9 @@ namespace Bluem\BluemPHP\Responses;
 
 class MandateTransactionBluemResponse extends TransactionBluemResponse
 {
-    public static string $transaction_type = "EMandate";
+    public static ?string $transaction_type = "EMandate";
 
-    public static string $response_primary_key = 'EMandateTransaction';
+    public static ?string $response_primary_key = 'EMandateTransaction';
 
     public static ?string $error_response_type = 'EMandateErrorResponse';
 

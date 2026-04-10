@@ -150,6 +150,8 @@ No earlier changelog was recorded. Please refer to the [commit log](https://gith
 ## Testing
 For improving future features, unit testing is introduced since november 2021.
 
+The repository also has a PHPCS linting setup: `make lint` runs the shared ruleset from `phpcs.xml.dist`, and CI uses the same lint step so local and automated checks stay aligned. That XML file also contains a few narrow exceptions for legacy naming and file-header issues, which lets the existing public API stay intact without failing the build on historical style violations.
+
 Tests are located in the `tests` folder
 To run tests:
 ```

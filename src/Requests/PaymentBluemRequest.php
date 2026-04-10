@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -204,7 +205,7 @@ class PaymentBluemRequest extends BluemRequest
         if (!empty($BIC)) {
             $this->context->addPaymentMethodDetails(
                 [
-                'BIC'=>$BIC
+                'BIC' => $BIC
                 ]
             );
         }
@@ -222,7 +223,7 @@ class PaymentBluemRequest extends BluemRequest
         if (!empty($payPalAccount)) {
             $this->context->addPaymentMethodDetails(
                 [
-                'PayPalAccount'=>$payPalAccount
+                'PayPalAccount' => $payPalAccount
                 ]
             );
         }
@@ -242,16 +243,17 @@ class PaymentBluemRequest extends BluemRequest
         /**
          * Prepared for future use.
          */
-        if ($cardNumber !== '' && $cardNumber !== '0' || $name !== '' && $name !== '0' || $securityCode !== '' && $securityCode !== '0'
-            || $expirationDateMonth !== '' && $expirationDateMonth !== '0' || $expirationDateYear !== '' && $expirationDateYear !== '0'
+        if (
+            !empty($cardNumber) || !empty($name) || !empty($securityCode)
+            || !empty($expirationDateMonth) || !empty($expirationDateYear)
         ) {
             $this->context->addPaymentMethodDetails(
                 [
-                'CardNumber'=>$cardNumber,
-                'Name'=>$name,
-                'SecurityCode'=>$securityCode,
-                'ExpirationDateMonth'=>$expirationDateMonth,
-                'ExpirationDateYear'=>$expirationDateYear,
+                'CardNumber' => $cardNumber,
+                'Name' => $name,
+                'SecurityCode' => $securityCode,
+                'ExpirationDateMonth' => $expirationDateMonth,
+                'ExpirationDateYear' => $expirationDateYear,
                 ]
             );
         }
@@ -301,11 +303,7 @@ class PaymentBluemRequest extends BluemRequest
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
-        $res = '';
-
         if ($this->context->isIDEAL()) {
-            $bic = '';
-
             if (empty($this->context->getPaymentDetail('BIC'))) {
                 if (!empty($this->debtorWallet)) {
                     $bic = $this->debtorWallet;

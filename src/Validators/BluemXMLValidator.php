@@ -1,4 +1,5 @@
 <?php
+
 /* Reference: https://www.codementor.io/@sirolad/validating-xml-against-xsd-in-php-6f56rwcds */
 
 namespace Bluem\BluemPHP\Validators;

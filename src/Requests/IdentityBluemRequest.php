@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -189,30 +190,30 @@ class IdentityBluemRequest extends BluemRequest
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
-        $res = '';
-
         if ($this->context->isIDIN()) {
-            $bic = '';
-
-            if (empty($this->context->getPaymentDetail('BIC'))) {
-                if (!empty($this->debtorWallet)) {
-                    $bic = $this->debtorWallet;
-                }
-            } else {
-                $bic = $this->context->getPaymentDetail('BIC');
-            }
-
-            if (empty($bic)) {
-                return '';
-            }
-
-            $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-            $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
-            $res .= "<BIC>" . $bic . "</BIC>";
-            $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
-
-            return $res . ("</DebtorWallet>" . PHP_EOL);
+            return '';
         }
+
+        if (empty($this->context->getPaymentDetail('BIC'))) {
+            if (!empty($this->debtorWallet)) {
+                $bic = $this->debtorWallet;
+            } else {
+                $bic = '';
+            }
+        } else {
+            $bic = $this->context->getPaymentDetail('BIC');
+        }
+
+        if (empty($bic)) {
+            return '';
+        }
+
+        $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
+        $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
+        $res .= "<BIC>" . $bic . "</BIC>";
+        $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
+
+        return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
     /**

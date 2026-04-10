@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -12,9 +13,9 @@ use SimpleXMLElement;
 
 class IBANNameCheckBluemResponse extends TransactionBluemResponse
 {
-    public static string $transaction_type = "IBANCheckTransactionResponse";
+    public static ?string $transaction_type = "IBANCheckTransactionResponse";
 
-    public static string $response_primary_key = "IBANCheckTransaction";
+    public static ?string $response_primary_key = "IBANCheckTransaction";
 
     public static ?string $error_response_type = "IBANCheckResult";
 
@@ -29,7 +30,7 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
         return null;
     }
 
-    private function getKeyFromIBANCheckResult(string $key, string $parentObjectKey = null): string
+    private function getKeyFromIBANCheckResult(string $key, ?string $parentObjectKey = null): string
     {
         $result = $this->getIBANCheckResultObject($parentObjectKey);
 
