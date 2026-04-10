@@ -6,6 +6,8 @@ This note captures the main discrepancies and noteworthy behaviors I found while
 
 The core happy paths work, but a few docs-vs-code mismatches and legacy behaviors are worth tightening up before relying on the examples as the public contract.
 
+The same pattern also shows up in the Identity and IBAN name-check flows: the requests are usable, but the examples lag a little behind the actual API and response behavior.
+
 ## Discrepancies / doc drift
 
 ### 1) Mandate example naming does not match the public API exactly
@@ -61,11 +63,37 @@ The core happy paths work, but a few docs-vs-code mismatches and legacy behavior
 
 **Suggested follow-up:** consider adding a short compatibility note in the examples or README so users know which names are canonical.
 
+## Additional findings from Identity and IBAN testing
+
+### 9) Identity example signature and request-type list need a quick cleanup
+- `Bluem::CreateIdentityRequest()` requires a `returnURL` argument, but the example snippet does not show it in the call.
+- The identity request-type list in `examples/identity.md` has a formatting issue and should be kept in sync with `Bluem::GetIdentityRequestTypes()`.
+- The docs should consistently use `AgeCheckRequest` rather than mixing request naming styles.
+
+**Impact:** the example is close, but not copy/paste safe as written.
+
+### 10) Identity status reports can be absent, and the response now treats that as `null`
+- `IdentityStatusBluemResponse::GetIdentityReport()` returns `null` when the response has no `<IdentityReport>` node.
+
+**Impact:** callers should guard that access before dereferencing the report object.
+
+### 11) IBAN name-check example only shows two result states
+- The docs only show `INVALID` and `KNOWN`, but the response tests also cover `SERVICE_TEMPORARILY_NOT_AVAILABLE`.
+
+**Impact:** the example should mention the third state so consumers know it is a valid runtime outcome.
+
+### 12) IBAN account-details fields are optional and parse as empty strings
+- When `<AccountDetails>` is missing, the getters for account type, joint-account flag, number of holders, and country name all return `''`.
+
+**Impact:** this is safe, but it should be documented if callers rely on those fields for business rules.
+
 ## Suggested next improvements
 
 - Make the return URL builder handle URLs that already contain query parameters.
 - Clarify the currency restriction in the payment example/docs.
 - Normalize the mandate example method/property names to match the actual public API.
 - Consider documenting the exception behavior for missing mandate acceptance data.
+- Fix the identity example to show the required `returnURL` argument.
+- Add the `SERVICE_TEMPORARILY_NOT_AVAILABLE` IBAN result to the example docs.
 
 
