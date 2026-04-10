@@ -1,20 +1,30 @@
 version: 2
+
 updates:
-  - package-ecosystem: "composer"
-    directory: "/"
+  - package-ecosystem: composer
+    directory: /
     schedule:
-      interval: "weekly"
+      interval: weekly
     open-pull-requests-limit: 10
     versioning-strategy: increase-if-necessary
     labels:
-      - "dependencies"
+      - dependencies
     groups:
-      minor-and-patch:
+      php-platform:
+        patterns:
+          - php
+        update-types:
+          - minor
+          - patch
+      composer-minor-and-patch:
         patterns:
           - "*"
+        exclude-patterns:
+          - php
         update-types:
-          - "minor"
-          - "patch"
+          - minor
+          - patch
     ignore:
-      - dependency-name: "php"
-        versions: ["<8.0"]
+      - dependency-name: php
+        versions:
+          - "<8.3"

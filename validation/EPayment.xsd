@@ -325,6 +325,8 @@
             <xsd:enumeration value="CARTE_BANCAIRE"/>
             <xsd:enumeration value="BANCONTACT"/>
             <xsd:enumeration value="GIROPAY"/>
+            <xsd:enumeration value="APPLEPAY"/>
+            <xsd:enumeration value="WERO"/>
         </xsd:restriction>
     </xsd:simpleType>
     
@@ -481,20 +483,26 @@
     <xsd:complexType name="CarteBancaireComplexType"></xsd:complexType>
 
     <xsd:complexType name="BancontactComplexType"></xsd:complexType>
-
+     
     <xsd:complexType name="GiropayComplexType"></xsd:complexType>
+    
+    <xsd:complexType name="ApplePayComplexType"></xsd:complexType>
+    
+    <xsd:complexType name="WeroComplexType"></xsd:complexType>
+
 
     <xsd:complexType name="DebtorWalletComplexType">
         <xsd:choice>
-            <xsd:element name="IDEAL" type="IDealComplexType" maxOccurs="1"/>            
-            <xsd:element name="PayPal" type="PayPalComplexType" maxOccurs="1"/>
-            <xsd:element name="CreditCard" type="DebtorCreditCardComplexType" maxOccurs="1"/>
-            <xsd:element name="Sofort" type="SofortComplexType" maxOccurs="1"/>
+            <xsd:element name="IDEAL"                 type="IDealComplexType" maxOccurs="1"/>            
+            <xsd:element name="PayPal"                type="PayPalComplexType" maxOccurs="1"/>
+            <xsd:element name="CreditCard"            type="DebtorCreditCardComplexType" maxOccurs="1"/>
+            <xsd:element name="Sofort"                type="SofortComplexType" maxOccurs="1"/>
             <xsd:element name="SofortDigitalServices" type="SofortDigitalServicesComplexType" maxOccurs="1"/>
-            <xsd:element name="CarteBancaire" type="CarteBancaireComplexType" maxOccurs="1"/>
-            <xsd:element name="Bancontact" type="BancontactComplexType" maxOccurs="1"/>
-            <xsd:element name="Giropay" type="GiropayComplexType" maxOccurs="1"/>
-
+            <xsd:element name="CarteBancaire"         type="CarteBancaireComplexType" maxOccurs="1"/>
+            <xsd:element name="Bancontact"            type="BancontactComplexType" maxOccurs="1"/>
+            <xsd:element name="Giropay"               type="GiropayComplexType" maxOccurs="1"/>
+            <xsd:element name="ApplePay"              type="ApplePayComplexType" maxOccurs="1"/>
+            <xsd:element name="Wero"                  type="WeroComplexType" maxOccurs="1"/>
         </xsd:choice>
     </xsd:complexType>
     <!-- END - DebtorWallet additions -->
@@ -502,15 +510,16 @@
 
     <xsd:complexType name="PaymentMethodDetailsComplexType">
         <xsd:sequence>
-            <xsd:element name="IDealDetails" type="IDealDetailsComplexType" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="PayPalDetails" type="PayPalDetailsComplexType" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="VisaMasterDetails" type="VisaMasterDetailsComplexType" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="SofortDetails" type="SofortDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="IDealDetails"                 type="IDealDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="PayPalDetails"                type="PayPalDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="VisaMasterDetails"            type="VisaMasterDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="SofortDetails"                type="SofortDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="SofortDigitalServicesDetails" type="SofortDigitalServicesDetailsComplexType" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="CarteBancaireDetails" type="CarteBancaireDetailsComplexType" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="BancontactDetails" type="BancontactDetailsComplexType" minOccurs="0" maxOccurs="1"/>
-            <xsd:element name="GiropayDetails" type="GiropayDetailsComplexType" minOccurs="0" maxOccurs="1"/>
-
+            <xsd:element name="CarteBancaireDetails"         type="CarteBancaireDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="BancontactDetails"            type="BancontactDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="GiropayDetails"               type="GiropayDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="ApplePayDetails"              type="ApplePayDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="WeroDetails"                  type="WeroDetailsComplexType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
     </xsd:complexType>
 
@@ -573,6 +582,19 @@
         </xsd:sequence>
     </xsd:complexType>
 
+   	<xsd:complexType name="ApplePayDetailsComplexType">
+		<xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+	</xsd:complexType>
+	
+   	<xsd:complexType name="WeroDetailsComplexType">
+		<xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+	</xsd:complexType>
 
     <xsd:complexType name="DocComplexType">
         <xsd:sequence>

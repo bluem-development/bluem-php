@@ -10,6 +10,8 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IBANCheckContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use stdClass;
 
 /**
  * IBAN Name Check Request object
@@ -35,7 +37,7 @@ class IBANBluemRequest extends BluemRequest
      * @param [type] $entranceCode
      */
     public function __construct(
-        $config,
+        BluemConfiguration|stdClass $config,
         $entranceCode,
         string $_inputIban,
         string $_inputName,

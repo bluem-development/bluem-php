@@ -10,7 +10,9 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\MandatesContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Exception;
+use stdClass;
 
 /**
  * EMandateStatusRequest
@@ -30,7 +32,7 @@ class EmandateStatusBluemRequest extends BluemRequest
      * @throws Exception
      */
     public function __construct(
-        $config,
+        BluemConfiguration|stdClass $config,
         $mandateID,
         $entranceCode = "",
         $expected_return = ""
