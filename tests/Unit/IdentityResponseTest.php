@@ -51,4 +51,22 @@ XML;
         self::assertNotNull($response->GetIdentityReport());
         self::assertSame('Verified', (string) $response->GetIdentityReport()->ReportStatus);
     }
+
+    public function testIdentityStatusResponseReturnsNullWhenIdentityReportIsMissing(): void
+    {
+        $xml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<IdentityInterface createDateTime="2026-04-05T00:00:00Z" messageCount="1" mode="direct" senderID="S001" type="StatusUpdate" version="1.0">
+    <IdentityStatusUpdate entranceCode="showConsumerGuiMYOWNENTRANCECODE77128">
+        <AuthenticationAuthorityID>AUTH-002</AuthenticationAuthorityID>
+        <Status>Success</Status>
+    </IdentityStatusUpdate>
+</IdentityInterface>
+XML;
+
+        $response = $this->loadXmlResponse($xml, IdentityStatusBluemResponse::class);
+
+        self::assertSame('AUTH-002', $response->GetAuthenticationAuthorityID());
+        self::assertNull($response->GetIdentityReport());
+    }
 }
