@@ -73,4 +73,28 @@ XML;
         self::assertSame('INVALID', $invalidResponse->GetIBANResult());
         self::assertSame('SERVICE_TEMPORARILY_NOT_AVAILABLE', $unavailableResponse->GetIBANResult());
     }
+
+    public function testIbanResponseWithoutAccountDetailsReturnsEmptyStrings(): void
+    {
+        $xml = <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<IBANCheckInterface createDateTime="2026-04-05T00:00:00Z" messageCount="1" mode="direct" senderID="S001" type="TransactionRequest" version="1.0">
+    <IBANCheckTransactionResponse entranceCode="20260405095326910">
+        <IBANCheckResult>
+            <IBANResult>KNOWN</IBANResult>
+            <NameResult>MATCH</NameResult>
+            <SuggestedName>D.J.M. Daan Jeroen Maarten Quackernaat</SuggestedName>
+            <AccountStatus>OPEN</AccountStatus>
+        </IBANCheckResult>
+    </IBANCheckTransactionResponse>
+</IBANCheckInterface>
+XML;
+
+        $response = $this->loadXmlResponse($xml, IBANNameCheckBluemResponse::class);
+
+        self::assertSame('', $response->GetAccountType());
+        self::assertSame('', $response->GetIsJointAccount());
+        self::assertSame('', $response->GetNumberOfAccountHolders());
+        self::assertSame('', $response->GetCountryName());
+    }
 }

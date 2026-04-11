@@ -147,8 +147,8 @@ class BluemConfigurationValidator
 
     private function _validateMerchantIDAndSelectAccessToken($config)
     {
-        if (! isset($config->merchantId)) {
-            $config->merchantId = "";
+        if (! isset($config->merchantID)) {
+            $config->merchantID = "";
         }
 
         if ($config->environment === Constants::PRODUCTION_ENVIRONMENT) {

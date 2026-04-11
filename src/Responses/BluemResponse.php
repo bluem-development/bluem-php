@@ -35,7 +35,7 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
      */
     public function Status(): bool
     {
-        return self::$error_response_type === null;
+        return $this->getEmbeddedErrorElement() === null;
     }
 
     /**
@@ -43,11 +43,28 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
      */
     public function Error(): string
     {
-        if ($this->EMandateErrorResponse !== null) {
-            return $this->EMandateErrorResponse->Error . "";
+        $errorElement = $this->getEmbeddedErrorElement();
+
+        if ($errorElement === null) {
+            return '';
         }
 
-        return '';
+        $errorCode = $this->getErrorNodeValue($errorElement, ['errorcode', 'ErrorCode']);
+        $errorMessage = $this->getErrorNodeValue($errorElement, ['errormessage', 'ErrorMessage']);
+
+        if ($errorCode !== '' && $errorMessage !== '') {
+            return $errorCode . ': ' . $errorMessage;
+        }
+
+        if ($errorMessage !== '') {
+            return $errorMessage;
+        }
+
+        if ($errorCode !== '') {
+            return $errorCode;
+        }
+
+        return trim((string) $errorElement);
     }
 
     /**
@@ -87,5 +104,39 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
     protected function getParentElement(): ?SimpleXMLElement
     {
         return $this->{$this->getParentXmlElement()} ?? null;
+    }
+
+    private function getEmbeddedErrorElement(): ?SimpleXMLElement
+    {
+        $parent = $this->getParentElement();
+
+        if ($parent === null) {
+            return null;
+        }
+
+        if (isset($parent->error)) {
+            return $parent->error;
+        }
+
+        $errorResponseType = static::$error_response_type;
+        if ($errorResponseType !== null && isset($parent->{$errorResponseType})) {
+            return $parent->{$errorResponseType};
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<int, string> $keys
+     */
+    private function getErrorNodeValue(SimpleXMLElement $element, array $keys): string
+    {
+        foreach ($keys as $key) {
+            if (isset($element->{$key})) {
+                return trim((string) $element->{$key});
+            }
+        }
+
+        return '';
     }
 }

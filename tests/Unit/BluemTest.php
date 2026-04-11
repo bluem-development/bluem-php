@@ -83,6 +83,39 @@ XML
         $this->assertNotEmpty($this->transport->lastHeaders);
     }
 
+    public function testPaymentResponseWithEmbeddedErrorReturnsErrorResponse(): void
+    {
+        $this->transport->setResponse(
+            200,
+            <<<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<EPaymentInterface mode="direct" senderID="S001" version="1.0" createDateTime="2026-04-10T12:54:22.129Z" messageCount="1" type="TransactionResponse">
+    <PaymentTransactionResponse entranceCode="20260410125421185">
+        <PaymentReference>212120260410</PaymentReference>
+        <DebtorReference>21</DebtorReference>
+        <error>
+            <errorcode>BL2005</errorcode>
+            <errormessage>Non-existent brandID</errormessage>
+            <object>PTX-S001-BSP1-20260410105421000_16091.xml</object>
+        </error>
+    </PaymentTransactionResponse>
+</EPaymentInterface>
+XML
+        );
+
+        $response = $this->bluem->Payment(
+            'Test payment',
+            '21',
+            12.34,
+            '2026-04-12',
+            'EUR',
+            '20260410125421185'
+        );
+
+        self::assertInstanceOf(ErrorBluemResponse::class, $response);
+        self::assertSame('Error: BL2005: Non-existent brandID', $response->Error());
+    }
+
     public function testMandateWithException(): void
     {
         $this->expectException(RuntimeException::class);
