@@ -154,7 +154,7 @@ class WebhookSignatureValidationTest extends TestCase
 
     private function createValidator(): WebhookSignatureValidation
     {
-        return new class('test', $this->certificateFilePath) extends WebhookSignatureValidation {
+        return new class ('test', $this->certificateFilePath) extends WebhookSignatureValidation {
             public function __construct(string $env, private string $certificateFilePath)
             {
                 parent::__construct($env);
