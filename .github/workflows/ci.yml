@@ -5,8 +5,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                # add 8.4 soon
-                php-version: ['8.3']
+                php-version: ['8.3', '8.4']
 
         steps:
             - name: Checkout code
