@@ -52,8 +52,7 @@ Utilized by other applications as well:
 
 
 # Requirements & Versioning
-## 3.0 is coming with PHP 8.3 support and requirement
-A new version of the PHP library will be released in the coming 1-2 months.
+## 2.5 is here with PHP 8.3 support and requirement
 Starting this release, **PHP 8.3** is the minimum required version for this library.
 - 2026: Starting at our release >= 3.0, **PHP 8.3** is the minimum required version for this library. Previous releases requires **PHP 8.1**.
 - 2024: Starting at our release >= 2.4, **PHP 8.1** is the minimum required version for this library. Previous releases requires **PHP 8.0**.
@@ -72,6 +71,7 @@ composer require bluem-development/bluem-php
 Refer to the [examples](https://github.com/bluem-development/bluem-php/tree/master/examples) for a full example implementation that you can base your own integration on. 
 
 Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
+
 
 ## Notes per version
 See [Changelog](changelog.md)
