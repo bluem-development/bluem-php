@@ -17,35 +17,34 @@ use SimpleXMLElement;
 
 class Webhook implements WebhookInterface
 {
-private const string PAYMENTS_SERVICE = 'Payments';
+    private const string PAYMENTS_SERVICE = 'Payments';
 
-private const string IDENTITY_SERVICE = 'Identity';
+    private const string IDENTITY_SERVICE = 'Identity';
 
-private const string EMANDATES_SERVICE = 'EMandates';
+    private const string EMANDATES_SERVICE = 'EMandates';
 
-private const string XML_UTF8_CONTENT_TYPE = "text/xml; charset=UTF-8";
+    private const string XML_UTF8_CONTENT_TYPE = "text/xml; charset=UTF-8";
 
-private const int STATUSCODE_BAD_REQUEST = 400;
+    private const int STATUSCODE_BAD_REQUEST = 400;
 
-public string $service = '';
+    public string $service = '';
 
-public ?SimpleXMLElement $xmlObject = null;
+    public ?SimpleXMLElement $xmlObject = null;
 
-private string $xmlInterface = '';
+    private string $xmlInterface = '';
 
-private string $xmlPayloadKey = '';
+    private string $xmlPayloadKey = '';
 
-public function __construct(
-    private $senderID,
-    private $environment = BLUEM_ENVIRONMENT_TESTING,
-    private $webhookData = ''
-) {
-    $this->parse($this->webhookData);
-}
+    public function __construct(
+        private $senderID,
+        private $environment = BLUEM_ENVIRONMENT_TESTING,
+        private $webhookData = ''
+    ) {
+        $this->parse($this->webhookData);
+    }
 
-private function parse($xmlData = ''): void
-{
-    if (empty($xmlData)) {
+    private function parse($xmlData = ''): void
+    {
         if (empty($xmlData)) {
             if (!$this->isHttpsRequest()) {
                 $this->exitWithError();
@@ -423,7 +422,6 @@ private function parse($xmlData = ''): void
             'BirthDateResponse' => $report->BirthDateResponse . '',
             'GenderResponse' => $report->GenderResponse . '',
             'TelephoneResponse1' => $report->TelephoneResponse1 . '',
-            'EmailResponse' => $report->EmailResponse . ''
             'EmailResponse' => $report->EmailResponse . ''
         ];
     }

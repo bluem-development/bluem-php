@@ -9,9 +9,7 @@
 
 namespace Bluem\BluemPHP\Validators;
 
-use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Bluem\BluemPHP\Constants;
-use Bluem\BluemPHP\Exceptions\InvalidBluemConfigurationException;
 use Exception;
 use RuntimeException;
 use Throwable;
@@ -51,6 +49,12 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
+        if (! isset($config->environment)) {
+            throw new Exception(
+                "environment not set; please add this to your configuration when instantiating the Bluem integration"
+            );
+        }
+
         if (
             !in_array(
                 $config->environment,
@@ -75,8 +79,11 @@ class BluemConfigurationValidator
             )
         ) {
             throw new Exception(
-                sprintf(sprintf("Invalid environment setting (%s), should be one of: 
-                %%s", $config->environment), implode(', ', Constants::ENVIRONMENTS))
+                sprintf(
+                    "Invalid environment setting (%s), should be one of: %s",
+                    $config->environment,
+                    implode(', ', Constants::ENVIRONMENTS)
+                )
             );
         }
 

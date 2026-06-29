@@ -9,9 +9,20 @@
 
 namespace Bluem\BluemPHP\Tests\Unit;
 
+use Bluem\BluemPHP\Requests\PaymentBluemRequest;
+
 class BluemPaymentsTest extends BluemTestCase
 {
     public function testCanCreatePaymentRequest(): void
     {
+        $request = $this->bluem->CreatePaymentRequest(
+            description: 'Payment test',
+            debtorReference: 'order123',
+            amount: 12.34,
+            currency: 'EUR',
+            debtorReturnURL: 'https://example.test/return'
+        );
+
+        $this->assertInstanceOf(PaymentBluemRequest::class, $request);
     }
 }
