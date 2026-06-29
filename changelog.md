@@ -3,9 +3,12 @@
 ## Major version 2
 ### 2.5: 
 - Migrated away from deprecated XML signature validation package
-- Set minimum PHP to 8.1
+- Set minimum PHP to 8.3
 
-### 2.3.2.4 (latest)
+### 2.4:
+- Added Bancontact support
+
+### 2.3.2.4
 - Added bank 'N26' to ePayments BIC list.
 - Restructured code for Magento compatibility.
 
