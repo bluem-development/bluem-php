@@ -12,7 +12,7 @@
     <exclude-pattern>vendor/*</exclude-pattern>
 
     <rule ref="PSR12">
-        <exclude name="PSR12.Files.FileHeader.IncorrectOrder" />
+        <exclude name="PSR12.Files.FileHeader" />
     </rule>
 
     <rule ref="PSR1.Methods.CamelCapsMethodName">
