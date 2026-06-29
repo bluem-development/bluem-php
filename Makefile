@@ -68,7 +68,7 @@ help:
 	@echo "Available targets:"
 	@echo "  test_unit         Run unit tests"
 	@echo "  test_integration  Run integration tests; requires .env"
-	@echo "  test_acceptance   Run acceptance tests; requires .env"
+	@echo "  test_acceptance   Run acceptance tests"
 	@echo "  test              Run unit, acceptance, and integration tests"
 	@echo "  lint              Run PHP CodeSniffer"
 	@echo "  lint_fix          Auto-fix code style issues"
