@@ -10,10 +10,10 @@
 namespace Bluem\BluemPHP\Validators;
 
 use Bluem\BluemPHP\Helpers\Now;
+use DOMDocument;
 use Exception;
-use Selective\XmlDSig\CryptoVerifier;
-use Selective\XmlDSig\PublicKeyStore;
-use Selective\XmlDSig\XmlSignatureVerifier;
+use RobRichards\XMLSecLibs\XMLSecurityDSig;
+use RobRichards\XMLSecLibs\XMLSecurityKey;
 
 class WebhookSignatureValidation extends WebhookValidator
 {
@@ -34,20 +34,41 @@ class WebhookSignatureValidation extends WebhookValidator
         fwrite($temp_file, $data);
         $temp_file_path = stream_get_meta_data($temp_file)['uri'];
 
-        $publicKeyStore = new PublicKeyStore();
+        // Load the XML to be verified
+        $doc = new DOMDocument();
+        $doc->load($temp_file_path);
 
-        $public_key_file_path = dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
+        // Create a new Security object
+        $objDSig = new XMLSecurityDSig();
+
+        // Locate the signature within the XML
+        try {
+            $objDSig->locateSignature($doc);
+            $objDSig->canonicalizeSignedInfo();
+            $objDSig->validateReference();
+        } catch (Exception $e) {
+            $this->addError('Reference Validation Failed: ' . $e->getMessage());
+            fclose($temp_file);
+            return $this;
+        }
 
         try {
-            $publicKeyStore->loadFromPem(file_get_contents($public_key_file_path));
-            $cryptoVerifier = new CryptoVerifier($publicKeyStore);
+            $objKey = $objDSig->locateKey();
+            if (! $objKey instanceof XMLSecurityKey) {
+                $this->addError('Unable to determine signature key algorithm');
+                fclose($temp_file);
+                return $this;
+            }
+            $objKey->loadKey($this->getPublicKeyFilePath(), true);
+        } catch (Exception $e) {
+            $this->addError('Could not load public key');
+            fclose($temp_file);
+            return $this;
+        }
 
-            // Create a verifier instance and pass the crypto decoder
-            $xmlSignatureVerifier = new XmlSignatureVerifier($cryptoVerifier);
-
-            // Verify a XML file
-            $xmlVerified = $xmlSignatureVerifier->verifyXml(file_get_contents($temp_file_path));
-            if (! $xmlVerified) {
+        try {
+            // Check the signature
+            if ($objDSig->verify($objKey) !== 1) {
                 $this->addError("Invalid signature");
             }
         } catch (Exception $exception) {
@@ -57,6 +78,14 @@ class WebhookSignatureValidation extends WebhookValidator
         fclose($temp_file);
 
         return $this;
+    }
+
+    /**
+     * Determine full path to the public key/certificate used for validation.
+     */
+    protected function getPublicKeyFilePath(): string
+    {
+        return dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
     }
 
     /**
