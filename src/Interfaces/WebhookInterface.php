@@ -11,4 +11,6 @@ declare(strict_types=1);
 
 namespace Bluem\BluemPHP\Interfaces;
 
-interface WebhookInterface {}
+interface WebhookInterface
+{
+}

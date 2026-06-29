@@ -16,5 +16,6 @@ class BIC
     public function __construct(
         public string $issuerID,
         public string $issuerName
-    ) {}
+    ) {
+    }
 }

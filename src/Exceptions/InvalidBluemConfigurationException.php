@@ -13,4 +13,6 @@ namespace Bluem\BluemPHP\Exceptions;
 
 use Exception;
 
-class InvalidBluemConfigurationException extends Exception {}
+class InvalidBluemConfigurationException extends Exception
+{
+}

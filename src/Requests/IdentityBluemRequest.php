@@ -188,7 +188,9 @@ class IdentityBluemRequest extends BluemRequest
      * @deprecated Since iDeal 2.0, the status GUI via this entranceCode mutation is no longer available.
      * @return void
      */
-    public function enableStatusGUI() {}
+    public function enableStatusGUI()
+    {
+    }
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {

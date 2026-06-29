@@ -15,7 +15,9 @@ use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 
 abstract class BluemContext implements BluemContextInterface
 {
-    public function __construct(public array $BICs = []) {}
+    public function __construct(public array $BICs = [])
+    {
+    }
 
     public function getBICs(): array
     {

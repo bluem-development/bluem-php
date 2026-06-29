@@ -21,7 +21,8 @@ class WebhookSignatureValidation extends WebhookValidator
 
     public function __construct(
         private readonly string $env
-    ) {}
+    ) {
+    }
 
     /**
      * Validate webhook signature based on a key file

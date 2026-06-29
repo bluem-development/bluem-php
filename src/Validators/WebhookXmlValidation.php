@@ -22,7 +22,9 @@ class WebhookXmlValidation extends WebhookXMLValidator
         'EMandateInterface'
     ];
 
-    public function __construct(private readonly string $senderID) {}
+    public function __construct(private readonly string $senderID)
+    {
+    }
 
     public function validate(SimpleXMLElement $data): self
     {

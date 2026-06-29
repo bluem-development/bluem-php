@@ -18,7 +18,9 @@ use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
  */
 class ErrorBluemResponse implements BluemResponseInterface
 {
-    public function __construct(private readonly string $error) {}
+    public function __construct(private readonly string $error)
+    {
+    }
 
     public function Status(): bool
     {
