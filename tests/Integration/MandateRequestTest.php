@@ -1,15 +1,16 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
-
 namespace Bluem\BluemPHP\Tests\Integration;
 
 use Bluem\BluemPHP\Requests\EmandateBluemRequest;
-
 
 class MandateRequestTest extends BluemGenericTestCase
 {
@@ -24,8 +25,8 @@ class MandateRequestTest extends BluemGenericTestCase
                 $order_id,
                 "default"
             );
-        } catch (\Exception $e) {
-            $this->fail("Exception while creating mandate request: ". $e->getMessage());
+        } catch (\Exception $exception) {
+            $this->fail("Exception while creating mandate request: " . $exception->getMessage());
         }
 
         $this->assertInstanceOf(

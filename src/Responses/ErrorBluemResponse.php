@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -15,7 +18,7 @@ use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
  */
 class ErrorBluemResponse implements BluemResponseInterface
 {
-    public function __construct(private string $error)
+    public function __construct(private readonly string $error)
     {
     }
 

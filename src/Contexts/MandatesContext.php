@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -20,9 +23,6 @@ class MandatesContext extends BluemContext
 
     private array $_possibleMandateTypes = [ 'CORE', 'B2B' ];
 
-    /**
-     * @var array
-     */
     private array $paymentMethodDetails;
 
     /**
@@ -42,6 +42,7 @@ class MandatesContext extends BluemContext
                 should be either 'CORE' or 'B2B'"
             );
         }
+
         if ($type === "CORE") {
             $BICs = [
                 new BIC("ABNANL2A", "ABN AMRO"),
@@ -49,7 +50,7 @@ class MandatesContext extends BluemContext
                 new BIC("INGBNL2A", "ING"),
                 new BIC("RABONL2U", "Rabobank"),
                 new BIC("RBRBNL21", "RegioBank"),
-                new BIC("SNSBNL2A", "SNS"),
+                new BIC("SNSBNL2A", "ASN voorheen SNS"),
                 new BIC("TRIONL2U", "Triodos Bank"),
             ];
         } else {
@@ -63,6 +64,7 @@ class MandatesContext extends BluemContext
         parent::__construct($BICs);
     }
 
+    #[\Override]
     public function getValidationSchema(): string
     {
         return parent::getValidationSchema() . 'EMandate.xsd';
@@ -75,20 +77,19 @@ class MandatesContext extends BluemContext
 
     public function addPaymentMethodDetails(array $details = []): void
     {
-        $validationErrors = $this->validateDetails($details);
+        $validationErrors = $this->validateDetails();
         if ($validationErrors !== []) {
-            throw new RuntimeException('Invalid details given: '. implode(', ', $validationErrors));
+            throw new RuntimeException('Invalid details given: ' . implode(', ', $validationErrors));
         }
 
         $this->paymentMethodDetails = $details;
     }
 
-    private function validateDetails(array $details = []): array
+    private function validateDetails(): array
     {
         if ($this->isMandate()) {
             // no validation yet
         }
-
         return [];
     }
 

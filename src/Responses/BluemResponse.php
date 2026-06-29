@@ -19,9 +19,10 @@ use SimpleXMLElement;
  */
 class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
 {
+    public static ?string $response_primary_key = null;
 
-    public static string $response_primary_key;
-    public static string $transaction_type;
+    public static ?string $transaction_type = null;
+
     public static ?string $error_response_type = null;
 
     public function ReceivedResponse(): bool
@@ -59,7 +60,9 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
         $attrs = $this->{$this->getParentXmlElement()}->attributes();
 
         if (! $attrs || ! isset($attrs['entranceCode'])) {
-            throw new RuntimeException("An error occurred in reading the transaction response: no entrance code found.");
+            throw new RuntimeException(
+                "An error occurred in reading the transaction response: no entrance code found."
+            );
         }
 
         return $attrs['entranceCode'] . "";
@@ -76,7 +79,7 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
         return self::$response_primary_key;
     }
 
-    protected function getParentStringVariable(string $variable) : string
+    protected function getParentStringVariable(string $variable): string
     {
         return ( isset($this->{$this->getParentXmlElement()}->$variable) ) ? $this->{$this->getParentXmlElement()}->$variable . '' : '';
     }

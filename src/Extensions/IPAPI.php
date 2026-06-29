@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -21,19 +22,8 @@ if (! defined("BLUEM_STATIC_IPAPI_KEY")) {
  */
 class IPAPI
 {
-    /**
-     * @var bool
-     */
-    private bool $debug = false;
-
-    /**
-     * @var string
-     */
     private string $baseURL = "http://api.ipstack.com/";
 
-    /**
-     * @var string
-     */
     private string $accessKey = BLUEM_STATIC_IPAPI_KEY;
 
     /**
@@ -45,7 +35,8 @@ class IPAPI
         $result = $this->QueryIP($ip);
 
         // if we encountered an error, return true for now
-        if (isset($result['success'])
+        if (
+            isset($result['success'])
             && $result['success'] === false
         ) {
             return true;
@@ -55,6 +46,7 @@ class IPAPI
         if (empty($result['country_code'])) {
             return true;
         }
+
         return ( $result['country_code'] === "NL" );
     }
 
@@ -69,7 +61,7 @@ class IPAPI
             $ip = $this->GetCurrentIP();
         }
 
-        $call_url = "{$this->baseURL}{$ip}?access_key=$this->accessKey";
+        $call_url = sprintf('%s%s?access_key=%s', $this->baseURL, $ip, $this->accessKey);
 
         // Initialize CURL:
         $ch = curl_init(
@@ -84,7 +76,7 @@ class IPAPI
         // Decode JSON response:
         try {
             $api_result = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $e) {
+        } catch (JsonException) {
             return false;
         }
 

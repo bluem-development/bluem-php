@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -10,7 +13,9 @@ namespace Bluem\BluemPHP\Responses;
 
 class IdentityTransactionBluemResponse extends TransactionBluemResponse
 {
-    public static string $transaction_type = "Identity";
-    public static string $response_primary_key = 'IdentityTransaction';
+    public static ?string $transaction_type = "Identity";
+
+    public static ?string $response_primary_key = 'IdentityTransaction';
+
     public static ?string $error_response_type = 'IdentityErrorResponse';
 }

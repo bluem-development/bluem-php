@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -10,6 +13,7 @@ namespace Bluem\BluemPHP\Contexts;
 
 class IBANCheckContext extends BluemContext
 {
+    #[\Override]
     public function getValidationSchema(): string
     {
         return parent::getValidationSchema() . 'IBANCheck.xsd';

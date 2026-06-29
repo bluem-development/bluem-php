@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -8,11 +9,15 @@
 
 namespace Bluem\BluemPHP\Requests;
 
+use Bluem\BluemPHP\Bluem;
+use Bluem\BluemPHP\Constants;
+use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Interfaces\BluemRequestInterface;
 use Exception;
 use SimpleXMLElement;
+use stdClass;
 
 /**
  * BluemRequest general class
@@ -23,12 +28,14 @@ class BluemRequest implements BluemRequestInterface
      * @var
      */
     public $transaction_code;
+
     // @todo make an enum or a datatype?
 
     /**
      * @var
      */
     public $typeIdentifier;
+
     /**
      * @var
      */
@@ -47,7 +54,7 @@ class BluemRequest implements BluemRequestInterface
     /**
      * @var
      */
-    public $debtorWallet = null;
+    public $debtorWallet;
 
     /**
      * @var
@@ -81,6 +88,8 @@ class BluemRequest implements BluemRequestInterface
 
     private array $_debtorAdditionalData = [];
 
+    private const array TYPE_IDENTIFIERS = [ 'createTransaction', 'requestStatus' ];
+
     /**
      * @var string[]
      */
@@ -108,17 +117,17 @@ class BluemRequest implements BluemRequestInterface
      *
      * @param BluemConfiguration|object $config
      *
-     * @throws Exception
+     * @throws InvalidBluemRequestException
      */
     public function __construct(
-        $config,
+        BluemConfiguration|stdClass $config,
         string $entranceCode = "",
         string $expectedReturn = ""
     ) {
-        $possibleTypeIdentifiers = [ 'createTransaction', 'requestStatus' ];
-        if (! in_array($this->typeIdentifier, $possibleTypeIdentifiers)) {
-            throw new Exception("Invalid transaction type called for", 1);
+        if (!in_array($this->typeIdentifier, self::TYPE_IDENTIFIERS, true)) {
+            throw new InvalidBluemRequestException("Invalid transaction type called for", 1);
         }
+
         // @todo: move to request validation class?
 
         $this->environment = $config->environment;
@@ -153,44 +162,30 @@ class BluemRequest implements BluemRequestInterface
         $entranceCode = (new Now())->format("YmdHisv");
 
         $prefix = "";
-        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+        if ($this->environment === Constants::TESTING_ENVIRONMENT) {
             switch ($expectedReturn) {
                 case 'success':
-                {
                     $prefix = "HIO100OIH";
                     break;
-                }
                 case 'cancelled':
-                {
                     $prefix = "HIO200OIH";
                     break;
-                }
                 case 'expired':
-                {
                     $prefix = "HIO300OIH";
                     break;
-                }
                 case 'failure':
-                {
                     $prefix = "HIO500OIH";
                     break;
-                }
                 case 'open':
-                {
                     $prefix = "HIO400OIH";
                     break;
-                }
                 case 'pending':
-                {
                     $prefix = "HIO600OIH";
                     break;
-                }
                 case '':
                 case 'none':
                 default:
-                {
                     break;
-                }
             }
         }
 
@@ -239,14 +234,14 @@ class BluemRequest implements BluemRequestInterface
             BLUEM_ENVIRONMENT_ACCEPTANCE => $request_url .= "acc.",
             default => $request_url .= "test.",
         };
-        $request_url .= "viamijnbank.net/$this->request_url_type/";
+        $request_url .= sprintf('viamijnbank.net/%s/', $this->request_url_type);
         match ($this->typeIdentifier) {
             'createTransaction' => $request_url .= "createTransactionWithToken",
             'requestStatus' => $request_url .= "requestTransactionStatusWithToken",
-            default => $request_url . "?token=$this->accessToken",
+            default => $request_url . ('?token=' . $this->accessToken),
         };
 
-        return $request_url . "?token=$this->accessToken";
+        return $request_url . ('?token=' . $this->accessToken);
     }
 
     /**
@@ -280,6 +275,7 @@ class BluemRequest implements BluemRequestInterface
         if (! in_array($BIC, $possibleBICs)) {
             throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
+
         $this->debtorWallet = $BIC;
     }
 
@@ -302,16 +298,16 @@ class BluemRequest implements BluemRequestInterface
         }
 
         $res = PHP_EOL . "<DebtorWallet>" . PHP_EOL;
-        $res .= "<{$this->context->debtorWalletElementName}>";
+        $res .= sprintf('<%s>', $this->context->debtorWalletElementName);
         $res .= "<BIC>" . $this->debtorWallet . "</BIC>";
-        $res .= "</{$this->context->debtorWalletElementName}>" . PHP_EOL;
+        $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;
 
         return $res . ("</DebtorWallet>" . PHP_EOL);
     }
 
     public function XmlWrapDebtorAdditionalData(): string
     {
-        if (count($this->_debtorAdditionalData) == 0) {
+        if ($this->_debtorAdditionalData === []) {
             return '';
         }
 
@@ -324,9 +320,9 @@ class BluemRequest implements BluemRequestInterface
 
             // @todo: add specific regex pattern checks for value of each type.
 
-            $res .= "<$key>";
+            $res .= sprintf('<%s>', $key);
             $res .= $value;
-            $res .= "</$key>" . PHP_EOL;
+            $res .= sprintf('</%s>', $key) . PHP_EOL;
         }
 
         return $res . ("</DebtorAdditionalData>" . PHP_EOL);
@@ -400,10 +396,10 @@ class BluemRequest implements BluemRequestInterface
      */
     protected function XmlRequestObjectWrap(string $element_name, string $rest, array $extra_attrs = []): string
     {
-        $res = "<$element_name
+        $res = "<{$element_name}
            entranceCode=\"$this->entranceCode\" ";
         foreach ($extra_attrs as $key => $value) {
-            $res .= "$key=\"$value\" " . PHP_EOL;
+            $res .= sprintf('%s="%s" ', $key, $value) . PHP_EOL;
         }
 
         return $res . ('>' . $rest . '</' . $element_name . '>');
@@ -424,12 +420,8 @@ class BluemRequest implements BluemRequestInterface
             $description
         );
         // max 128 characters
-        $result = substr($description, 0, 128);
-        if ($result !== false) {
-            return $result;
-        }
-
-        return $description;
+        $result = substr((string) $description, 0, 128);
+        return $result;
     }
 
     /*

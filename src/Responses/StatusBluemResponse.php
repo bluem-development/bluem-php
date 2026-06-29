@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -15,6 +18,7 @@ class StatusBluemResponse extends BluemResponse
         return $this->getParentStringVariable("Status");
     }
 
+    #[\Override]
     protected function getParentXmlElement(): string
     {
         return static::$response_primary_key . "Update";

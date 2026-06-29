@@ -1,4 +1,5 @@
 <?php
+
 /*
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -7,7 +8,6 @@
  */
 
 namespace Bluem\BluemPHP\Tests\Integration;
-
 
 class IdentityRequestTest extends BluemGenericTestCase
 {

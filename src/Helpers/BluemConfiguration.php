@@ -1,11 +1,11 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
  */
-
 
 namespace Bluem\BluemPHP\Helpers;
 
@@ -16,30 +16,40 @@ use RuntimeException;
 
 class BluemConfiguration
 {
-    private const TESTING_ENVIRONMENT = 'test';
+    private const string TESTING_ENVIRONMENT = 'test';
 
     public mixed $environment;
+
     public mixed $senderID;
+
     public mixed $brandID;
+
     public mixed $accessToken;
+
     public mixed $merchantReturnURLBase;
-    private BluemConfigurationValidator $validator;
+
+    private readonly BluemConfigurationValidator $validator;
+
     public mixed $test_accessToken;
+
     public mixed $IDINBrandID;
+
     public mixed $sequenceType;
+
     public mixed $merchantID;
+
     public ?string $production_accessToken;
+
     public ?string $expectedReturnStatus;
+
     public ?string $eMandateReason;
+
     public ?string $localInstrumentCode;
 
     /**
      * this is given by the bank and never changed (default 0)
      */
     public string $merchantSubID;
-    private string $PaymentsBrandID;
-    // @todo: consider deprecating this?
-    private string $EmandateBrandID;
     // @todo: consider deprecating this?
 
     // additional helper flags
@@ -48,10 +58,11 @@ class BluemConfiguration
      */
     public bool $webhookDebug = false;
 
+    public ?string $paymentBrandID = '';
+
     /**
      * An object containing the configuration for the Bluem integration. Can be an array or object
      *
-     * @param object|array $raw
      *
      * @throws Exception
      */
@@ -66,7 +77,9 @@ class BluemConfiguration
         $validated = $this->validator->validate($raw);
 
         if ($validated === false) {
-            throw new InvalidBluemConfigurationException('Bluem Configuration is not valid: ' . $this->errorsAsString());
+            throw new InvalidBluemConfigurationException(
+                'Bluem Configuration is not valid: ' . $this->errorsAsString()
+            );
         }
 
         $this->environment           = $validated->environment ?? self::TESTING_ENVIRONMENT;
@@ -80,8 +93,6 @@ class BluemConfiguration
         $this->test_accessToken = $validated->test_accessToken ?? null;
 
         $this->IDINBrandID = $this->_assumeBrandID("Identity", $this->brandID);
-        $this->PaymentsBrandID = $this->_assumeBrandID("Payment", $this->brandID);
-        $this->EmandateBrandID = $this->_assumeBrandID("Mandate", $this->brandID);
 
         $this->sequenceType = $validated->sequenceType ?? null;
 
@@ -105,7 +116,7 @@ class BluemConfiguration
      */
     private function _assumeBrandID(string $service, string $brandID): string
     {
-        if (empty($brandID)) {
+        if ($brandID === '' || $brandID === '0') {
             throw new RuntimeException("No brandID given");
         }
 
@@ -115,12 +126,12 @@ class BluemConfiguration
             'Mandate'
         ];
 
-        if (!in_array($service, $available_services)) {
+        if (!in_array($service, $available_services, true)) {
             throw new RuntimeException("Invalid service requested");
         }
 
         $prefix = str_replace($available_services, '', $brandID);
-        return $prefix.ucfirst($service);
+        return $prefix . ucfirst($service);
     }
 
     /**

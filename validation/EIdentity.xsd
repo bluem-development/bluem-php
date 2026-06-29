@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.4.0">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.5.0">
 	<!--=====================================================================-->
 	<!--                        Schema Management                            -->
 	<!--=====================================================================-->
@@ -9,8 +9,8 @@
 		<xsd:documentation xml:lang="en"/>
 		<xsd:documentation>
 			<name>Identity Interface</name>
-			<revision version="1.4.0">
-				<date>2020-MAY-20</date>
+			<revision version="1.5.0">
+				<date>2023-NOVEMBER-03</date>
 			</revision>
 		</xsd:documentation>
 	</xsd:annotation>
@@ -44,6 +44,16 @@
 			<xsd:pattern value="[0-9a-zA-Z]{1,32}"/>
 		</xsd:restriction>
 	</xsd:simpleType>
+	
+	    <xsd:simpleType name="LanguageCodeSimpleType">
+        <!-- two small letters -->
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="2"/>
+            <xsd:maxLength value="2"/>
+            <xsd:pattern value="[a-z]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
 
 	<xsd:simpleType name="VersionSimpleType">
 		<xsd:restriction base="xsd:token">
@@ -51,14 +61,6 @@
 		</xsd:restriction>
 	</xsd:simpleType>
 
-	<xsd:simpleType name="LineNumberSimpleType">
-		<xsd:restriction base="xsd:token">
-			<xsd:minLength value="1"/>
-			<xsd:maxLength value="2"/>
-			<xsd:pattern value="[0-9]{1,2}"/>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
     <xsd:simpleType name="AgeSimpleType">
 		<xsd:restriction base="xsd:token">
 			<xsd:minLength value="1"/>
@@ -105,7 +107,7 @@
 	<xsd:simpleType name="MessageCountSimpleType">
 		<xsd:restriction base="xsd:nonNegativeInteger">
 			<xsd:minInclusive value="0"/>
-			<xsd:maxInclusive value="1000"/>
+			<xsd:maxInclusive value="3000"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
@@ -169,7 +171,7 @@
             </xsd:simpleType>
         </xsd:union>
     </xsd:simpleType>
-
+  
     <xsd:simpleType name="TokenLength70SimpleType">
         <xsd:restriction base="xsd:token">
             <xsd:maxLength value="70"/>
@@ -179,13 +181,6 @@
     <xsd:simpleType name="TokenLength128SimpleType">
         <xsd:restriction base="xsd:token">
             <xsd:maxLength value="128"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-    
-    
-    <xsd:simpleType name="DescriptionSimpleType">
-        <xsd:restriction base="xsd:token">
-		      <xsd:pattern value="[-0-9a-zA-ZéèëïôóöüúÉÈËÏÔÓÖÜÚ€ ()+,.@&amp;=%&quot;&apos;/:;?$]{0,128}"/>
         </xsd:restriction>
     </xsd:simpleType>
     
@@ -337,7 +332,7 @@
             <xsd:enumeration value="GENERATED"/>
             <xsd:enumeration value="CANCELED"/>
             <xsd:enumeration value="FAILED"/>
-            <!-- $$$ what are the other options -->
+            <!-- $$$ other options -->
          </xsd:restriction>
     </xsd:simpleType>
         
@@ -346,7 +341,7 @@
 	<xsd:complexType name="IdentityTransactionRequestType">
 		<xsd:sequence>
 			<xsd:element name="RequestCategory" type="RequestCategoryComplexType"/>
-			<xsd:element name="Description" type="DescriptionSimpleType"/>
+			<xsd:element name="Description" type="TokenLength128SimpleType"/>
 			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType" minOccurs="0"/>
 			<xsd:element name="SkinID" type="RelaxedIdentifierSimpleType" minOccurs="0"/>
 			<xsd:element name="DueDateTime" type="DateTimeSimpleType" minOccurs="0"/>
@@ -375,7 +370,6 @@
     </xsd:complexType>
     
 
-	
     <xsd:complexType name="IdentityTransactionResponseType">
         <xsd:sequence>
             <xsd:element name="DebtorReference" type="DebtorReferenceSimpleType" minOccurs="0"/>
@@ -496,9 +490,7 @@
 				</xsd:complexType>
 			</xsd:element>
 			<xsd:element name="DocumentSignatureRequest" type="DocumentSignatureRequestComplexType" minOccurs="0"/>
-			<!-- $$$  -->
-			<!-- $$$  -->
-			<!-- $$$  -->
+
 			<!-- $$$  -->
 		</xsd:sequence>
 	</xsd:complexType>
@@ -531,7 +523,7 @@
 
     <xsd:complexType name="TelephoneResponseComplexType" mixed="true">
         <xsd:simpleContent>
-            <xsd:extension base="PhoneNumberSimpleType">
+            <xsd:extension base="TokenLength70SimpleType">
 				<xsd:attributeGroup ref="ResponseCategoryAttributeGroup"/>
                 <xsd:attribute name="type" type="TelephoneTypeSimpleType"/>
             </xsd:extension>
@@ -748,14 +740,7 @@
                 </xsd:restriction>
             </xsd:simpleType>
 		</xsd:attribute>
-		<xsd:attribute name="language" default = "nl">
-			<xsd:simpleType>
-				<xsd:restriction base="xsd:token">
-					<xsd:enumeration value="en"/>
-					<xsd:enumeration value="nl"/>
-				</xsd:restriction>
-			</xsd:simpleType>
-        </xsd:attribute>
+        <xsd:attribute name="language" type="LanguageCodeSimpleType" default="nl"/>
 	</xsd:attributeGroup>
 
 	<xsd:attributeGroup name="RequestCategoryAttributeGroup">

@@ -1,4 +1,5 @@
 <?php
+
 /* Reference: https://www.codementor.io/@sirolad/validating-xml-against-xsd-in-php-6f56rwcds */
 
 namespace Bluem\BluemPHP\Validators;
@@ -33,17 +34,12 @@ class BluemXMLValidator
      */
     protected $feedSchema = "";
 
-    /**
-     * @var DOMDocument
-     */
-    private \DOMDocument $handler;
+    private readonly \DOMDocument $handler;
 
     /**
      * Validation Class constructor Instantiating DOMDocument
-     *
-     * @param string|null $feedSchema
      */
-    public function __construct(string $feedSchema = null)
+    public function __construct(?string $feedSchema = null)
     {
         $this->handler = new DOMDocument('1.0', 'utf-8');
         $this->feedSchema = $feedSchema;
@@ -66,6 +62,7 @@ class BluemXMLValidator
                 "'DOMDocument' class not found!"
             );
         }
+
         if (! file_exists($this->feedSchema)) {
             throw new Exception(
                 "Schema is Missing, Please add schema to feedSchema property"
@@ -80,9 +77,8 @@ class BluemXMLValidator
             $this->feedErrors   = 1;
 
             return false;
-        } else {
-            return true;
         }
+        return true;
     }
 
     private function libxmlDisplayErrors(): array
@@ -92,6 +88,7 @@ class BluemXMLValidator
         foreach ($errors as $error) {
             $result[] = $this->libxmlDisplayError($error);
         }
+
         libxml_clear_errors();
 
         return $result;
@@ -102,9 +99,9 @@ class BluemXMLValidator
      */
     private function libxmlDisplayError($error): string
     {
-        $errorString = "Error $error->code in $error->file (Line: $error->line):";
+        $errorString = sprintf('Error %s in %s (Line: %s):', $error->code, $error->file, $error->line);
 
-        return $errorString . trim($error->message);
+        return $errorString . trim((string) $error->message);
     }
 
     /**

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
@@ -9,7 +10,9 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\MandatesContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Exception;
+use stdClass;
 
 /**
  * EMandateStatusRequest
@@ -17,8 +20,11 @@ use Exception;
 class EmandateStatusBluemRequest extends BluemRequest
 {
     public $typeIdentifier = "requestStatus";
+
     public $request_url_type = "mr";
+
     public $transaction_code = "SRX";
+
     private string $xmlInterfaceName = "EMandateInterface";
 
 
@@ -26,7 +32,7 @@ class EmandateStatusBluemRequest extends BluemRequest
      * @throws Exception
      */
     public function __construct(
-        $config,
+        BluemConfiguration|stdClass $config,
         $mandateID,
         $entranceCode = "",
         $expected_return = ""
@@ -53,6 +59,7 @@ class EmandateStatusBluemRequest extends BluemRequest
 
     // @todo: deprecated, remove
 
+    #[\Override]
     public function XmlString(): string
     {
         return $this->XmlRequestInterfaceWrap(
