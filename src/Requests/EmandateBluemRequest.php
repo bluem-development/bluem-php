@@ -92,7 +92,7 @@ class EmandateBluemRequest extends BluemRequest
 
         // override with hardcoded merchantID when in test environment, according to documentation
         if ($this->environment === Constants::TESTING_ENVIRONMENT) {
-            $this->merchantID = "0020000387";
+            $this->merchantID = Constants::BLUEM_STATIC_MERCHANT_ID;
         }
 
         $this->merchantSubID = $config->merchantSubID ?? "0";
