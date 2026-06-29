@@ -29,12 +29,9 @@ class WebhookSignatureValidation extends WebhookValidator
      */
     public function validate(string $data): self
     {
-        $public_key_file_path = dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
-
         $temp_file = tmpfile();
         fwrite($temp_file, $data);
         $temp_file_path = stream_get_meta_data($temp_file)['uri'];
-
 
         // Load the XML to be verified
         $doc = new DOMDocument();
@@ -50,23 +47,29 @@ class WebhookSignatureValidation extends WebhookValidator
             $objDSig->validateReference();
         } catch (Exception $e) {
             $this->addError('Reference Validation Failed: ' . $e->getMessage());
+            fclose($temp_file);
+            return $this;
         }
 
         try {
-            // Load the public key
-            $objKey = new XMLSecurityKey(XMLSecurityKey::RSA_SHA256, ['type' => 'public']);
-            $objKey->loadKey($public_key_file_path, TRUE);
-
+            $objKey = $objDSig->locateKey();
+            if (! $objKey instanceof XMLSecurityKey) {
+                $this->addError('Unable to determine signature key algorithm');
+                fclose($temp_file);
+                return $this;
+            }
+            $objKey->loadKey($this->getPublicKeyFilePath(), true);
         } catch (Exception $e) {
             $this->addError('Could not load public key');
+            fclose($temp_file);
+            return $this;
         }
 
         try {
             // Check the signature
-            if (!$objDSig->verify($objKey)) {
+            if ($objDSig->verify($objKey) !== 1) {
                 $this->addError("Invalid signature");
             }
-            // else, the signature is valid
         } catch (Exception $e) {
             $this->addError($e->getMessage());
         }
@@ -74,6 +77,14 @@ class WebhookSignatureValidation extends WebhookValidator
         fclose($temp_file);
 
         return $this;
+    }
+
+    /**
+     * Determine full path to the public key/certificate used for validation.
+     */
+    protected function getPublicKeyFilePath(): string
+    {
+        return dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
     }
 
     /**
