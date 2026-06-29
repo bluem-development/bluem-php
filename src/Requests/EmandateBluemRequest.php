@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -117,8 +117,8 @@ class EmandateBluemRequest extends BluemRequest
                 <EMandateReason>' . $this->eMandateReason . '</EMandateReason>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <PurchaseID>' . $this->purchaseID . '</PurchaseID>' .
-                $this->XmlWrapDebtorAdditionalData() .
-                $this->XmlWrapDebtorWalletForPaymentMethod(),
+                    $this->XmlWrapDebtorAdditionalData() .
+                    $this->XmlWrapDebtorWalletForPaymentMethod(),
                 [
                     // 'entranceCode'=>$this->entranceCode,  always sent already
                     'requestType'         => "Issuing",

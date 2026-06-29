@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -127,7 +127,7 @@ class IdentityBluemRequest extends BluemRequest
      */
     private function getIdinRequestCategory($category, bool $active = true): string
     {
-        $action = ( $active ? "request" : "skip" );
+        $action = ($active ? "request" : "skip");
 
         return match ($category) {
             'CustomerIDRequest' => sprintf('<CustomerIDRequest action="%s"/>', $action),
@@ -138,8 +138,8 @@ class IdentityBluemRequest extends BluemRequest
             'TelephoneRequest' => sprintf('<TelephoneRequest action="%s"/>', $action),
             'EmailRequest' => sprintf('<EmailRequest action="%s"/>', $action),
             'AgeCheckRequest' => '<AgeCheckRequest ageOrOlder="' .
-                   $this->getMinAge() .
-                   sprintf('" action="%s"/>', $action),
+                $this->getMinAge() .
+                sprintf('" action="%s"/>', $action),
             'CustomerIDLoginRequest' => sprintf('<CustomerIDLoginRequest action="%s"/>', $action),
             default => throw new Exception("No proper iDIN request category given", 1),
         };
@@ -147,7 +147,7 @@ class IdentityBluemRequest extends BluemRequest
 
     private function getMinAge(): string
     {
-        return "" . ( $this->minage ?? BLUEM_DEFAULT_MIN_AGE );
+        return "" . ($this->minage ?? BLUEM_DEFAULT_MIN_AGE);
     }
 
     public function TransactionType(): string
@@ -163,12 +163,12 @@ class IdentityBluemRequest extends BluemRequest
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'IdentityTransactionRequest',
-                ( $this->requestCategory ) . '
+                ($this->requestCategory) . '
                 <Description>' . $this->description . '</Description>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
-                $this->XmlWrapDebtorWalletForPaymentMethod() .
-                $this->XmlWrapDebtorAdditionalData(),
+                    $this->XmlWrapDebtorWalletForPaymentMethod() .
+                    $this->XmlWrapDebtorAdditionalData(),
                 [
                     'sendOption' => "none",
                     'language'   => "nl",

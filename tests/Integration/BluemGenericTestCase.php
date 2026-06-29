@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -67,11 +67,11 @@ abstract class BluemGenericTestCase extends TestCase
         $bluem_config->merchantID = $_ENV['BLUEM_MERCHANTID'];
         $bluem_config->merchantReturnURLBase = $_ENV['BLUEM_MERCHANTRETURNURLBASE'];
 
-        $bluem_config->production_accessToken = "" ;
-        $bluem_config->expectedReturnStatus = "success" ;
-        $bluem_config->eMandateReason = "eMandateReason" ;
-        $bluem_config->sequenceType = "OOFF" ;
-        $bluem_config->localInstrumentCode = "B2B" ;
+        $bluem_config->production_accessToken = "";
+        $bluem_config->expectedReturnStatus = "success";
+        $bluem_config->eMandateReason = "eMandateReason";
+        $bluem_config->sequenceType = "OOFF";
+        $bluem_config->localInstrumentCode = "B2B";
         // @todo: create env variables for these
 
         try {
@@ -114,14 +114,14 @@ abstract class BluemGenericTestCase extends TestCase
         } catch (Exception $exception) {
             $this->fail(
                 "Exception when performing the request: " .
-                $exception->getMessage()
+                    $exception->getMessage()
             );
         }
 
         if ($response instanceof \Bluem\BluemPHP\Responses\ErrorBluemResponse) {
             $this->fail(
                 "Erroneous response returned: " .
-                $response->error()
+                    $response->error()
             );
         } else {
             $cname = $request::class;

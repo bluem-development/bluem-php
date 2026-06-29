@@ -17,164 +17,139 @@ use RobRichards\XMLSecLibs\XMLSecurityKey;
 
 class WebhookSignatureValidation extends WebhookValidator
 {
-    private const string KEY_FOLDER = '/keys/';
+private const string KEY_FOLDER = "/keys/";
 
-    public function __construct(
-        private readonly string $env
-    ) {
-    }
+public function __construct(
+    private readonly string $env
+) {
+}
 
     /**
      * Validate webhook signature based on a key file
      * available in the `keys` folder.
      */
-    public function validate(string $data): self
-    {
-        $temp_file = tmpfile();
-        fwrite($temp_file, $data);
-        $temp_file_path = stream_get_meta_data($temp_file)['uri'];
+public function validate(string $data): self
+{
+    $temp_file = tmpfile();
+    fwrite($temp_file, $data);
+    $temp_file_path = stream_get_meta_data($temp_file)['uri'];
 
-        $doc = new DOMDocument();
-        $doc->load($temp_file_path);
+    // Load the XML to be verified
+    $doc = new DOMDocument();
+    $doc->load($temp_file_path);
 
-        $objDSig = new XMLSecurityDSig();
+    // Create a new Security object
+    $objDSig = new XMLSecurityDSig();
 
-        try {
-            $objDSig->locateSignature($doc);
-            $objDSig->canonicalizeSignedInfo();
-            $objDSig->validateReference();
-        } catch (Exception $e) {
-            $this->addError('Reference Validation Failed: ' . $e->getMessage());
-            fclose($temp_file);
-
-            return $this;
-        }
-
-        try {
-            $objKey = $objDSig->locateKey();
-            if (! $objKey instanceof XMLSecurityKey) {
-                $this->addError('Unable to determine signature key algorithm');
-                fclose($temp_file);
-
-                return $this;
-            }
-            $objKey->loadKey($this->getPublicKeyFilePath(), true);
-        } catch (Exception) {
-            $this->addError('Could not load public key');
-            fclose($temp_file);
-
-            return $this;
-        }
-
-        try {
-            if ($objDSig->verify($objKey) !== 1) {
-                $this->addError('Invalid signature');
-            }
-        } catch (Exception $exception) {
-            $this->addError($exception->getMessage());
-        }
-
+    // Locate the signature within the XML
+    try {
+        $objDSig->locateSignature($doc);
+        $objDSig->canonicalizeSignedInfo();
+        $objDSig->validateReference();
+    } catch (Exception $e) {
+        $this->addError('Reference Validation Failed: ' . $e->getMessage());
         fclose($temp_file);
-
         return $this;
     }
+
+    try {
+        $objKey = $objDSig->locateKey();
+        if (! $objKey instanceof XMLSecurityKey) {
+            $this->addError('Unable to determine signature key algorithm');
+            fclose($temp_file);
+            return $this;
+        }
+        $objKey->loadKey($this->getPublicKeyFilePath(), true);
+    } catch (Exception $e) {
+        $this->addError('Could not load public key');
+        fclose($temp_file);
+        return $this;
+    }
+
+    try {
+        // Check the signature
+        if ($objDSig->verify($objKey) !== 1) {
+            $this->addError("Invalid signature");
+        }
+    } catch (Exception $exception) {
+        $this->addError($exception->getMessage());
+    }
+
+    fclose($temp_file);
+
+    return $this;
+}
 
     /**
      * Determine full path to the public key/certificate used for validation.
      */
-    protected function getPublicKeyFilePath(): string
-    {
-        return dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
-    }
+protected function getPublicKeyFilePath(): string
+{
+    return dirname(__DIR__, 2) . self::KEY_FOLDER . $this->getKeyFileName();
+}
 
     /**
-     * Determine filename certificate.
+     * Determine filename certificate
      */
-    private function getKeyFileName(): string
+private function getKeyFileName(): string
     {
+        // Define current date & time
         $now = new Now();
         $current_date = $now->format('Y-m-d');
         $current_time = $now->format('H:i');
 
-        $timestamp = '202206090200-202307110159';
+        // Define the default filename
+        $prefix = 'webhook_bluem_nl_';
 
-        if ($this->uses2026Certificate($current_date, $current_time)) {
+        // Check the datetime for certificates
+if (
+            ($current_date === "2024-07-01" && $current_time >= "12:00")
+            || $current_date > "2024-07-01"
+) {
+// 2025 certificate on testing from July 17th, 8:30 CET time
+    if ((  $current_date === "2024-07-17" && $current_time >= "6:30" ) || $current_date > "2024-07-17") {
+        // 2025 certificate on production from July 18th, 8:30 CET time
+        if (
+            $this->env === BLUEM_ENVIRONMENT_PRODUCTION && (
+            ( $current_date === "2025-07-18" && $current_time >= "08:30" )
+            || $current_date > "2025-07-18")
+        ) {
             $timestamp = '20250717';
-        } elseif ($this->uses2025Certificate($current_date, $current_time)) {
+        }
+
+        if ((  $current_date === "2025-07-17" && $current_time >= "6:30" ) || $current_date > "2025-07-17") {
+        // 2025 certificate on testing & acceptance from July 17th, 8:30 CET time
+        } elseif (
+            ($this->env === BLUEM_ENVIRONMENT_TESTING || $this->env === BLUEM_ENVIRONMENT_ACCEPTANCE)
+                && (($current_date === "2025-07-17" && $current_time >= "6:30") || $current_date > "2025-07-17")
+        ) {
+        } elseif (
+                ($this->env === BLUEM_ENVIRONMENT_TESTING || $this->env === BLUEM_ENVIRONMENT_ACCEPTANCE)
+                && (($current_date === "2024-07-17"
+                    && $current_time >= "06:30") || $current_date > "2024-07-17")
+        ) {
             $timestamp = '20250717';
-        } elseif ($this->uses2024Certificate($current_date, $current_time)) {
+        } elseif (
+                (  $current_date === "2024-07-01" && $current_time >= "12:00" )
+                || $current_date > "2024-07-01"
+        ) {
             $timestamp = '20240701';
-        } elseif ($this->uses2023Certificate($current_date, $current_time)) {
+        } elseif (
+                $this->env === BLUEM_ENVIRONMENT_TESTING
+                && ( ( $current_date === "2023-06-28" && $current_time >= "08:00" )
+                || $current_date > "2023-06-28")
+        ) {
             $timestamp = '202306140200-202407050159';
-        }
-
-        return 'webhook_bluem_nl_' . $timestamp . '.pem';
-    }
-
-    private function uses2026Certificate(string $current_date, string $current_time): bool
-    {
-        if (
-            $this->env === BLUEM_ENVIRONMENT_PRODUCTION
-            && (
-                ($current_date === '2026-07-18' && $current_time >= '08:30')
-                || $current_date > '2026-07-18'
-            )
+        } elseif (
+                $this->env === BLUEM_ENVIRONMENT_PRODUCTION
+                && ( ( $current_date === "2023-07-04" && $current_time >= "08:00" )
+                || $current_date > "2023-07-04")
         ) {
-            return true;
+            $timestamp = '202306140200-202407050159';
+        } else {
+            $timestamp = '202206090200-202307110159';
         }
 
-        return (
-            $this->env === BLUEM_ENVIRONMENT_TESTING
-            || $this->env === BLUEM_ENVIRONMENT_ACCEPTANCE
-        ) && (
-            ($current_date === '2026-07-17' && $current_time >= '08:30')
-            || $current_date > '2026-07-17'
-        );
-    }
-
-    private function uses2025Certificate(string $current_date, string $current_time): bool
-    {
-        if (
-            $this->env === BLUEM_ENVIRONMENT_PRODUCTION
-            && (
-                ($current_date === '2025-07-18' && $current_time >= '08:30')
-                || $current_date > '2025-07-18'
-            )
-        ) {
-            return true;
-        }
-
-        return (
-            $this->env === BLUEM_ENVIRONMENT_TESTING
-            || $this->env === BLUEM_ENVIRONMENT_ACCEPTANCE
-        ) && (
-            ($current_date === '2025-07-17' && $current_time >= '08:30')
-            || $current_date > '2025-07-17'
-        );
-    }
-
-    private function uses2024Certificate(string $current_date, string $current_time): bool
-    {
-        return ($current_date === '2024-07-01' && $current_time >= '12:00')
-            || $current_date > '2024-07-01';
-    }
-
-    private function uses2023Certificate(string $current_date, string $current_time): bool
-    {
-        if (
-            $this->env === BLUEM_ENVIRONMENT_TESTING
-            && (
-                ($current_date === '2023-06-28' && $current_time >= '08:00')
-                || $current_date > '2023-06-28'
-            )
-        ) {
-            return true;
-        }
-
-        return $this->env === BLUEM_ENVIRONMENT_PRODUCTION
-            && (
-                ($current_date === '2023-07-04' && $current_time >= '08:00')
-                || $current_date > '2023-07-04'
-            );
+        return $prefix . $timestamp . '.pem';
     }
 }
