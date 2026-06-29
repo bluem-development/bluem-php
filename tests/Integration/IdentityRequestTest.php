@@ -1,7 +1,7 @@
 <?php
 
 /*
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -22,19 +22,8 @@ class IdentityRequestTest extends BluemGenericTestCase
             "https://google.com"
         );
 
-        //        $this->assertInstanceOf(IdentityBluemRequest::class, $request);
-
         $response = $this->bluem->performRequest($request);
 
-        $this->assertEquals(false, $response->Error());
-
-        //        $transactionId = $response->GetTransactionID();
-        //        $entranceCode = $response->GetEntranceCode();
-        //        $status = $this->bluem->IdentityStatus(
-        //            $transactionId,
-        //            $entranceCode
-        //        );
-        //
         $this->assertEquals(false, $response->Error());
     }
 }

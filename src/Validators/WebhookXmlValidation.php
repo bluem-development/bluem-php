@@ -1,7 +1,7 @@
 <?php
 
 /**
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -22,9 +22,7 @@ class WebhookXmlValidation extends WebhookXMLValidator
         'EMandateInterface'
     ];
 
-    public function __construct(private readonly string $senderID)
-    {
-    }
+    public function __construct(private readonly string $senderID) {}
 
     public function validate(SimpleXMLElement $data): self
     {

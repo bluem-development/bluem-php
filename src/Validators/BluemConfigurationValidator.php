@@ -1,7 +1,7 @@
 <?php
 
 /**
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -220,15 +220,7 @@ class BluemConfigurationValidator
      */
     private function getPossibleReturnStatuses(): array
     {
-        return [
-            Constants::EXPECTED_RETURN_NONE,
-            Constants::EXPECTED_RETURN_SUCCESS,
-            Constants::EXPECTED_RETURN_CANCELLED,
-            Constants::EXPECTED_RETURN_EXPIRED,
-            Constants::EXPECTED_RETURN_FAILURE,
-            Constants::EXPECTED_RETURN_OPEN,
-            Constants::EXPECTED_RETURN_PENDING
-        ];
+        return Constants::POSSIBLE_RETURN_STATUSES;
     }
 
     private function _validateEMandateReason($config)

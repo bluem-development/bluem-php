@@ -1,7 +1,7 @@
 <?php
 
 /**
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -21,8 +21,7 @@ class WebhookSignatureValidation extends WebhookValidator
 
     public function __construct(
         private readonly string $env
-    ) {
-    }
+    ) {}
 
     /**
      * Validate webhook signature based on a key file

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -188,9 +188,7 @@ class IdentityBluemRequest extends BluemRequest
      * @deprecated Since iDeal 2.0, the status GUI via this entranceCode mutation is no longer available.
      * @return void
      */
-    public function enableStatusGUI()
-    {
-    }
+    public function enableStatusGUI() {}
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {

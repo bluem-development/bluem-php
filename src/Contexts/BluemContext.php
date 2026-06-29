@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -15,9 +15,7 @@ use Bluem\BluemPHP\Interfaces\BluemContextInterface;
 
 abstract class BluemContext implements BluemContextInterface
 {
-    public function __construct(public array $BICs = [])
-    {
-    }
+    public function __construct(public array $BICs = []) {}
 
     public function getBICs(): array
     {

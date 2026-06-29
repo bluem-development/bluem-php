@@ -1,7 +1,7 @@
 <?php
 
 /**
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -18,6 +18,14 @@ use stdClass;
 
 class PaymentBluemRequest extends BluemRequest
 {
+    private const string DEFAULT_CURRENCY = "EUR";
+
+    private const string DOCUMENT_TYPE_PAY_REQUEST = "PayRequest";
+
+    private const string SEND_OPTION_NONE = "none";
+
+    private const string LANGUAGE_DUTCH = "nl";
+
     public $request_url_type = "pr";
 
     public $typeIdentifier = "createTransaction";
@@ -139,7 +147,7 @@ class PaymentBluemRequest extends BluemRequest
      */
     private function validateCurrency($currency): string
     {
-        $availableCurrencies = ["EUR"]; // @todo: add list of currencies based on
+        $availableCurrencies = [self::DEFAULT_CURRENCY]; // @todo: add list of currencies based on
         if (!in_array($currency, $availableCurrencies, true)) {
             throw new InvalidBluemRequestException(
                 "Currency not recognized, should be one of the following available currencies: " .
@@ -159,9 +167,9 @@ class PaymentBluemRequest extends BluemRequest
     public function XmlString(): string
     {
         $extraOptions = [
-            'documentType' => "PayRequest",
-            'sendOption'   => "none",
-            'language'     => "nl",
+            'documentType' => self::DOCUMENT_TYPE_PAY_REQUEST,
+            'sendOption'   => self::SEND_OPTION_NONE,
+            'language'     => self::LANGUAGE_DUTCH,
         ];
 
         if (!empty($this->brandID)) {
@@ -299,13 +307,6 @@ class PaymentBluemRequest extends BluemRequest
             return $then->getCreateDateTimeForRequest();
         } catch (Exception $exception) {
             throw new InvalidBluemRequestException($exception, $exception->getCode(), $exception);
-        }
-    }
-
-    private function addZeroPrefix($number)
-    {
-        if (strlen($number . '') === 1) {
-            return (int) '0' . $number;
         }
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * © 2026 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -177,8 +177,8 @@ class Bluem
             $order_id,
             $mandate_id,
             ($this->configuration->environment === "test" &&
-            $this->configuration->expectedReturnStatus !== null ?
-            $this->configuration->expectedReturnStatus : "")
+                $this->configuration->expectedReturnStatus !== null ?
+                $this->configuration->expectedReturnStatus : "")
         );
     }
 
@@ -220,10 +220,10 @@ class Bluem
         ) {
             return new ErrorBluemResponse(
                 "Error: Request is not formed correctly. More details: " .
-                implode(
-                    ';<BR>' . PHP_EOL,
-                    $validator->errorDetails
-                )
+                    implode(
+                        ';<BR>' . PHP_EOL,
+                        $validator->errorDetails
+                    )
             );
         }
 
@@ -283,7 +283,7 @@ class Bluem
                 } catch (Throwable $th) {
                     return new ErrorBluemResponse(
                         "Error: Could not create Bluem Response object. More details: " .
-                        $th->getMessage()
+                            $th->getMessage()
                     );
                 }
 
@@ -331,7 +331,7 @@ class Bluem
             return '';
         }
 
-                        return (string) $xml->{$errorNodeName}->Error->ErrorMessage;
+        return (string) $xml->{$errorNodeName}->Error->ErrorMessage;
     }
 
     /**
@@ -372,8 +372,8 @@ class Bluem
             $this->configuration,
             $mandateID,
             $entranceCode,
-            ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
-            $this->configuration->expectedReturnStatus !== null ?
+            ($this->configuration->environment === Constants::TESTING_ENVIRONMENT &&
+                $this->configuration->expectedReturnStatus !== null ?
                 $this->configuration->expectedReturnStatus : "")
         );
 
@@ -476,9 +476,9 @@ class Bluem
             $currency,
             $this->CreatePaymentTransactionID($debtorReference),
             $entranceCode,
-            ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
-            $this->configuration->expectedReturnStatus !== null ?
-            $this->configuration->expectedReturnStatus : ""),
+            ($this->configuration->environment === Constants::TESTING_ENVIRONMENT &&
+                $this->configuration->expectedReturnStatus !== null ?
+                $this->configuration->expectedReturnStatus : ""),
             $debtorReturnURL,
             $paymentReference
         );
@@ -512,7 +512,7 @@ class Bluem
         $r = new PaymentStatusBluemRequest(
             $this->configuration,
             $transactionID,
-            $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            $this->configuration->environment === Constants::TESTING_ENVIRONMENT &&
                 $this->configuration->expectedReturnStatus !== null ?
                 $this->configuration->expectedReturnStatus : "",
             $entranceCode
@@ -544,7 +544,7 @@ class Bluem
         return new IdentityBluemRequest(
             $this->configuration,
             $entranceCode,
-            $this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            $this->configuration->environment === Constants::TESTING_ENVIRONMENT &&
                 $this->configuration->expectedReturnStatus !== null ?
                 $this->configuration->expectedReturnStatus : "",
             $requestCategory,
@@ -567,7 +567,7 @@ class Bluem
         $r = new IdentityStatusBluemRequest(
             $this->configuration,
             $entranceCode,
-            ($this->configuration->environment === BLUEM_ENVIRONMENT_TESTING &&
+            ($this->configuration->environment === Constants::TESTING_ENVIRONMENT &&
                 $this->configuration->expectedReturnStatus !== null ?
                 $this->configuration->expectedReturnStatus : ""),
             $transactionID
@@ -703,21 +703,20 @@ class Bluem
     {
         $localInstrumentCode = $this->configuration->localInstrumentCode;
         switch ($context) {
-            case 'Mandates':
+            case Constants::MANDATES_CONTEXT:
                 $context = new MandatesContext($localInstrumentCode);
                 break;
-            case 'Payments':
+            case Constants::PAYMENTS_CONTEXT:
                 $context = new PaymentsContext();
                 break;
-            case 'Identity':
+            case Constants::IDENTITY_CONTEXT:
                 $context = new IdentityContext();
                 break;
             default:
-                $contexts = ["Mandates", "Payments", "Identity"];
                 throw new RuntimeException(
                     "Invalid Context requested, should be
                 one of the following: " .
-                        implode(",", $contexts)
+                        implode(",", Constants::AVAILABLE_CONTEXTS)
                 );
         }
 
