@@ -10,6 +10,7 @@
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\MandatesContext;
+use Bluem\BluemPHP\Constants;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 
 /**
@@ -90,7 +91,7 @@ class EmandateBluemRequest extends BluemRequest
         $this->merchantID = $config->merchantID ?? "";
 
         // override with hardcoded merchantID when in test environment, according to documentation
-        if ($this->environment === BLUEM_ENVIRONMENT_TESTING) {
+        if ($this->environment === Constants::TESTING_ENVIRONMENT) {
             $this->merchantID = "0020000387";
         }
 

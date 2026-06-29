@@ -28,8 +28,6 @@ class PaymentsContext extends BluemContext
 
     public const PAYMENT_METHOD_BANCONTACT = 'Bancontact';
 
-    public const PAYMENT_METHOD_BANCONTACT = 'Bancontact';
-
     public const PAYMENT_METHODS = [
         self::PAYMENT_METHOD_IDEAL,
         self::PAYMENT_METHOD_PAYPAL,
