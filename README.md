@@ -14,11 +14,7 @@ Utilized by other applications as well:
 ## Table of Contents
 * [Requirements](#requirements)
 * [Getting started:](#getting-started)
-* [Notes per version](#notes-per-version)
-    + [Version 2.3 (latest)](#version-2324-latest)
-    + [Version 2.2](#version-22)
-    + [Version 2.1](#version-21)
-    + [Versions before 2.1](#versions-before-21)
+* [Changelog](#changelog)
 * [Testing](#testing)
     + [Description of the base tests:](#description-of-the-base-tests)
 * [Frequently asked questions](#frequently-asked-questions)
@@ -73,7 +69,7 @@ Refer to the [examples](https://github.com/bluem-development/bluem-php/tree/mast
 
 Please contact us if you have any questions regarding the examples or the implementation of the library in your project.
 
-## Notes per version
+## Changelog
 See [Changelog](changelog.md)
 
 ## Testing
