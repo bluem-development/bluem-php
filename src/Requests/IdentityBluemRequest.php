@@ -72,7 +72,7 @@ class IdentityBluemRequest extends BluemRequest
         if (empty($debtorReturnURL)) {
             $debtorReturnURL = $config->merchantReturnURLBase;
         }
-        $this->debtorReturnURL = $this->appendToUrl($debtorReturnURL,"debtorReference",$this->debtorReference);
+        $this->debtorReturnURL = $this->appendToUrl($debtorReturnURL, "debtorReference", $this->debtorReference);
 
         // @todo: make this a configurable setting
         $this->minAge = $config->minAge ?? BLUEM_DEFAULT_MIN_AGE;
@@ -187,7 +187,9 @@ class IdentityBluemRequest extends BluemRequest
      * @deprecated Since iDeal 2.0, the status GUI via this entranceCode mutation is no longer available.
      * @return void
      */
-    public function enableStatusGUI() {}
+    public function enableStatusGUI()
+    {
+    }
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {

@@ -107,7 +107,7 @@ class PaymentBluemRequest extends BluemRequest
         }
 
         $this->debtorReturnURL = $this->appendToUrl($this->debtorReturnURL, 'entranceCode', $this->entranceCode);
-        $this->debtorReturnURL = $this->appendToUrl($this->debtorReturnURL, 'transactionID',$this->transactionID);
+        $this->debtorReturnURL = $this->appendToUrl($this->debtorReturnURL, 'transactionID', $this->transactionID);
 
         // Note: different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class.
@@ -174,7 +174,7 @@ class PaymentBluemRequest extends BluemRequest
         if (!empty($this->brandID)) {
             $extraOptions['brandID'] = $this->brandID;
         }
-        
+
         return $this->XmlRequestInterfaceWrap(
             $this->xmlInterfaceName,
             'TransactionRequest',
@@ -286,7 +286,7 @@ class PaymentBluemRequest extends BluemRequest
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CARTE_BANCAIRE);
         return $this;
     }
-    
+
     public function setPaymentMethodToBancontact(): self
     {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
