@@ -15,11 +15,11 @@ use stdClass;
 
 class PaymentStatusBluemRequest extends BluemRequest
 {
-    public string $request_url_type = 'pr';
+    public $request_url_type = 'pr';
 
-    public string $typeIdentifier = 'requestStatus';
+    public $typeIdentifier = 'requestStatus';
 
-    public string $transaction_code = 'PSX';
+    public $transaction_code = 'PSX';
 
     protected string $xmlInterfaceName = 'EPaymentInterface';
 
