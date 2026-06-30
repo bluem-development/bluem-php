@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -81,7 +81,7 @@ class BluemResponse extends SimpleXMLElement implements BluemResponseInterface
 
     protected function getParentStringVariable(string $variable): string
     {
-        return ( isset($this->{$this->getParentXmlElement()}->$variable) ) ? $this->{$this->getParentXmlElement()}->$variable . '' : '';
+        return (isset($this->{$this->getParentXmlElement()}->$variable)) ? $this->{$this->getParentXmlElement()}->$variable . '' : '';
     }
 
     protected function getParentElement(): ?SimpleXMLElement

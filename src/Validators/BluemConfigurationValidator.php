@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -38,8 +38,8 @@ class BluemConfigurationValidator
             $config = $this->_validateEMandateReason($config);
             $config = $this->_validateLocalInstrumentCode($config);
             $config = $this->_validateMerchantReturnURLBase($config);
-        } catch (Throwable $throwable) {
-            $this->errors[] = $throwable->getMessage();
+        } catch (Throwable $th) {
+            $this->errors[] = $th->getMessage();
 
             return false;
         }
@@ -49,8 +49,22 @@ class BluemConfigurationValidator
 
     private function _validateEnvironment($config)
     {
+        if (! isset($config->environment)) {
+            throw new Exception(
+                "environment not set; please add this to your configuration when instantiating the Bluem integration"
+            );
+        }
+
         if (
-            !isset($config->environment)
+            !in_array(
+                $config->environment,
+                [
+                    Constants::TESTING_ENVIRONMENT,
+                    Constants::ACCEPTANCE_ENVIRONMENT,
+                    Constants::PRODUCTION_ENVIRONMENT
+                ],
+                true
+            )
         ) {
             throw new Exception(
                 "environment not set; please add this to your configuration when instantiating the Bluem integration"
@@ -65,8 +79,11 @@ class BluemConfigurationValidator
             )
         ) {
             throw new Exception(
-                sprintf(sprintf("Invalid environment setting (%s), should be one of: 
-                %%s", $config->environment), implode(', ', Constants::ENVIRONMENTS))
+                sprintf(
+                    "Invalid environment setting (%s), should be one of: %s",
+                    $config->environment,
+                    implode(', ', Constants::ENVIRONMENTS)
+                )
             );
         }
 
@@ -103,8 +120,8 @@ class BluemConfigurationValidator
     {
         if (
             $config->environment === Constants::TESTING_ENVIRONMENT
-            && ( ! isset($config->test_accessToken)
-            || $config->test_accessToken === "" )
+            && (! isset($config->test_accessToken)
+                || $config->test_accessToken === "")
         ) {
             throw new Exception(
                 "test_accessToken not set correctly; please add this 
@@ -121,8 +138,8 @@ class BluemConfigurationValidator
         // production_accessToken
         if (
             $config->environment === Constants::PRODUCTION_ENVIRONMENT
-            && ( ! isset($config->production_accessToken)
-            || $config->production_accessToken === "" )
+            && (! isset($config->production_accessToken)
+                || $config->production_accessToken === "")
         ) {
             throw new Exception(
                 "production_accessToken not set correctly; 
@@ -184,8 +201,8 @@ class BluemConfigurationValidator
         if ($config->environment === Constants::TESTING_ENVIRONMENT) {
             if (
                 ! isset($config->expectedReturnStatus)
-                || ( $config->expectedReturnStatus !== ""
-                && !in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
+                || ($config->expectedReturnStatus !== ""
+                    && !in_array($config->expectedReturnStatus, $this->getPossibleReturnStatuses(), true))
             ) {
                 // default back to success
                 $config->expectedReturnStatus = Constants::EXPECTED_RETURN_SUCCESS;
@@ -203,15 +220,7 @@ class BluemConfigurationValidator
      */
     private function getPossibleReturnStatuses(): array
     {
-        return [
-            Constants::EXPECTED_RETURN_NONE,
-            Constants::EXPECTED_RETURN_SUCCESS,
-            Constants::EXPECTED_RETURN_CANCELLED,
-            Constants::EXPECTED_RETURN_EXPIRED,
-            Constants::EXPECTED_RETURN_FAILURE,
-            Constants::EXPECTED_RETURN_OPEN,
-            Constants::EXPECTED_RETURN_PENDING
-        ];
+        return Constants::POSSIBLE_RETURN_STATUSES;
     }
 
     private function _validateEMandateReason($config)
@@ -226,7 +235,7 @@ class BluemConfigurationValidator
             ! isset($config->localInstrumentCode)
             || ! in_array(
                 $config->localInstrumentCode,
-                [ 'B2B', 'CORE' ]
+                ['B2B', 'CORE']
             )
         ) {
             // defaulting localInstrumentCode

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -15,26 +15,15 @@ class IdentityRequestTest extends BluemGenericTestCase
     {
 
         $request = $this->bluem->CreateIdentityRequest(
-            ["CustomerIDRequest","NameRequest"],
+            ["CustomerIDRequest", "NameRequest"],
             "Identificatie EsmeÃ© Timmerman",
             "nope",
             random_int(0, 12353),
             "https://google.com"
         );
 
-//        $this->assertInstanceOf(IdentityBluemRequest::class, $request);
-
         $response = $this->bluem->performRequest($request);
 
-        $this->assertEquals(false, $response->Error());
-
-//        $transactionId = $response->GetTransactionID();
-//        $entranceCode = $response->GetEntranceCode();
-//        $status = $this->bluem->IdentityStatus(
-//            $transactionId,
-//            $entranceCode
-//        );
-//
         $this->assertEquals(false, $response->Error());
     }
 }

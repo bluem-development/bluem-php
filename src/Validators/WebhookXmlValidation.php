@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -17,7 +17,9 @@ use SimpleXMLElement;
 class WebhookXmlValidation extends WebhookXMLValidator
 {
     private const array ALLOWED_SERVICE_INTERFACES = [
-        'EPaymentInterface', 'IdentityInterface', 'EMandateInterface'
+        'EPaymentInterface',
+        'IdentityInterface',
+        'EMandateInterface'
     ];
 
     public function __construct(private readonly string $senderID)

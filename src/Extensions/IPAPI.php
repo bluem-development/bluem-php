@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -22,6 +22,8 @@ if (! defined("BLUEM_STATIC_IPAPI_KEY")) {
  */
 class IPAPI
 {
+    private const string COUNTRY_CODE_NETHERLANDS = "NL";
+
     private string $baseURL = "http://api.ipstack.com/";
 
     private string $accessKey = BLUEM_STATIC_IPAPI_KEY;
@@ -47,7 +49,7 @@ class IPAPI
             return true;
         }
 
-        return ( $result['country_code'] === "NL" );
+        return ($result['country_code'] === self::COUNTRY_CODE_NETHERLANDS);
     }
 
     /**

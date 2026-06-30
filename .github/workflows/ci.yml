@@ -5,7 +5,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['8.3', '8.4']
+                php-version: ['8.3', '8.4', '8.5']
 
         steps:
             - name: Checkout code
@@ -41,6 +41,6 @@ jobs:
               uses: php-actions/phpunit@v4
               with:
                   php_version: ${{ matrix.php-version }}
-                  version: 11
+                  version: 12
                   bootstrap: ./vendor/autoload.php
                   configuration: ./.github/workflows/phpunit.xml

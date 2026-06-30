@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -11,6 +11,7 @@ namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Bluem;
 use Bluem\BluemPHP\Contexts\IdentityContext;
+use Bluem\BluemPHP\Exceptions\InvalidBluemRequestException;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
 use Exception;
 use stdClass;
@@ -68,8 +69,8 @@ class IdentityBluemRequest extends BluemRequest
 
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         $this->description     = $this->_sanitizeDescription($description);
-        if ($debtorReturnURL == "") {
-            throw new Exception("Debtor return URL is required");
+        if (empty($debtorReturnURL)) {
+            throw new InvalidBluemRequestException("Debtor return URL is required");
         }
 
         $this->debtorReturnURL = $debtorReturnURL . ('?debtorReference=' . $this->debtorReference);
@@ -126,7 +127,7 @@ class IdentityBluemRequest extends BluemRequest
      */
     private function getIdinRequestCategory($category, bool $active = true): string
     {
-        $action = ( $active ? "request" : "skip" );
+        $action = ($active ? "request" : "skip");
 
         return match ($category) {
             'CustomerIDRequest' => sprintf('<CustomerIDRequest action="%s"/>', $action),
@@ -137,8 +138,8 @@ class IdentityBluemRequest extends BluemRequest
             'TelephoneRequest' => sprintf('<TelephoneRequest action="%s"/>', $action),
             'EmailRequest' => sprintf('<EmailRequest action="%s"/>', $action),
             'AgeCheckRequest' => '<AgeCheckRequest ageOrOlder="' .
-                   $this->getMinAge() .
-                   sprintf('" action="%s"/>', $action),
+                $this->getMinAge() .
+                sprintf('" action="%s"/>', $action),
             'CustomerIDLoginRequest' => sprintf('<CustomerIDLoginRequest action="%s"/>', $action),
             default => throw new Exception("No proper iDIN request category given", 1),
         };
@@ -146,7 +147,7 @@ class IdentityBluemRequest extends BluemRequest
 
     private function getMinAge(): string
     {
-        return "" . ( $this->minage ?? BLUEM_DEFAULT_MIN_AGE );
+        return "" . ($this->minage ?? BLUEM_DEFAULT_MIN_AGE);
     }
 
     public function TransactionType(): string
@@ -162,12 +163,12 @@ class IdentityBluemRequest extends BluemRequest
             'TransactionRequest',
             $this->XmlRequestObjectWrap(
                 'IdentityTransactionRequest',
-                ( $this->requestCategory ) . '
+                ($this->requestCategory) . '
                 <Description>' . $this->description . '</Description>
                 <DebtorReference>' . $this->debtorReference . '</DebtorReference>
                 <DebtorReturnURL automaticRedirect="1">' . $this->debtorReturnURL . '</DebtorReturnURL>' .
-                $this->XmlWrapDebtorWalletForPaymentMethod() .
-                $this->XmlWrapDebtorAdditionalData(),
+                    $this->XmlWrapDebtorWalletForPaymentMethod() .
+                    $this->XmlWrapDebtorAdditionalData(),
                 [
                     'sendOption' => "none",
                     'language'   => "nl",

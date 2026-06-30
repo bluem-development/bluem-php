@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -94,15 +94,15 @@ class IBANBluemRequest extends BluemRequest
             $this->XmlRequestObjectWrap(
                 'IBANCheckTransactionRequest',
                 PHP_EOL .
-                '<IBAN>' .
-                $this->_inputIban .
-                '</IBAN>' . PHP_EOL .
-                '<AssumedName>' .
-                $this->_inputName .
-                '</AssumedName>' . PHP_EOL .
-                '<DebtorReference>' .
-                $this->_debtorReference .
-                '</DebtorReference>' . PHP_EOL,
+                    '<IBAN>' .
+                    $this->_inputIban .
+                    '</IBAN>' . PHP_EOL .
+                    '<AssumedName>' .
+                    $this->_inputName .
+                    '</AssumedName>' . PHP_EOL .
+                    '<DebtorReference>' .
+                    $this->_debtorReference .
+                    '</DebtorReference>' . PHP_EOL,
                 []
             )
         );

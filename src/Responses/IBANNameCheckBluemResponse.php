@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -30,7 +30,7 @@ class IBANNameCheckBluemResponse extends TransactionBluemResponse
         return null;
     }
 
-    private function getKeyFromIBANCheckResult(string $key, ?string $parentObjectKey = null): string
+    private function getKeyFromIBANCheckResult(string $key, string $parentObjectKey = null): string
     {
         $result = $this->getIBANCheckResultObject($parentObjectKey);
 

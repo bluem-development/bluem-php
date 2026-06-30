@@ -1,15 +1,17 @@
 <?php
 
 /**
-       * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
-       *
-       * This source file is subject to the license that is bundled
-       * with this source code in the file LICENSE.
-       */
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
+ *
+ * This source file is subject to the license that is bundled
+ * with this source code in the file LICENSE.
+ */
 
 namespace Bluem\BluemPHP\Requests;
 
 use Bluem\BluemPHP\Contexts\IdentityContext;
+use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use stdClass;
 
 class IdentityStatusBluemRequest extends BluemRequest
 {
@@ -21,15 +23,21 @@ class IdentityStatusBluemRequest extends BluemRequest
 
     protected $xmlInterfaceName = "IdentityInterface";
 
-    public function __construct($config, $entranceCode, $expectedReturn, $transactionID)
-    {
+    public function __construct(
+        BluemConfiguration|stdClass $config,
+        $entranceCode,
+        $expectedReturn,
+        $transactionID
+    ) {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID when using IDIN
-        if (isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
+        if ($config instanceof BluemConfiguration && isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
             $config->setBrandId($config->IDINBrandID);
-        } else {
+        } elseif ($config instanceof BluemConfiguration) {
             $config->setBrandId($config->brandID);
+        } elseif (isset($config->IDINBrandID) && $config->IDINBrandID !== "") {
+            $config->brandID = $config->IDINBrandID;
         }
 
         $this->transactionID = $transactionID;

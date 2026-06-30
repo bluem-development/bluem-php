@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -21,7 +21,7 @@ class MandatesContext extends BluemContext
 
     public string $debtorWalletElementName = "INCASSOMACHTIGEN";
 
-    private array $_possibleMandateTypes = [ 'CORE', 'B2B' ];
+    private array $_possibleMandateTypes = ['CORE', 'B2B'];
 
     private array $paymentMethodDetails;
 

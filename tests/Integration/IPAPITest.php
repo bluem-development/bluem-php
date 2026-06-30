@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -42,7 +42,7 @@ class IPAPITest extends TestCase
             [
                 'ipAddress' => '31.187.128.0',
                 'expectedNetherlands' => true,
-            ]
+            ],
             // @todo: add true negative test and check for usage rate limits to prevent false negatives.
         ];
     }

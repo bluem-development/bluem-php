@@ -1,7 +1,7 @@
 <?php
 
 /*
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -16,13 +16,11 @@ use Bluem\BluemPHP\Interfaces\BluemResponseInterface;
 use Bluem\BluemPHP\Requests\BluemRequest;
 use Bluem\BluemPHP\Responses\ErrorBluemResponse;
 use Bluem\BluemPHP\Tests\FakeHttpTransport;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
-use stdClass;
 
-class BluemTest extends TestCase
+class BluemTest extends BluemTestCase
 {
-    private Bluem $bluem;
+    public Bluem $bluem;
     private FakeHttpTransport $transport;
 
     /**
@@ -50,7 +48,7 @@ class BluemTest extends TestCase
     }
 
 
-    public function testIdentityRequestWithValidParameters(): void
+    public function testMandateWithValidParameters(): void
     {
         $this->transport->setResponse(
             200,
@@ -98,7 +96,7 @@ XML
     public function testPerformRequestWithInvalidXml(): void
     {
         // Mock a request that would generate invalid XML
-        $mockBluemRequest = $this->createMock(BluemRequest::class);
+        $mockBluemRequest = $this->createStub(BluemRequest::class);
 
         $mockBluemRequest->method('XmlString')
             ->willReturn('<xmla>Some invalid aaXML String</xmla>');
@@ -109,27 +107,5 @@ XML
 
         $result = $this->bluem->PerformRequest($mockBluemRequest);
         $this->assertInstanceOf(ErrorBluemResponse::class, $result);
-    }
-
-    // helper classes
-    private function getConfig(): stdClass
-    {
-        $bluem_config = new stdClass();
-        $bluem_config->environment = 'test';
-        $bluem_config->senderID = 'S12345';
-
-        $bluem_config->brandID = 'BLUEM_BRANDID';
-        $bluem_config->test_accessToken = 'BLUEM_TEST_ACCESS_TOKEN';
-        $bluem_config->IDINBrandID = 'BLUEM_BRANDID';
-        $bluem_config->merchantID = 'BLUEM_MERCHANTID';
-        $bluem_config->merchantReturnURLBase = 'BLUEM_MERCHANTRETURNURLBASE';
-
-        $bluem_config->production_accessToken = "";
-        $bluem_config->expectedReturnStatus = "success";
-        $bluem_config->eMandateReason = "eMandateReason";
-        $bluem_config->sequenceType = "OOFF";
-        $bluem_config->localInstrumentCode = "B2B";
-
-        return $bluem_config;
     }
 }

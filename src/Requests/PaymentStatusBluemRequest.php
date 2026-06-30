@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -15,31 +15,30 @@ use stdClass;
 
 class PaymentStatusBluemRequest extends BluemRequest
 {
-    public $request_url_type = "pr";
+    public $request_url_type = 'pr';
 
-    public $typeIdentifier = "requestStatus";
+    public $typeIdentifier = 'requestStatus';
 
-    public $transaction_code = "PSX";
+    public $transaction_code = 'PSX';
 
-    protected $xmlInterfaceName = "EPaymentInterface";
+    protected string $xmlInterfaceName = 'EPaymentInterface';
 
     public function __construct(
         BluemConfiguration|stdClass $config,
         $transactionID,
-        $expected_return = "",
-        $entranceCode = ""
+        $expected_return = '',
+        $entranceCode = ''
     ) {
         parent::__construct($config, $entranceCode, $expected_return);
 
-        if ($config instanceof BluemConfiguration && method_exists($config, 'setBrandId')) {
-            if (
-                isset($config->paymentBrandID)
-                && $config->paymentBrandID !== ""
-            ) {
-                $config->setBrandID($config->paymentBrandID);
+        if ($config instanceof BluemConfiguration) {
+            if (isset($config->paymentBrandID) && $config->paymentBrandID !== '') {
+                $config->setBrandId($config->paymentBrandID);
             } else {
-                $config->setBrandID($config->brandID);
+                $config->setBrandId($config->brandID);
             }
+        } elseif ($config instanceof stdClass && isset($config->paymentBrandID) && $config->paymentBrandID !== '') {
+            $config->brandID = $config->paymentBrandID;
         }
 
         $this->transactionID = $transactionID;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) 2023 - Bluem Plugin Support <pluginsupport@bluem.nl>
+ * © 2026 - Bluem Payment & Identity: https://bluem.nl
  *
  * This source file is subject to the license that is bundled
  * with this source code in the file LICENSE.
@@ -88,7 +88,7 @@ class BluemRequest implements BluemRequestInterface
 
     private array $_debtorAdditionalData = [];
 
-    private const array TYPE_IDENTIFIERS = [ 'createTransaction', 'requestStatus' ];
+    private const array TYPE_IDENTIFIERS = ['createTransaction', 'requestStatus'];
 
     /**
      * @var string[]
@@ -132,8 +132,8 @@ class BluemRequest implements BluemRequestInterface
 
         $this->environment = $config->environment;
 
-        $this->brandID     = $config->brandID;
-        $this->senderID    = $config->senderID;
+        $this->brandID = $config->brandID;
+        $this->senderID = $config->senderID;
         $this->accessToken = $config->accessToken;
         // @todo just use the config directly instead of copying all configuration elements
 
@@ -150,6 +150,7 @@ class BluemRequest implements BluemRequestInterface
     }
 
     // @todo remove this?
+
     /**
      * Generate an entranceCode, including test entranceCode substrings for certain types of return responses
      *
@@ -272,7 +273,7 @@ class BluemRequest implements BluemRequestInterface
     {
         $possibleBICs = $this->context->getBICCodes();
 
-        if (! in_array($BIC, $possibleBICs)) {
+        if (!in_array($BIC, $possibleBICs)) {
             throw new Exception("Invalid BIC code given, should be a valid BIC of a supported bank.");
         }
 
@@ -293,7 +294,7 @@ class BluemRequest implements BluemRequestInterface
             return "";
         }
 
-        if (! isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName === "") {
+        if (!isset($this->context->debtorWalletElementName) || $this->context->debtorWalletElementName === "") {
             return '';
         }
 
@@ -314,7 +315,7 @@ class BluemRequest implements BluemRequestInterface
         $res = PHP_EOL . "<DebtorAdditionalData>" . PHP_EOL;
 
         foreach ($this->_debtorAdditionalData as $key => $value) {
-            if (! in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
+            if (!in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
                 continue;
             }
 
@@ -333,14 +334,14 @@ class BluemRequest implements BluemRequestInterface
      */
     public function addAdditionalData($key, $value): BluemRequest
     {
-        if (! in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
+        if (!in_array($key, $this->_possibleDebtorAdditionalDataKeys)) {
             throw new Exception(
                 "Incorrect key added as DebtorAdditionalData
                 to request."
             );
         }
 
-        $this->_debtorAdditionalData[ $key ] = $value;
+        $this->_debtorAdditionalData[$key] = $value;
 
         return $this; // allow function chaining
     }
