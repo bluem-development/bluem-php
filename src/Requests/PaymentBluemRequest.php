@@ -287,12 +287,6 @@ class PaymentBluemRequest extends BluemRequest
         return $this;
     }
 
-    public function setPaymentMethodToBancontact(): self
-    {
-        $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
-        return $this;
-    }
-
     public function setPaymentMethodToGiropay(): self
     {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_GIROPAY);
@@ -304,7 +298,6 @@ class PaymentBluemRequest extends BluemRequest
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
         return $this;
     }
-
 
     /**
      * @throws InvalidBluemRequestException
