@@ -70,7 +70,7 @@ class IdentityBluemRequest extends BluemRequest
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         $this->description     = $this->_sanitizeDescription($description);
         if (empty($debtorReturnURL)) {
-            throw new InvalidBluemRequestException("Debtor return URL is required");
+            $debtorReturnURL = $config->merchantReturnURLBase;
         }
 
         $this->debtorReturnURL = $debtorReturnURL . ('?debtorReference=' . $this->debtorReference);
@@ -188,9 +188,7 @@ class IdentityBluemRequest extends BluemRequest
      * @deprecated Since iDeal 2.0, the status GUI via this entranceCode mutation is no longer available.
      * @return void
      */
-    public function enableStatusGUI()
-    {
-    }
+    public function enableStatusGUI() {}
 
     private function XmlWrapDebtorWalletForPaymentMethod(): string
     {
