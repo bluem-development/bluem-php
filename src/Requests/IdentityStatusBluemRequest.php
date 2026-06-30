@@ -28,8 +28,7 @@ class IdentityStatusBluemRequest extends BluemRequest
         $entranceCode,
         $expectedReturn,
         $transactionID
-    )
-    {
+    ) {
         parent::__construct($config, $entranceCode, $expectedReturn);
 
         // override specific brand ID when using IDIN
