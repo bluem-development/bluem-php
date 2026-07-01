@@ -106,9 +106,8 @@ class PaymentBluemRequest extends BluemRequest
             $this->debtorReturnURL = $config->merchantReturnURLBase;
         }
 
-        $this->debtorReturnURL .= sprintf('?entranceCode=%s&transactionID=%s', $this->entranceCode, $this->transactionID);
-
-        $this->debtorReturnURL = str_replace('&', '&amp;', $this->debtorReturnURL);
+        $this->debtorReturnURL = $this->appendToUrl($this->debtorReturnURL, 'entranceCode', $this->entranceCode);
+        $this->debtorReturnURL = $this->appendToUrl($this->debtorReturnURL, 'transactionID', $this->transactionID);
 
         // Note: different variable name in config
         // added entranceCode as well, useful. Defined in generic bluem request class.
@@ -276,9 +275,21 @@ class PaymentBluemRequest extends BluemRequest
         return $this;
     }
 
+    public function setPaymentMethodToSofortDigitalServices(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_SOFORT_DIGITAL_SERVICES);
+        return $this;
+    }
+
     public function setPaymentMethodToCarteBancaire(): self
     {
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_CARTE_BANCAIRE);
+        return $this;
+    }
+
+    public function setPaymentMethodToGiropay(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_GIROPAY);
         return $this;
     }
 
@@ -287,7 +298,6 @@ class PaymentBluemRequest extends BluemRequest
         $this->setPaymentMethod($this->context::PAYMENT_METHOD_BANCONTACT);
         return $this;
     }
-
 
     /**
      * @throws InvalidBluemRequestException

@@ -39,7 +39,7 @@ final class PaymentsAcceptanceTest extends AcceptanceTestCase
             '<Currency>EUR</Currency>',
             '<Amount>12.34</Amount>',
             '<DueDateTime>2026-04-12T00:00:00.000Z</DueDateTime>',
-            '<DebtorReturnURL automaticRedirect="1">http://localhost:8000/?a=callback?entranceCode=PAYMENT-ENTRANCE-123&amp;transactionID=TRANS123</DebtorReturnURL>',
+            '<DebtorReturnURL automaticRedirect="1">http://localhost:8000/?a=callback&amp;entranceCode=PAYMENT-ENTRANCE-123&amp;transactionID=TRANS123</DebtorReturnURL>',
             '<DebtorWallet>',
             '<Bancontact>',
         );

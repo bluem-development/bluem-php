@@ -70,10 +70,9 @@ class IdentityBluemRequest extends BluemRequest
         $this->requestCategory = $this->getRequestCategoryElement($requestCategory);
         $this->description     = $this->_sanitizeDescription($description);
         if (empty($debtorReturnURL)) {
-            throw new InvalidBluemRequestException("Debtor return URL is required");
+            $debtorReturnURL = $config->merchantReturnURLBase;
         }
-
-        $this->debtorReturnURL = $debtorReturnURL . ('?debtorReference=' . $this->debtorReference);
+        $this->debtorReturnURL = $this->appendToUrl($debtorReturnURL, "debtorReference", $this->debtorReference);
 
         // @todo: make this a configurable setting
         $this->minAge = $config->minAge ?? BLUEM_DEFAULT_MIN_AGE;
