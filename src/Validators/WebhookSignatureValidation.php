@@ -89,15 +89,14 @@ class WebhookSignatureValidation extends WebhookValidator
      */
     private function getKeyFileName(): string
     {
-        $now = new Now();
+        $now = $this->getNow();
         $current_date = $now->format('Y-m-d');
         $current_time = $now->format('H:i');
 
         $timestamp = '202206090200-202307110159';
 
         if ($this->uses2026Certificate($current_date, $current_time)) {
-            // Placeholder until the 2026 certificate file is available.
-            $timestamp = '20250717';
+            $timestamp = '20260716';
         } elseif ($this->uses2025Certificate($current_date, $current_time)) {
             $timestamp = '20250717';
         } elseif ($this->uses2024Certificate($current_date, $current_time)) {
@@ -114,8 +113,8 @@ class WebhookSignatureValidation extends WebhookValidator
         if (
             $this->env === BLUEM_ENVIRONMENT_PRODUCTION
             && (
-                ($current_date === '2026-07-18' && $current_time >= '08:30')
-                || $current_date > '2026-07-18'
+                ($current_date === '2026-07-20' && $current_time >= '09:00')
+                || $current_date > '2026-07-20'
             )
         ) {
             return true;
@@ -125,9 +124,14 @@ class WebhookSignatureValidation extends WebhookValidator
             $this->env === BLUEM_ENVIRONMENT_TESTING
             || $this->env === BLUEM_ENVIRONMENT_ACCEPTANCE
         ) && (
-            ($current_date === '2026-07-17' && $current_time >= '08:30')
-            || $current_date > '2026-07-17'
+            ($current_date === '2026-07-16' && $current_time >= '13:00')
+            || $current_date > '2026-07-16'
         );
+    }
+
+    protected function getNow(): Now
+    {
+        return new Now();
     }
 
     private function uses2025Certificate(string $current_date, string $current_time): bool

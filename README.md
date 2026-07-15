@@ -776,7 +776,9 @@ More details on how to use IBAN-Name checking will follow shortly.
 
 ### Enable secure Webhook reception through a certificate check
 
-To be able to use webhook functionality, retrieve a copy of the Webhook certificate provided by Bluem and put it in a folder named `keys`, writeable by the code in this library.
+To be able to use webhook functionality securely, this package includes Bluem's `webhook.bluem.nl` certificates for validating signed webhook callbacks.
+
+The current 2026 certificate is available as `keys/webhook_bluem_nl_20260716.pem` and is selected automatically for TEST and ACC from July 16, 2026 at 13:00 Europe/Amsterdam time, and for PROD from July 20, 2026 at 09:00 Europe/Amsterdam time. This only affects implementations that validate the webhook XML signature.
 
 ## Appendices
 

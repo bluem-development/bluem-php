@@ -2,6 +2,7 @@
 
 namespace Bluem\BluemPHP\Tests\Unit;
 
+use Bluem\BluemPHP\Helpers\Now;
 use Bluem\BluemPHP\Validators\WebhookSignatureValidation;
 use Bluem\BluemPHP\Validators\WebhookValidator;
 use DOMDocument;
@@ -9,6 +10,18 @@ use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use RobRichards\XMLSecLibs\XMLSecurityDSig;
 use RobRichards\XMLSecLibs\XMLSecurityKey;
+
+if (!defined("BLUEM_ENVIRONMENT_PRODUCTION")) {
+    define("BLUEM_ENVIRONMENT_PRODUCTION", "prod");
+}
+
+if (!defined("BLUEM_ENVIRONMENT_TESTING")) {
+    define("BLUEM_ENVIRONMENT_TESTING", "test");
+}
+
+if (!defined("BLUEM_ENVIRONMENT_ACCEPTANCE")) {
+    define("BLUEM_ENVIRONMENT_ACCEPTANCE", "acc");
+}
 
 class WebhookSignatureValidationTest extends TestCase
 {
@@ -82,6 +95,34 @@ class WebhookSignatureValidationTest extends TestCase
 
         $this->assertFalse($validator::$isValid);
         $this->assertStringContainsString('Unable to determine signature key algorithm', $validator->errorMessage());
+    }
+
+    public function testTestAndAcceptanceEnvironmentsUse2026CertificateFromAnnouncedCutover(): void
+    {
+        $this->assertSame(
+            'webhook_bluem_nl_20250717.pem',
+            $this->createCutoverValidator('test', '2026-07-16 12:59:00')->selectedCertificateFile()
+        );
+        $this->assertSame(
+            'webhook_bluem_nl_20260716.pem',
+            $this->createCutoverValidator('test', '2026-07-16 13:00:00')->selectedCertificateFile()
+        );
+        $this->assertSame(
+            'webhook_bluem_nl_20260716.pem',
+            $this->createCutoverValidator('acc', '2026-07-16 13:00:00')->selectedCertificateFile()
+        );
+    }
+
+    public function testProductionEnvironmentUses2026CertificateFromAnnouncedCutover(): void
+    {
+        $this->assertSame(
+            'webhook_bluem_nl_20250717.pem',
+            $this->createCutoverValidator('prod', '2026-07-20 08:59:00')->selectedCertificateFile()
+        );
+        $this->assertSame(
+            'webhook_bluem_nl_20260716.pem',
+            $this->createCutoverValidator('prod', '2026-07-20 09:00:00')->selectedCertificateFile()
+        );
     }
 
     private function createTemporaryCertificate(): void
@@ -163,6 +204,26 @@ class WebhookSignatureValidationTest extends TestCase
             protected function getPublicKeyFilePath(): string
             {
                 return $this->certificateFilePath;
+            }
+        };
+    }
+
+    private function createCutoverValidator(string $env, string $dateTime): object
+    {
+        return new class ($env, $dateTime) extends WebhookSignatureValidation {
+            public function __construct(string $env, private string $dateTime)
+            {
+                parent::__construct($env);
+            }
+
+            public function selectedCertificateFile(): string
+            {
+                return basename($this->getPublicKeyFilePath());
+            }
+
+            protected function getNow(): Now
+            {
+                return (new Now())->fromDate($this->dateTime);
             }
         };
     }
