@@ -365,7 +365,7 @@ class PaymentBluemRequest extends BluemRequest
                 $res .= "<Name>" . $this->context->getPaymentDetail('Name') . "</Name>";
             }
 
-            if (!empty($this->context->getPaymentDetail('Name'))) {
+            if (!empty($this->context->getPaymentDetail('SecurityCode'))) {
                 $res .= "<SecurityCode>" . $this->context->getPaymentDetail('SecurityCode') . "</SecurityCode>";
             }
 

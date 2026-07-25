@@ -25,4 +25,19 @@ class BluemPaymentsTest extends BluemTestCase
 
         $this->assertInstanceOf(PaymentBluemRequest::class, $request);
     }
+
+    public function testCreditCardRequestIncludesSecurityCodeWhenProvided(): void
+    {
+        $request = $this->bluem->CreatePaymentRequest(
+            description: 'Credit card payment',
+            debtorReference: 'order123',
+            amount: 12.34,
+            currency: 'EUR',
+            debtorReturnURL: 'https://example.test/return'
+        );
+
+        $request->setPaymentMethodToCreditCard(securityCode: '123');
+
+        self::assertStringContainsString('<SecurityCode>123</SecurityCode>', $request->XmlString());
+    }
 }
