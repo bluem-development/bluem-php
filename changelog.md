@@ -5,6 +5,10 @@
 - Migrated away from deprecated XML signature validation package
 - Set minimum PHP to 8.3
 
+### 2.7:
+- Added Wero payment support through `PaymentBluemRequest::setPaymentMethodToWero()`.
+- Wero requests use the `<DebtorWallet><Wero></Wero></DebtorWallet>` XML wallet element defined by `EPayment.xsd`.
+
 ### 2.4:
 - Added Bancontact support
 

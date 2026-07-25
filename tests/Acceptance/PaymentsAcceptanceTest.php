@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bluem\BluemPHP\Tests\Acceptance;
 
 use Bluem\BluemPHP\Requests\PaymentBluemRequest;
+use Bluem\BluemPHP\Validators\BluemXMLValidator;
 
 final class PaymentsAcceptanceTest extends AcceptanceTestCase
 {
@@ -80,6 +81,39 @@ final class PaymentsAcceptanceTest extends AcceptanceTestCase
             '<ExpirationDate>',
             '<Month>03</Month>',
             '<Year>2025</Year>'
+        );
+    }
+
+    public function testPaymentRequestSupportsWeroAndValidatesAgainstPaymentSchema(): void
+    {
+        $config = $this->createConfiguration('S001Payment');
+
+        $request = new PaymentBluemRequest(
+            $config,
+            'Wero test payment',
+            '1234',
+            12.34,
+            '2026-04-12',
+            'EUR',
+            'TRANS789',
+            'PAYMENTENTRANCE789'
+        );
+
+        $request->setPaymentMethodToWero();
+
+        $xml = $request->XmlString();
+        $this->assertXmlContains(
+            $xml,
+            '<DebtorWallet>',
+            '<Wero>',
+            '</Wero>',
+            '</DebtorWallet>'
+        );
+
+        $validator = new BluemXMLValidator();
+        self::assertTrue(
+            $validator->validate($request->RequestContext(), $xml),
+            implode('; ', $validator->errorDetails ?? [])
         );
     }
 }

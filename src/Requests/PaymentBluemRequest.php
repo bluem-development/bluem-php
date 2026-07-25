@@ -299,6 +299,12 @@ class PaymentBluemRequest extends BluemRequest
         return $this;
     }
 
+    public function setPaymentMethodToWero(): self
+    {
+        $this->setPaymentMethod($this->context::PAYMENT_METHOD_WERO);
+        return $this;
+    }
+
     /**
      * @throws InvalidBluemRequestException
      */
@@ -373,6 +379,8 @@ class PaymentBluemRequest extends BluemRequest
             // if specific sofort body becomes required in the future; please add it here
         } elseif ($this->context->isCarteBancaire()) {
             // if specific carte bancaire body becomes required in the future; please add it here
+        } elseif ($this->context->isWero()) {
+            // Wero currently has an empty DebtorWallet payload in EPayment.xsd.
         }
 
         $res .= sprintf('</%s>', $this->context->debtorWalletElementName) . PHP_EOL;

@@ -40,6 +40,7 @@ Most of this will be migrated into the documentation mentioned above. Note: You 
 - [Webhooks](#webhooks)
 - [Payments](#payments)
   - [Creating a payment transaction](#creating-a-payment-transaction)
+  - [Creating a Wero payment](#creating-a-wero-payment)
   - [Requesting a payment status](#requesting-a-payment-status)
   - [Tip for testing with payments](#tip-for-testing-with-payments)
   - [Adding additional data to a request](#adding-additional-data-to-a-request)
@@ -346,6 +347,33 @@ $response = $bluem->Payment(
     $currency
 );
 ```
+
+### Creating a Wero payment
+
+Wero uses the regular payment transaction flow. Select it on the request before calling `PerformRequest()`; do not use the `Payment()` shorthand when selecting a specific payment method.
+
+```php
+$request = $bluem->CreatePaymentRequest(
+    'Wero payment',
+    'ORDER123',
+    12.34,
+    null,
+    'EUR'
+);
+
+$request->setPaymentMethodToWero();
+$response = $bluem->PerformRequest($request);
+
+if ($response->ReceivedResponse()) {
+    $transactionID = $response->GetTransactionID();
+    $entranceCode = $response->GetEntranceCode();
+    header('Location: ' . $response->GetTransactionURL());
+} else {
+    echo $response->Error();
+}
+```
+
+This creates a request with `<DebtorWallet><Wero></Wero></DebtorWallet>`. Save the transaction ID and entrance code for `PaymentStatus()` or process the final result through the payment webhook. See [`examples/payments.md`](examples/payments.md) for the complete payment example.
 
 ### Requesting a payment status
 

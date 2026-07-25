@@ -59,6 +59,37 @@ if ($response->ReceivedResponse()) {
 
 
 
+Creating a Wero payment
+------------------------
+
+Wero payments use the same payment transaction flow. Select Wero on the request before performing it; a BIC or bank preselection is not required.
+
+```php
+$request = $bluem_object->CreatePaymentRequest(
+    'Wero payment',
+    'ORDER123',
+    12.34,
+    null,
+    'EUR'
+);
+
+$request->setPaymentMethodToWero();
+
+$response = $bluem_object->PerformRequest($request);
+
+if ($response->ReceivedResponse()) {
+    // Store these values for a later status check.
+    $entranceCode = $response->GetEntranceCode();
+    $transactionID = $response->GetTransactionID();
+
+    header('Location: ' . $response->GetTransactionURL());
+} else {
+    throw new Exception('Unable to create Wero payment: ' . $response->Error());
+}
+```
+
+The request contains `<DebtorWallet><Wero></Wero></DebtorWallet>`. After checkout, use `PaymentStatus($transactionID, $entranceCode)` or the payment webhook to process the final status.
+
 // --------------------------------------------
 /**
  * Requesting a Payment status
