@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.7.0">
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.7.0">
     <!--=====================================================================-->
     <!--                        Schema Management                            -->
     <!--=====================================================================-->
@@ -10,8 +9,6 @@
         <xsd:documentation xml:lang="en"/>
         <xsd:documentation>
             <name>EPayment Interface</name>
-            <revision version="1.6.0">
-                <date>2023-JANUARY-10</date>
             <revision version="1.6.0">
                 <date>2023-JANUARY-10</date>
             </revision>
@@ -181,7 +178,6 @@
     </xsd:simpleType>
 
     <xsd:simpleType name="CurrencySimpleType">
-    <xsd:simpleType name="CurrencySimpleType">
         <xsd:restriction base="xsd:token">
             <xsd:enumeration value="EUR"/>
             <xsd:enumeration value="GBP"/>
@@ -283,7 +279,6 @@
             <xsd:enumeration value="SuccessManual"/>
             <xsd:enumeration value="BankSelected"/>
             <xsd:enumeration value="Refunded"/>
-            <xsd:enumeration value="Refunded"/>
         </xsd:restriction>
     </xsd:simpleType>
 
@@ -327,12 +322,12 @@
             <xsd:enumeration value="VISA_MASTER"/>
             <xsd:enumeration value="SOFORT"/>
             <xsd:enumeration value="SOFORT_DIGITALSERVICES"/>
-            <xsd:enumeration value="SOFORT_DIGITALSERVICES"/>
             <xsd:enumeration value="CARTE_BANCAIRE"/>
             <xsd:enumeration value="BANCONTACT"/>
             <xsd:enumeration value="GIROPAY"/>
             <xsd:enumeration value="APPLEPAY"/>
             <xsd:enumeration value="WERO"/>
+            <xsd:enumeration value="PAY_BY_BANK"/>
         </xsd:restriction>
     </xsd:simpleType>
     
@@ -471,9 +466,7 @@
     
     
     <!-- BEGIN - DebtorWallet additions -->    
-    <!-- BEGIN - DebtorWallet additions -->    
    <xsd:complexType name="DebtorCreditCardComplexType">
-   </xsd:complexType>
    </xsd:complexType>
 
     <xsd:complexType name="IDealComplexType">
@@ -496,6 +489,9 @@
     
     <xsd:complexType name="ApplePayComplexType"></xsd:complexType>
     
+    <xsd:complexType name="PayByBankComplexType"></xsd:complexType>
+
+    
     <xsd:complexType name="WeroComplexType"></xsd:complexType>
 
 
@@ -511,6 +507,8 @@
             <xsd:element name="Giropay"               type="GiropayComplexType" maxOccurs="1"/>
             <xsd:element name="ApplePay"              type="ApplePayComplexType" maxOccurs="1"/>
             <xsd:element name="Wero"                  type="WeroComplexType" maxOccurs="1"/>
+            <xsd:element name="PayByBank"             type="PayByBankComplexType" maxOccurs="1"/>
+
         </xsd:choice>
     </xsd:complexType>
     <!-- END - DebtorWallet additions -->
@@ -528,6 +526,7 @@
             <xsd:element name="GiropayDetails"               type="GiropayDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="ApplePayDetails"              type="ApplePayDetailsComplexType" minOccurs="0" maxOccurs="1"/>
             <xsd:element name="WeroDetails"                  type="WeroDetailsComplexType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="PayByBankDetails"             type="PayByBankDetailsComplexType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
     </xsd:complexType>
 
@@ -560,14 +559,6 @@
             <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
-    
-   <xsd:complexType name="SofortDigitalServicesDetailsComplexType">
-        <xsd:sequence>
-            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
-            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
-    
     
    <xsd:complexType name="SofortDigitalServicesDetailsComplexType">
         <xsd:sequence>
@@ -611,6 +602,14 @@
             <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
         </xsd:sequence>
 	</xsd:complexType>
+	
+	<xsd:complexType name="PayByBankDetailsComplexType">
+		<xsd:sequence>
+            <xsd:element name="DebtorAccountName" type="TokenLength70SimpleType" minOccurs="0"/>
+            <xsd:element name="DebtorAccount" type="TokenLength70SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+	</xsd:complexType>
+
 
     <xsd:complexType name="DocComplexType">
         <xsd:sequence>
@@ -723,7 +722,6 @@
 
         <xsd:attribute name="language" type="LanguageCodeSimpleType" default="nl"/>
     </xsd:attributeGroup>
- 
  
     <xsd:element name="EPaymentInterface" type="EPaymentInterfaceType"/>
 

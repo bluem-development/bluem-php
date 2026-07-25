@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0.0">
+    <!--=====================================================================-->
+    <!--                        Schema Management                            -->
+    <!--=====================================================================-->
+    <!--                             IMPORTS                                 -->
+    <!--                          DOCUMENTATION                              -->
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en"/>
+        <xsd:documentation>
+            <name>AMLCompliance Interface</name>
+            <revision version="1.0.0">
+                <date>2024-FEB-27</date>
+            </revision>
+        </xsd:documentation>
+    </xsd:annotation>
+    <!--                             INCLUDE                                 -->
+    <!--                            REDEFINE                                 -->
+    <!--=====================================================================-->
+    <!--                    Model-Building Components                        -->
+    <!--=====================================================================-->
+    <!--                            NOTATIONS                                -->
+    <!--                           SIMPLE TYPES                              -->
+    <xsd:simpleType name="ModeSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="direct"/>
+            <xsd:enumeration value="batch"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="BatchIdentifierSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="22"/>
+            <xsd:maxLength value="150"/>
+            <xsd:pattern value="[A-Z]{1,4}-[A-Z,0-9]{1,32}-[A-Z,0-9]{1,32}-([A-Z]{1,32}-){0,2}[0-9]{17}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="IdentifierSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="32"/>
+            <xsd:pattern value="[0-9a-zA-Z]{1,32}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+   
+    <xsd:simpleType name="VersionSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="[0-9].[0-9]"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+            
+    <xsd:simpleType name="DateTimeSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="24"/>
+            <xsd:maxLength value="24"/>
+            <xsd:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="MessageCountSimpleType">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="3000"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+            
+    <xsd:simpleType name="DebtorReferenceSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="35"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="TokenLength128SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="128"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TokenLength256SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="256"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    
+    <xsd:simpleType name="TokenLength200SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="200"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    
+    <xsd:simpleType name="TokenLength64SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="64"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="TokenLength32SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="32"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+   <xsd:simpleType name="TokenLength16SimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:maxLength value="16"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+        
+    <xsd:simpleType name="TokenUnrestrictedLengthSimpleType">
+        <xsd:restriction base="xsd:token"/>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="EntranceCodeSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="1"/>
+            <xsd:maxLength value="40"/>
+            <xsd:pattern value="[0-9a-zA-Z]{1,40}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="ErrorCodeSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:pattern value="[A-Z]{2}[0-9]{4}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+        
+    <xsd:simpleType name="CountrySimpleType">
+        <xsd:restriction base="xsd:token">
+<!--             <xsd:pattern value="[A-Z]{2,2}"/> -->	
+<!-- below change is TEMP -->
+            <xsd:pattern value="([A-Z]{2}|[A-Z]{2}-[A-Z]{2})"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:simpleType name="DateSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:minLength value="10"/>
+            <xsd:maxLength value="10"/>
+            <xsd:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+	<xsd:simpleType name="ScoreSimpleType">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+            <xsd:minInclusive value="0"/>
+            <xsd:maxInclusive value="100"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="GenderSimpleType">
+       <xsd:union>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:token">
+                    <xsd:enumeration value="MALE"/>
+                    <xsd:enumeration value="FEMALE"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:normalizedString">
+                    <xsd:minLength value="0"/>
+                    <xsd:maxLength value="0"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+	</xsd:simpleType>
+
+   <xsd:simpleType name="AMLSubjectTypeSimpleType">
+       <xsd:restriction base="xsd:token">
+           <xsd:enumeration value="INDIVIDUAL"/>
+           <xsd:enumeration value="ENTITY"/>
+           <xsd:enumeration value="UNKNOWN"/>
+       </xsd:restriction>
+ 	</xsd:simpleType>
+ 	
+ 	
+ 	 <xsd:simpleType name="RelevanceSimpleType">
+       <xsd:restriction base="xsd:token">
+           <xsd:enumeration value="LOW"/>
+           <xsd:enumeration value="HIGH"/>
+           <xsd:enumeration value="UNKNOWN"/>
+           <xsd:enumeration value="NA"/>
+       </xsd:restriction>
+ 	</xsd:simpleType>
+
+   <xsd:simpleType name="FlagSimpleType">
+        <xsd:restriction base="xsd:nonNegativeInteger">
+           <xsd:enumeration value="1"/>
+           <xsd:enumeration value="0"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+   <xsd:simpleType name="DataSetSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="PEP"/>
+            <xsd:enumeration value="SANCTION"/>
+            <xsd:enumeration value="CRIMINAL"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="IsRegisteredSimpleType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="true"/>
+            <xsd:enumeration value="false"/>
+            <xsd:enumeration value="uncertain"/>
+         </xsd:restriction>
+    </xsd:simpleType>
+    
+    <xsd:complexType name="IsRegisteredResultType">
+		<xsd:simpleContent>
+			<xsd:extension base="IsRegisteredSimpleType">
+        		<xsd:attribute name="hits" type="xsd:nonNegativeInteger"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+
+
+
+    <!--                          COMPLEX TYPES                              -->
+ 
+    <!--                          ROOT ELEMENT TYPE                          -->
+    <xsd:complexType name="AMLComplianceInterfaceType">
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+            <xsd:element name="AMLComplianceTransactionRequest"  type="AMLComplianceTransactionRequestType"  maxOccurs="1"/>
+            <xsd:element name="AMLComplianceTransactionResponse" type="AMLComplianceTransactionResponseType" maxOccurs="1"/>
+            <xsd:element name="AMLComplianceErrorResponse"       type="AMLComplianceErrorResponseType"       minOccurs="0" maxOccurs="1"/>
+        </xsd:choice>
+        <xsd:attributeGroup ref="HeaderAttributes"/>
+    </xsd:complexType>
+    
+    <!--                      COMPLEX TYPES DESCRIBING MAIN DOCUMENTS TYPES  -->
+     <xsd:complexType name="AMLComplianceTransactionRequestType">
+	     <xsd:all>
+	        <xsd:element name="AMLRequest"      type="AMLComplianceRequestComplexType" maxOccurs="1"/>
+			<xsd:element name="DebtorReference" type="DebtorReferenceSimpleType"       minOccurs="0"/>
+ 		 </xsd:all>
+         <xsd:attributeGroup ref="RequestAttributes"/>
+    </xsd:complexType>
+        
+            
+    <xsd:complexType name="AMLComplianceTransactionResponseType">
+	     <xsd:sequence>
+
+           <xsd:choice maxOccurs="1" minOccurs="1">
+            	<xsd:element name="RequestedIndividual" type="AMLRequestedIndividualComplexType"/>
+                <xsd:element name="RequestedEntity"     type="AMLRequestedEntityComplexType" />
+            </xsd:choice>
+
+			<xsd:element name="DebtorReference"         type="DebtorReferenceSimpleType"  minOccurs="0"/>
+            <xsd:choice maxOccurs="1" minOccurs="1">
+            	<xsd:element name="AMLResult"           type="AMLResultComplexType"/>
+                <xsd:element name="Error"               type="ErrorComplexType" maxOccurs="1"/>
+            </xsd:choice>
+			<xsd:element name="PEPReports"              type="PEPReportsComplexType"      minOccurs="0"/>
+			<xsd:element name="SanctionReports"         type="SanctionReportsComplexType" minOccurs="0"/>
+			<xsd:element name="CriminalReports"         type="CriminalReportsComplexType" minOccurs="0"/>
+ 		</xsd:sequence>
+        <xsd:attributeGroup ref="RequestAttributes"/>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="AMLComplianceErrorResponseType">
+        <xsd:sequence>
+            <xsd:element name="Error" type="ErrorComplexType" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+             
+    <!--                      OTHER COMPLEX TYPES                            -->    
+    <xsd:complexType name="ErrorComplexType">
+        <xsd:sequence>
+            <xsd:element name="ErrorCode"    type="ErrorCodeSimpleType"/>
+            <xsd:element name="ErrorMessage" type="TokenLength128SimpleType"/>
+            <xsd:element name="ErrorDetail"  type="TokenLength256SimpleType" minOccurs="0"/>
+            <xsd:element name="Object"       type="TokenLength256SimpleType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    
+    
+    <xsd:complexType name="AMLComplianceRequestComplexType">
+        <xsd:sequence>
+	        <xsd:element name="SearchDataSets"  type="SearchDataSetsComplexType"  minOccurs="0"/>
+        	<xsd:choice minOccurs="1">
+            	<xsd:element name="Entity"      type="AMLEntityComplexType"       maxOccurs="1"/>
+            	<xsd:element name="Individual"  type="AMLIndividualComplexType"   maxOccurs="1"/>
+        	</xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="SearchDataSetsComplexType">
+       <xsd:sequence>
+	        <xsd:element name="DataSet" type="DataSetSimpleType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    
+    <xsd:complexType name="AMLIndividualComplexType">
+        <xsd:all>
+	        <xsd:element name="Initials"          type="TokenLength16SimpleType"  minOccurs="0"/>
+	        <xsd:element name="FirstNames"        type="TokenLength64SimpleType"/>
+	        <xsd:element name="SurnamePrefix"     type="TokenLength16SimpleType"  minOccurs="0"/>
+	        <xsd:element name="Surname"           type="TokenLength64SimpleType"/>
+ 			<xsd:element name="Gender"            type="GenderSimpleType" minOccurs="0"/>
+			<xsd:element name="BirthDate"         type="DateSimpleType"/>
+			<xsd:element name="BirthPlace"        type="TokenLength64SimpleType"  minOccurs="0"/>
+			<xsd:element name="Citizenships"      type="CitizenshipsComplexType"  minOccurs="0"/>
+        </xsd:all>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="AMLEntityComplexType">
+        <xsd:all>
+	        <xsd:element name="Name"         type="TokenLength128SimpleType"/>
+			<xsd:element name="Country"      type="CountrySimpleType"/>
+			<xsd:element name="Place"        type="TokenLength64SimpleType"  minOccurs="0"/>
+        </xsd:all>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AMLRequestedIndividualComplexType">
+        <xsd:all>
+	        <xsd:element name="RequestedInputName" type="TokenLength128SimpleType"/>
+			<xsd:element name="Gender"             type="GenderSimpleType" minOccurs="0"/>
+			<xsd:element name="BirthDate"          type="DateSimpleType"/>
+			<xsd:element name="BirthPlace"         type="TokenLength64SimpleType"  minOccurs="0"/>
+			<xsd:element name="Citizenships"       type="CitizenshipsComplexType"  minOccurs="0"/>
+        </xsd:all>
+    </xsd:complexType>
+    
+    <xsd:complexType name="AMLRequestedEntityComplexType">
+        <xsd:all>
+	        <xsd:element name="RequestedInputName" type="TokenLength128SimpleType"/>
+			<xsd:element name="Country"            type="CountrySimpleType"        minOccurs="0"/>
+			<xsd:element name="Place"              type="TokenLength64SimpleType"  minOccurs="0"/>
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="CitizenshipsComplexType">
+        <xsd:sequence>
+	        <xsd:element name="Country" type="CountrySimpleType" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="AMLResultComplexType">
+        <xsd:all>
+	        <xsd:element name="IsRegisteredPEP"      type="IsRegisteredResultType" minOccurs="0"/>
+	        <xsd:element name="IsRegisteredSanction" type="IsRegisteredResultType" minOccurs="0"/>
+	       	<xsd:element name="IsRegisteredCriminal" type="IsRegisteredResultType" minOccurs="0"/>
+        </xsd:all>
+    </xsd:complexType>
+    
+
+
+    <xsd:complexType name="PEPReportsComplexType">
+       <xsd:sequence>
+            <xsd:element name="PEPReport" type="PEPReportComplexType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="PEPReportComplexType">
+       <xsd:all>
+            <xsd:element name="PEPType"        type="TokenLength32SimpleType"   minOccurs="0"/>
+            <xsd:element name="Occupations"    type="OccupationsComplexType"    minOccurs="0"/>
+            <xsd:element name="Positions"      type="PositionsComplexType"      minOccurs="0"/>
+            <xsd:element name="ReportDetails"  type="ReportDetailsComplexType"  minOccurs="0"/>
+            <xsd:element name="SubjectDetails" type="SubjectDetailsComplexType" minOccurs="0"/>
+         </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="SanctionReportsComplexType">
+       <xsd:sequence>
+            <xsd:element name="SanctionReport" type="SanctionReportComplexType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SanctionReportComplexType">
+       <xsd:all>
+            <xsd:element name="SanctionDetails"  type="SanctionDetailsComplexType" minOccurs="0"/>
+            <xsd:element name="ReportDetails"    type="ReportDetailsComplexType"   minOccurs="0"/>
+            <xsd:element name="SubjectDetails"   type="SubjectDetailsComplexType"  minOccurs="0"/>
+         </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="CriminalReportsComplexType">
+       <xsd:sequence>
+            <xsd:element name="CriminalReport" type="CriminalReportComplexType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    
+   <xsd:complexType name="CriminalReportComplexType">
+       <xsd:all>
+            <xsd:element name="ReportDetails"    type="ReportDetailsComplexType"   minOccurs="0"/>
+            <xsd:element name="SubjectDetails"   type="SubjectDetailsComplexType"  minOccurs="0"/>
+         </xsd:all>
+    </xsd:complexType>
+
+     <xsd:complexType name="OccupationsComplexType">
+       <xsd:sequence>
+            <xsd:element name="Occupation" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/> 
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="PositionsComplexType">
+       <xsd:sequence>
+            <xsd:element name="Position" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>  
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SanctionDetailsComplexType">
+       <xsd:sequence>
+            <xsd:element name="SanctionDetail" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+   <xsd:complexType name="ReportDetailsComplexType">
+       <xsd:all>
+            <xsd:element name="IsRegistered"   type="IsRegisteredSimpleType"/>
+            <xsd:element name="Score"          type="ScoreSimpleType"/>
+            <xsd:element name="Relevance"      type="RelevanceSimpleType"/>
+            <xsd:element name="ListDate"       type="TokenLength64SimpleType" minOccurs="0"/>
+            <xsd:element name="SourceID"       type="TokenLength64SimpleType" minOccurs="0"/>
+            <xsd:element name="SourceLinks"    type="SourceLinksComplexType"  minOccurs="0"/>
+            <xsd:element name="Descriptions"   type="DescriptionsComplexType" minOccurs="0"/>
+         </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="SourceLinksComplexType">
+       <xsd:sequence>
+            <xsd:element name="SourceLink" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+      
+    <xsd:complexType name="DescriptionsComplexType">
+       <xsd:sequence>
+            <xsd:element name="Description" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="SubjectDetailsComplexType">
+       <xsd:all>
+            <xsd:element name="SubjectType"   type="AMLSubjectTypeSimpleType"/>
+            <xsd:element name="Name"          type="TokenUnrestrictedLengthSimpleType" minOccurs="0"/>
+            <xsd:element name="LastNames"     type="LastNamesComplexType"              minOccurs="0"/>
+            <xsd:element name="GivenNames"    type="GivenNamesComplexType"             minOccurs="0"/>
+            <xsd:element name="AliasNames"    type="AliasNamesComplexType"             minOccurs="0"/>
+            <xsd:element name="Gender"        type="GenderSimpleType"                  minOccurs="0"/>
+            <xsd:element name="BirthDates"    type="BirthDatesComplexType"             minOccurs="0"/>
+            <xsd:element name="BirthPlaces"   type="BirthPlacesComplexType"            minOccurs="0"/>
+            <xsd:element name="Citizenships"  type="CitizenshipsComplexType"           minOccurs="0"/>
+            <xsd:element name="Address"       type="AddressComplexType"                minOccurs="0"/>
+         </xsd:all>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="LastNamesComplexType">
+       <xsd:sequence>
+            <xsd:element name="LastName" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    
+    <xsd:complexType name="GivenNamesComplexType">
+       <xsd:sequence>
+            <xsd:element name="GivenName" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="AliasNamesComplexType">
+       <xsd:sequence>
+            <xsd:element name="AliasName" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:complexType name="BirthDatesComplexType">
+       <xsd:sequence>
+            <xsd:element name="BirthDate" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    
+    <xsd:complexType name="BirthPlacesComplexType">
+       <xsd:sequence>
+            <xsd:element name="BirthPlace" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+    
+    <xsd:complexType name="AddressComplexType">
+       <xsd:sequence>
+            <xsd:element name="AddressLine" type="TokenUnrestrictedLengthSimpleType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    
+
+
+    <!--                        ATTRIBUTE GROUPS                             -->
+    <xsd:attributeGroup name="HeaderAttributes">
+        <xsd:attribute name="mode"           type="ModeSimpleType"         use="required"/>
+        <xsd:attribute name="batchID"        type="BatchIdentifierSimpleType"/>
+        <xsd:attribute name="senderID"       type="IdentifierSimpleType"   use="required"/>
+        <xsd:attribute name="version"        type="VersionSimpleType"      default="1.0"/>
+        <xsd:attribute name="createDateTime" type="DateTimeSimpleType"     use="required"/>
+        <xsd:attribute name="messageCount"   type="MessageCountSimpleType" use="required"/>
+        <xsd:attribute name="type" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:token">
+                    <xsd:enumeration value="TransactionRequest"/>
+                    <xsd:enumeration value="TransactionResponse"/>
+                    <xsd:enumeration value="ErrorResponse"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:attributeGroup>
+    
+    <xsd:attributeGroup name="RequestAttributes">
+    	<xsd:attribute name="entranceCode" type="EntranceCodeSimpleType"/>
+    </xsd:attributeGroup>
+    
+    <xsd:attributeGroup name="InputNameAttributes">
+		<xsd:attribute name="fuzzySearch" use="optional" type="FlagSimpleType"/>
+    </xsd:attributeGroup>
+
+     <xsd:element name="AMLComplianceInterface" type="AMLComplianceInterfaceType"/>
+    
+</xsd:schema>
