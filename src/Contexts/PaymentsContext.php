@@ -55,8 +55,10 @@ class PaymentsContext extends BluemContext
         parent::__construct(
             [
                 new BIC("ABNANL2A", "ABN AMRO"),
+                new BIC("ADYBNL2A", "Adyen"),
                 new BIC("ASNBNL21", "ASN Bank"),
                 new BIC("BUNQNL2A", "Bunq"),
+                new BIC("BUUTNL2A", "BUUT"),
                 new BIC("INGBNL2A", "ING"),
                 new BIC("KNABNL2H", "Knab"),
                 new BIC("RABONL2U", "Rabobank"),

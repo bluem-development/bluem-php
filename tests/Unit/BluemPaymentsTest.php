@@ -10,6 +10,7 @@
 namespace Bluem\BluemPHP\Tests\Unit;
 
 use Bluem\BluemPHP\Requests\PaymentBluemRequest;
+use Bluem\BluemPHP\Contexts\PaymentsContext;
 
 class BluemPaymentsTest extends BluemTestCase
 {
@@ -39,5 +40,17 @@ class BluemPaymentsTest extends BluemTestCase
         $request->setPaymentMethodToCreditCard(securityCode: '123');
 
         self::assertStringContainsString('<SecurityCode>123</SecurityCode>', $request->XmlString());
+    }
+
+    public function testSupportsAllDocumentedIdealIssuingBankBics(): void
+    {
+        $expectedBics = [
+            'ABNANL2A', 'ADYBNL2A', 'ASNBNL21', 'BUNQNL2A', 'BUUTNL2A',
+            'INGBNL2A', 'KNABNL2H', 'RABONL2U', 'RBRBNL21', 'SNSBNL2A',
+            'TRIONL2U', 'FVLBNL22', 'REVOLT21', 'BITSNL2A', 'NTSBDEB1',
+            'NNBANL2G',
+        ];
+
+        self::assertSame($expectedBics, (new PaymentsContext())->getBICCodes());
     }
 }

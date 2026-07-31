@@ -815,9 +815,11 @@ The current 2026 certificate is available as `keys/webhook_bluem_nl_20260716.pem
 #### ePayments
 
 - ABN AMRO  <BR> BIC: `ABNANL2A`
+- Adyen  <BR> BIC: `ADYBNL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
 - ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
 - bunq  <BR> BIC: `BUNQNL2A`
+- BUUT  <BR> BIC: `BUUTNL2A`
 - ING   <BR> BIC: `INGBNL2A`
 - Knab  <BR> BIC: `KNABNL2H`
 - Rabobank  <BR> BIC: `RABONL2U`
