@@ -1,6 +1,9 @@
 # Changes per release
 
 ## Major version 2
+### 2.7.2:
+- Added Adyen (`ADYBNL2A`) and BUUT (`BUUTNL2A`) to the ePayments iDEAL issuing bank BIC list.
+
 ### 2.7.1:
 - Released Wero payment support introduced in 2.7.
 - Fixed CreditCard request serialization so a provided `SecurityCode` is included in the XML output.
