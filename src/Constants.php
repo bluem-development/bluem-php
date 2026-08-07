@@ -7,7 +7,7 @@ readonly class Constants
     /**
      * The version of this plug-in, to be updated upon each release
      */
-    public const string PHP_PLUGIN_VERSION = '2.5';
+    public const string PHP_PLUGIN_VERSION = '2.7.3';
 
     public const string PRODUCTION_ENVIRONMENT = 'prod';
     public const string ACCEPTANCE_ENVIRONMENT = 'acc';

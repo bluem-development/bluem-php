@@ -833,6 +833,11 @@ The current 2026 certificate is available as `keys/webhook_bluem_nl_20260716.pem
 
 #### eMandates CORE
 
+The eMandate API is unchanged. When a CORE mandate is preselected with one of
+the Green Mandate BICs below, Bluem directs the debtor to the Green Mandate
+flow. Selecting `ABNANL2A` continues to use the existing e-Mandate flow.
+Green Mandate is not available for B2B mandates yet.
+
 - ABN AMRO  <BR> BIC: `ABNANL2A`
 - ASN Bank  <BR> BIC: `ASNBNL21`
 - ASN (previously SNS)   <BR> BIC: `SNSBNL2A`
@@ -840,6 +845,12 @@ The current 2026 certificate is available as `keys/webhook_bluem_nl_20260716.pem
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
 - Triodos Bank  <BR> BIC: `TRIONL2U`
+- bunq (Green Mandate) <BR> BIC: `BUNQNL2A`
+- Knab (Green Mandate) <BR> BIC: `KNABNL2H`
+- Van Lanschot (Green Mandate) <BR> BIC: `FVLBNL22`
+- Revolut (Green Mandate) <BR> BIC: `REVOLT21`
+- N26 (Green Mandate) <BR> BIC: `NTSBDEB1`
+- Andere bank / Other bank (Green Mandate) <BR> BIC: `OTHERBANK`
 
 #### eMandates B2B
 
@@ -857,7 +868,8 @@ The current 2026 certificate is available as `keys/webhook_bluem_nl_20260716.pem
 - Rabobank  <BR> BIC: `RABONL2U`
 - RegioBank <BR> BIC: `RBRBNL21`
 
-Please note: Knab with BIC: `KNABNL2H` does not support eMandates CORE anymore as of 4th of October 2023.
+Please note: Knab with BIC: `KNABNL2H` is available through the Green Mandate
+flow for eMandates CORE.
 
 ---
 Todo:

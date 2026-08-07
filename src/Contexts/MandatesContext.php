@@ -52,6 +52,12 @@ class MandatesContext extends BluemContext
                 new BIC("RBRBNL21", "RegioBank"),
                 new BIC("SNSBNL2A", "ASN voorheen SNS"),
                 new BIC("TRIONL2U", "Triodos Bank"),
+                new BIC("BUNQNL2A", "bunq"),
+                new BIC("KNABNL2H", "Knab"),
+                new BIC("FVLBNL22", "Van Lanschot"),
+                new BIC("REVOLT21", "Revolut"),
+                new BIC("NTSBDEB1", "N26"),
+                new BIC("OTHERBANK", "Andere bank"),
             ];
         } else {
             $BICs = [

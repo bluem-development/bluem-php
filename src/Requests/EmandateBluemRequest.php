@@ -12,6 +12,7 @@ namespace Bluem\BluemPHP\Requests;
 use Bluem\BluemPHP\Contexts\MandatesContext;
 use Bluem\BluemPHP\Constants;
 use Bluem\BluemPHP\Helpers\BluemConfiguration;
+use Exception;
 
 /**
  * TransactionRequest
