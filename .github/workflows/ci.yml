@@ -29,21 +29,14 @@ jobs:
                   extensions: mbstring, intl
                   coverage: xdebug
 
-            - name: Run composer
-              uses: php-actions/composer@v6
-              with:
-                  php_version: ${{ matrix.php-version }}
+            - name: Install dependencies
+              run: composer install --no-interaction --prefer-dist
 
             - name: PHPCS Lint
               run: make lint
 
             - name: PHPUnit Tests
-              uses: php-actions/phpunit@v4
-              with:
-                  php_version: ${{ matrix.php-version }}
-                  version: 12
-                  bootstrap: ./vendor/autoload.php
-                  configuration: ./.github/workflows/phpunit.xml
+              run: make test_unit
 
     resolve-php-8-6-dependencies:
         name: Resolve dependencies for PHP 8.6
