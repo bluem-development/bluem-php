@@ -5,7 +5,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                php-version: ['8.3', '8.4', '8.5']
+                php-version: ['8.3', '8.4', '8.5', '8.6']
 
         steps:
             - name: Checkout code
@@ -29,18 +29,29 @@ jobs:
                   extensions: mbstring, intl
                   coverage: xdebug
 
-            - name: Run composer
-              uses: php-actions/composer@v6
-              with:
-                  php_version: ${{ matrix.php-version }}
+            - name: Install dependencies
+              run: composer install --no-interaction --prefer-dist
 
             - name: PHPCS Lint
               run: make lint
 
             - name: PHPUnit Tests
-              uses: php-actions/phpunit@v4
+              run: make test_unit
+
+    resolve-php-8-6-dependencies:
+        name: Resolve dependencies for PHP 8.6
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Setup PHP 8.6
+              uses: shivammathur/setup-php@v2
               with:
-                  php_version: ${{ matrix.php-version }}
-                  version: 12
-                  bootstrap: ./vendor/autoload.php
-                  configuration: ./.github/workflows/phpunit.xml
+                  php-version: '8.6'
+                  extensions: mbstring, intl
+
+            - name: Resolve dependencies against PHP 8.6
+              run: |
+                  composer config platform.php 8.6.0
+                  composer update --dry-run --with-all-dependencies --no-interaction
