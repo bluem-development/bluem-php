@@ -32,6 +32,7 @@ Most of this will be migrated into the documentation mentioned above. Note: You 
 
 - [Getting started:](#getting-started)
 - [Changelog](#changelog)
+- [Releasing](#releasing)
 - [Testing](#testing)
   - [Description of the base tests:](#description-of-the-base-tests)
 - [Frequently asked questions](#frequently-asked-questions)
@@ -90,6 +91,11 @@ Please contact us if you have any questions regarding the examples or the implem
 ## Changelog
 
 See [Changelog](changelog.md)
+
+## Releasing
+
+See [RELEASING.md](RELEASING.md) for the versioning convention and release
+checklist.
 
 ## Testing
 

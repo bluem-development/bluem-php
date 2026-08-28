@@ -1,6 +1,9 @@
 # Changes per release
 
 ## Major version 2
+### 2.7.3:
+- Added itsme (`BMIDBEBB`) to the iDIN bank list.
+
 ### 2.7.2:
 - Added Adyen (`ADYBNL2A`) and BUUT (`BUUTNL2A`) to the ePayments iDEAL issuing bank BIC list.
 

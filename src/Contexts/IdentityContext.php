@@ -33,6 +33,7 @@ class IdentityContext extends BluemContext
                 new BIC("ASNBNL21", "ASN Bank"),
                 new BIC("BUNQNL2A", "bunq"),
                 new BIC("INGBNL2A", "ING"),
+                new BIC("BMIDBEBB", "itsme"),
                 new BIC("RABONL2U", "Rabobank"),
                 new BIC("RBRBNL21", "RegioBank"),
                 new BIC("SNSBNL2A", "ASN voorheen SNS"),
