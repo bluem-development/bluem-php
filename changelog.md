@@ -1,6 +1,9 @@
 # Changes per release
 
 ## Major version 2
+### Unreleased:
+- Added support for `robrichards/xmlseclibs` 4 (alongside 3.1). Webhook signature tests now sign with the `enveloped-signature` transform, as required by xmlseclibs 4 for enveloped signatures.
+
 ### 2.7.3:
 - Added itsme (`BMIDBEBB`) to the iDIN bank list.
 

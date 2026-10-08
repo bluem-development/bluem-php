@@ -97,6 +97,22 @@ class WebhookSignatureValidationTest extends TestCase
         $this->assertStringContainsString('Unable to determine signature key algorithm', $validator->errorMessage());
     }
 
+    public function testSignatureFromDifferentKeyFails(): void
+    {
+        $validator = $this->createValidator();
+        $otherKey = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
+        $this->assertNotFalse($otherKey);
+        $this->assertTrue(openssl_pkey_export($otherKey, $otherKeyPem));
+        $this->assertNotFalse(file_put_contents($this->privateKeyFilePath, $otherKeyPem));
+
+        $signedXml = $this->createSignedXml(XMLSecurityKey::RSA_SHA256, XMLSecurityDSig::SHA256);
+
+        $validator->validate($signedXml);
+
+        $this->assertFalse($validator::$isValid);
+        $this->assertStringContainsString('Invalid signature', $validator->errorMessage());
+    }
+
     public function testTestAndAcceptanceEnvironmentsUse2026CertificateFromAnnouncedCutover(): void
     {
         $this->assertSame(
@@ -160,7 +176,12 @@ class WebhookSignatureValidationTest extends TestCase
 
         $signature = new XMLSecurityDSig();
         $signature->setCanonicalMethod(XMLSecurityDSig::EXC_C14N);
-        $signature->addReference($doc, $digestAlgorithm, [XMLSecurityDSig::EXC_C14N], ['force_uri' => true]);
+        $signature->addReference(
+            $doc,
+            $digestAlgorithm,
+            ['http://www.w3.org/2000/09/xmldsig#enveloped-signature', XMLSecurityDSig::EXC_C14N],
+            ['force_uri' => true]
+        );
 
         $privateKey = new XMLSecurityKey($signatureAlgorithm, ['type' => 'private']);
         $privateKey->loadKey($this->privateKeyFilePath, true);
